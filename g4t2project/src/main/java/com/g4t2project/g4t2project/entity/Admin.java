@@ -4,6 +4,6 @@ import java.util.*;
 @Entity
 public class Admin extends Employee {
     private ArrayList<Worker> under_supervision;
-
+    
 
 }
