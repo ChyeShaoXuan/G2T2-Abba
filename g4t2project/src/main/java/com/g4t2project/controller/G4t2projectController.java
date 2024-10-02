@@ -1,4 +1,4 @@
-package com.g4t2project.g4t2project;
+package com.g4t2project.controller;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
