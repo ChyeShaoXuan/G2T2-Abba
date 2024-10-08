@@ -1,4 +1,4 @@
-package com.g4t2project.controller;
+package com.g4t2project.g4t2project.controller;
 
 
 import com.g4t2project.g4t2project.entity.*;
@@ -41,4 +41,6 @@ public class AdminController {
         adminService.updateLeaveApplicationStatus(id, status);
         return ResponseEntity.noContent().build();
     }
+
+    
 }
