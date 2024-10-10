@@ -8,6 +8,7 @@ public class G4t2projectApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(G4t2projectApplication.class, args);
+		
 	}
 
 }
