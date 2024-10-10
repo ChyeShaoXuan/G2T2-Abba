@@ -2,6 +2,8 @@ package com.g4t2project.g4t2project;
 
 import java.util.Date;
 
+import com.g4t2project.g4t2project.entity.Worker;
+
 public class LeaveApplication {
     private String leaveID;
     private Worker worker;
@@ -21,9 +23,9 @@ public class LeaveApplication {
     }
 
     // Method to apply for leave
-    public boolean applyLeave(String Employee_ID, Date startDate, Date endDate, String leaveType) {
+    public boolean applyLeave(Long Employee_ID, Date startDate, Date endDate, String leaveType) {
         // Check if the workerID matches the worker's ID
-        if (this.worker.getEmployee_ID().equals(Employee_ID)) {
+        if (this.worker.getEmployeeId().equals(Employee_ID)) {
             this.startDate = startDate;
             this.endDate = endDate;
             this.leaveType = leaveType;
