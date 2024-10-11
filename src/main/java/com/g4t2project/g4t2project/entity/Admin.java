@@ -12,7 +12,7 @@ import java.util.List;
 public class Admin {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int adminId;
+    private Long adminId;
 
     private String name;
     private boolean isRoot;
@@ -20,7 +20,7 @@ public class Admin {
     @OneToMany(mappedBy = "admin")
     private ArrayList<Worker> workers = new ArrayList<>();
 
-    public int getAdminId() {
+    public Long getAdminId() {
         return adminId;
     }
     public String getName() {

@@ -20,21 +20,21 @@ public class AdminService {
     private WorkerRepository workerRepository;
 
 
-    public Admin addWorkerUnderAdmin(int adminId, Worker worker) {
+    public Admin addWorkerUnderAdmin(Long adminId, Worker worker) {
         Admin admin = adminRepository.findById(adminId).orElseThrow(() -> new RuntimeException("Admin not found"));
         admin.addWorker(worker);
         return adminRepository.save(admin);
     }
 
     
-    public Admin removeWorkerUnderAdmin(int adminId, int workerId) {
+    public Admin removeWorkerUnderAdmin(Long adminId, Long workerId) {
         Admin admin = adminRepository.findById(adminId).orElseThrow(() -> new RuntimeException("Admin not found"));
         Worker worker = workerRepository.findById(workerId).orElseThrow(() -> new RuntimeException("Worker not found"));
         admin.removeWorker(worker);
         return adminRepository.save(admin);
     }
    
-    public Worker updateWorker(int workerId, Worker updatedWorker) {
+    public Worker updateWorker(Long workerId, Worker updatedWorker) {
         Optional<Worker> existingWorkerOpt = workerRepository.findById(workerId);
         if (existingWorkerOpt.isPresent()) {
             Worker existingWorker = existingWorkerOpt.get();

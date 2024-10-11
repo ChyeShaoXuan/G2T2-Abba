@@ -5,6 +5,6 @@ import org.springframework.stereotype.Repository;
 import com.g4t2project.g4t2project.entity.Admin;
 
 @Repository
-public interface AdminRepository extends JpaRepository<Admin, Integer> {
+public interface AdminRepository extends JpaRepository<Admin, Long> {
     //add custom query methods here if needed
 }

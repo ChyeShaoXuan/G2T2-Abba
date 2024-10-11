@@ -17,20 +17,20 @@ public class AdminController {
 
 
     @PostMapping("/{adminId}/workers")
-    public ResponseEntity<Admin> addWorker(@PathVariable int adminId, @RequestBody Worker worker) {
+    public ResponseEntity<Admin> addWorker(@PathVariable Long adminId, @RequestBody Worker worker) {
         Admin admin = adminService.addWorkerUnderAdmin(adminId, worker);
         return ResponseEntity.ok(admin);
     }
 
     // Remove worker under an admin
     @DeleteMapping("/{adminId}/workers/{workerId}")
-    public ResponseEntity<Admin> removeWorker(@PathVariable int adminId, @PathVariable int workerId) {
+    public ResponseEntity<Admin> removeWorker(@PathVariable Long adminId, @PathVariable Long workerId) {
         Admin admin = adminService.removeWorkerUnderAdmin(adminId, workerId);
         return ResponseEntity.ok(admin);
     }
     
     @PutMapping("/workers/{id}")
-    public ResponseEntity<Worker> updateWorker(@PathVariable int id, @RequestBody Worker updatedWorker) {
+    public ResponseEntity<Worker> updateWorker(@PathVariable Long id, @RequestBody Worker updatedWorker) {
         Worker updated = adminService.updateWorker(id, updatedWorker);
         return ResponseEntity.ok(updated);
     }

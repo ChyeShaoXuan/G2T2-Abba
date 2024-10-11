@@ -5,6 +5,6 @@ import org.springframework.stereotype.Repository;
 import com.g4t2project.g4t2project.entity.Worker;
 
 @Repository
-public interface WorkerRepository extends JpaRepository<Worker, Integer> {
+public interface WorkerRepository extends JpaRepository<Worker, Long> {
     //add custom query methods here if needed
 }
