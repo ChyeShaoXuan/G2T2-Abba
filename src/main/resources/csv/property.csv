@@ -1,0 +1,5 @@
+propertyId,clientId,packageId,address,latitude,longitude
+1,1,1,"123 Main St, Cityville",40.7128,-74.0060
+2,2,2,"456 Elm St, Townsville",34.0522,-118.2437
+3,1,1,"789 Maple Ave, Villageburg",51.5074,-0.1278
+4,3,2,"321 Oak Rd, Hamletton",48.8566,2.3522

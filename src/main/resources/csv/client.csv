@@ -1,0 +1,5 @@
+clientId,name,phoneNumber,email,workerId
+1,John Doe,123-456-7890,johndoe@example.com,1
+2,Jane Smith,987-654-3210,janesmith@example.com,2
+3,Bob Johnson,555-0123,bobjohnson@example.com,1
+4,Alice Williams,444-5678,alicewilliams@example.com,3

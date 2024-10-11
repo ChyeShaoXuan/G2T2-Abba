@@ -1,0 +1,5 @@
+workerId,supervisorId,name,phoneNumber,shortBio,deployed,tele_Id,curPropertyId
+1,1,John Smith,+6512345678,"Experienced cleaner, pet-friendly",true,@johnsmith,101
+2,1,Mary Tan,+6598765432,"Specializes in disinfection treatment",false,@marytan,0
+3,2,Ahmed Ali,+6581234567,"No pets due to allergies",true,@ahmedali,103
+4,2,Susan Lee,+6587654321,"Background in carpet shampooing",false,@susanlee,0
