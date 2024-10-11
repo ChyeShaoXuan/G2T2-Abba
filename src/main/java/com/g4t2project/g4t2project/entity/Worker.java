@@ -5,7 +5,8 @@ import java.util.List;
 public class Worker {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int workerId;
+    @Column(name = "worker_id")
+    private Long worker_id;
 
     @ManyToOne
     @JoinColumn(name = "adminId")
@@ -42,11 +43,11 @@ public class Worker {
         this.curPropertyId = curPropertyId;
     }
 
-    public int getWorkerId() {
-        return workerId;
+    public Long getWorkerId() {
+        return worker_id;
     }
 
-    public int getSupervisorId() {
+    public Long getSupervisorId() {
         return admin.getAdminId();
     }
 
@@ -62,7 +63,7 @@ public class Worker {
         return shortBio;
     }
 
-    public boolean isDeployed() {
+    public boolean getDeployed() {
         return deployed;
     }
 
