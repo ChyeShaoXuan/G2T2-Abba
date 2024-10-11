@@ -21,15 +21,22 @@ public class Property {
     private String address;
     private double latitude;
     private double longitude;
+    private String postalCode;
+    private String propertyType;
+
+// Include in constructors, getters, and setters
+
 
     protected Property() {}
 
-    public Property(Client client, Package pkg, String address, double latitude, double longitude) {
+    public Property(Client client, Package pkg, String address, double latitude, double longitude, String postalCode, String propertyType) {
         this.client = client;
         this.pkg = pkg;
         this.address = address;
         this.latitude = latitude;
         this.longitude = longitude;
+        this.postalCode = postalCode;
+        this.propertyType = propertyType;
     }
 
     public int getPropertyId() {
@@ -73,6 +80,22 @@ public class Property {
 
     public void removeCleaningTask(CleaningTask cleaningTask) {
         cleaningTasks.remove(cleaningTask);
+    }
+
+    public String getPostalCode() {
+        return postalCode;
+    }
+
+    public void setPostalCode(String postalCode) {
+        this.postalCode = postalCode;
+    }
+
+    public String getPropertyType() {
+        return propertyType;
+    }
+
+    public void setPropertyType(String propertyType) {
+        this.propertyType = propertyType;
     }
 
     

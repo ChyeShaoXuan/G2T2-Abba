@@ -66,11 +66,11 @@ public class CleaningTask {
         return worker;
     }
 
-    public Shift getShift() {
+    public CleaningTask.Shift getShift() {
         return shift;
     }
 
-    public Status getStatus() {
+    public CleaningTask.Status getStatus() {
         return status;
     }
 
@@ -86,7 +86,11 @@ public class CleaningTask {
         this.worker = worker;
     }
 
-    public void setStatus(Status status) {
+    public void setShift(CleaningTask.Shift shift) {
+        this.shift = shift;
+    }
+
+    public void setStatus(CleaningTask.Status status) {
         this.status = status;
     }
 
@@ -94,5 +98,8 @@ public class CleaningTask {
         Acknowledged = acknowledged;
     }
     
+    public void setFeedback(Feedback feedback) {
+        this.feedback = feedback;
+    }    
     
 }

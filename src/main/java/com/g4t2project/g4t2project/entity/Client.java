@@ -20,6 +20,10 @@ public class Client {
     @OneToMany(mappedBy = "client")
     private ArrayList<Property> properties = new ArrayList<Property>();
 
+    @ManyToOne
+    @JoinColumn(name = "packageId")
+    private Package preferredPackage;
+
     protected Client() {}
 
     public Client(String name, String phoneNumber, String email) {
@@ -58,6 +62,14 @@ public class Client {
 
     public void setPreferredWorker(Worker preferredWorker) {
         this.preferredWorker = preferredWorker;
+    }
+
+    public int getClientId() {
+        return clientId;
+    }
+
+    public void setClientId(int clientId) {
+        this.clientId = clientId;
     }
     
     
