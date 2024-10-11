@@ -62,7 +62,7 @@ public class Worker {
         return shortBio;
     }
 
-    public boolean isDeployed() {
+    public boolean getDeployed() {
         return deployed;
     }
 
