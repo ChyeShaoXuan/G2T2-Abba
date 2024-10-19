@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 
 import com.g4t2project.g4t2project.repository.*;
 import com.g4t2project.g4t2project.entity.*;
+import com.g4t2project.g4t2project.entity.Package;
 
 import java.time.LocalDate;
 import java.util.Optional;
@@ -40,24 +41,20 @@ public class ClientService {
         // Assign a worker (simplified logic for example)
         Worker worker = assignWorker(property, shift, date);
 
-        // Create new CleaningTask
         CleaningTask cleaningTask = new CleaningTask(property, worker, shift, CleaningTask.Status.Scheduled, date, false);
 
-        // Save the cleaning task
         return cleaningTaskRepository.save(cleaningTask);
     }
 
     // Helper method to assign a worker (simplified)
     private Worker assignWorker(Property property, CleaningTask.Shift shift, LocalDate date) {
         // Implement your logic to find the best-matched worker
-        // For now, we'll just fetch any available worker
         Optional<Worker> optionalWorker = workerRepository.findFirstByAvailableTrue();
         return optionalWorker.orElseThrow(() -> new IllegalStateException("No available workers"));
     }
 
     // 2. rateSession(taskID, rating, comments): Feedback
     public Feedback rateSession(int clientId, int taskID, int rating, String comments) {
-        // Fetch the cleaning task
         CleaningTask task = cleaningTaskRepository.findById(taskID).orElseThrow(() -> new IllegalArgumentException("Cleaning task not found"));
 
         // Check if the task belongs to the client and is completed
@@ -68,7 +65,6 @@ public class ClientService {
             throw new IllegalStateException("Cannot rate a task that is not completed");
         }
 
-        // Create new Feedback
         Feedback feedback = new Feedback(rating, comments, task);
         feedbackRepository.save(feedback);
 
@@ -83,10 +79,8 @@ public class ClientService {
     public Property addProperty(int clientId, String address, String postalCode, String propertyType) {
         Client client = clientRepository.findById(clientId).orElseThrow(() -> new IllegalArgumentException("Client not found"));
 
-        // Create new Property
         Property property = new Property(client, address, postalCode, propertyType);
 
-        // Save the property
         return propertyRepository.save(property);
     }
 

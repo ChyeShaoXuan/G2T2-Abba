@@ -6,5 +6,4 @@ import com.g4t2project.g4t2project.entity.Admin;
 
 @Repository
 public interface AdminRepository extends JpaRepository<Admin, Integer> {
-    //add custom query methods here if needed
 }

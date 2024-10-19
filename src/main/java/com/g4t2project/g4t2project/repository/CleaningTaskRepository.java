@@ -6,5 +6,4 @@ import com.g4t2project.g4t2project.entity.CleaningTask;
 
 @Repository
 public interface CleaningTaskRepository extends JpaRepository<CleaningTask, Integer> {
-    //add custom query methods here if needed
 }
