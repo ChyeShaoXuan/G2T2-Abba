@@ -13,7 +13,7 @@ public class Property {
 
     @ManyToOne
     @JoinColumn(name = "packageId")
-    private Package pkg;
+    private CleaningPackage pkg;
 
     @OneToMany(mappedBy = "property")
     private ArrayList<CleaningTask> cleaningTasks = new ArrayList<CleaningTask>();
@@ -23,12 +23,9 @@ public class Property {
     private double longitude;
     private String postalCode;
 
-// Include in constructors, getters, and setters
-
-
     protected Property() {}
 
-    public Property(Client client, Package pkg, String address, double latitude, double longitude, String postalCode) {
+    public Property(Client client, CleaningPackage pkg, String address, double latitude, double longitude, String postalCode) {
         this.client = client;
         this.pkg = pkg;
         this.address = address;
@@ -86,6 +83,14 @@ public class Property {
 
     public void setPostalCode(String postalCode) {
         this.postalCode = postalCode;
+    }
+
+    public CleaningPackage getPkg() {
+        return pkg;
+    }
+
+    public void setPkg(CleaningPackage pkg) {
+        this.pkg = pkg;
     }
 
 }

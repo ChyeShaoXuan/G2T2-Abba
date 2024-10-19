@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service;
 
 import com.g4t2project.g4t2project.repository.*;
 import com.g4t2project.g4t2project.entity.*;
-import com.g4t2project.g4t2project.entity.Package;
 
 import java.time.LocalDate;
 import java.util.Optional;
@@ -20,7 +19,7 @@ public class ClientService {
     private PropertyRepository propertyRepository;
 
     @Autowired
-    private PackageRepository packageRepository;
+    private CleaningPackageRepository cleaningPackageRepository;
 
     @Autowired
     private CleaningTaskRepository cleaningTaskRepository;
@@ -31,14 +30,11 @@ public class ClientService {
     @Autowired
     private WorkerRepository workerRepository;
 
-    // 1. placeOrder(packageID, propertyID, timeslot): CleaningTask
-    public CleaningTask placeOrder(int clientId, int packageID, int propertyID, CleaningTask.Shift shift, LocalDate date) {
-        // Fetch entities
+    public CleaningTask placeOrder(Long clientId, int packageID, int propertyID, CleaningTask.Shift shift, LocalDate date) {
         Client client = clientRepository.findById(clientId).orElseThrow(() -> new IllegalArgumentException("Client not found"));
         Property property = propertyRepository.findById(propertyID).orElseThrow(() -> new IllegalArgumentException("Property not found"));
-        Package pkg = packageRepository.findById(packageID).orElseThrow(() -> new IllegalArgumentException("Package not found"));
+        CleaningPackage pkg = cleaningPackageRepository.findById(packageID).orElseThrow(() -> new IllegalArgumentException("Package not found"));
 
-        // Assign a worker (simplified logic for example)
         Worker worker = assignWorker(property, shift, date);
 
         CleaningTask cleaningTask = new CleaningTask(property, worker, shift, CleaningTask.Status.Scheduled, date, false);
@@ -46,18 +42,15 @@ public class ClientService {
         return cleaningTaskRepository.save(cleaningTask);
     }
 
-    // Helper method to assign a worker (simplified)
     private Worker assignWorker(Property property, CleaningTask.Shift shift, LocalDate date) {
-        // Implement your logic to find the best-matched worker
         Optional<Worker> optionalWorker = workerRepository.findFirstByAvailableTrue();
         return optionalWorker.orElseThrow(() -> new IllegalStateException("No available workers"));
     }
 
-    // 2. rateSession(taskID, rating, comments): Feedback
-    public Feedback rateSession(int clientId, int taskID, int rating, String comments) {
+
+    public Feedback rateSession(Long clientId, int taskID, int rating, String comments) {
         CleaningTask task = cleaningTaskRepository.findById(taskID).orElseThrow(() -> new IllegalArgumentException("Cleaning task not found"));
 
-        // Check if the task belongs to the client and is completed
         if (!task.getProperty().getClient().getClientId().equals(clientId)) {
             throw new IllegalArgumentException("This task does not belong to the client");
         }
@@ -68,24 +61,24 @@ public class ClientService {
         Feedback feedback = new Feedback(rating, comments, task);
         feedbackRepository.save(feedback);
 
-        // Associate feedback with the cleaning task
         task.setFeedback(feedback);
         cleaningTaskRepository.save(task);
 
         return feedback;
     }
 
-    // 3. addProperty(clientID, address, postalCode, propertyType): Property
-    public Property addProperty(int clientId, String address, String postalCode, String propertyType) {
+    public Property addProperty(Long clientId,  String address, String postalCode, int packageID, double latitude, double longitude) {
         Client client = clientRepository.findById(clientId).orElseThrow(() -> new IllegalArgumentException("Client not found"));
 
-        Property property = new Property(client, address, postalCode, propertyType);
+        CleaningPackage pkg = cleaningPackageRepository.findById(packageID).orElseThrow(() -> new IllegalArgumentException("Package not found"));
+        
+        Property property = new Property(client, pkg, address, latitude, longitude, postalCode);
 
         return propertyRepository.save(property);
     }
 
-    // 4. modifyProperty(propertyID, newAddress, newPostalCode): boolean
-    public boolean modifyProperty(int clientId, int propertyID, String newAddress, String newPostalCode) {
+    
+    public boolean modifyProperty(Long clientId, int propertyID, String newAddress, String newPostalCode) {
         Property property = propertyRepository.findById(propertyID).orElseThrow(() -> new IllegalArgumentException("Property not found"));
 
         // Check if the property belongs to the client
@@ -97,31 +90,31 @@ public class ClientService {
         property.setAddress(newAddress);
         property.setPostalCode(newPostalCode);
 
-        // Save changes
         propertyRepository.save(property);
         return true;
     }
 
-    // 5. submitFeedback(clientID, taskID, rating, comments): boolean
-    public boolean submitFeedback(int clientId, int taskID, int rating, String comments) {
+    public boolean submitFeedback(Long clientId, int taskID, int rating, String comments) {
         try {
             rateSession(clientId, taskID, rating, comments);
             return true;
         } catch (Exception e) {
-            // Handle exception as needed
             return false;
         }
     }
 
-    // 6. selectPackage(clientID, packageID): Package
-    public Package selectPackage(int clientId, int packageID) {
+    public CleaningPackage selectPackage(Long clientId, int propertyID, int packageID) {
         Client client = clientRepository.findById(clientId).orElseThrow(() -> new IllegalArgumentException("Client not found"));
-        Package selectedPackage = packageRepository.findById(packageID).orElseThrow(() -> new IllegalArgumentException("Package not found"));
-
-        // Set as preferred package
-        client.setPreferredPackage(selectedPackage);
-        clientRepository.save(client);
-
+        Property property = propertyRepository.findById(propertyID).orElseThrow(() -> new IllegalArgumentException("Property not found"));
+        CleaningPackage selectedPackage = cleaningPackageRepository.findById(packageID).orElseThrow(() -> new IllegalArgumentException("Package not found"));
+    
+        if (!property.getClient().getClientId().equals(clientId)) {
+            throw new IllegalArgumentException("This property does not belong to the client");
+        }
+    
+        property.setPkg(selectedPackage);
+        propertyRepository.save(property);
+    
         return selectedPackage;
     }
 }

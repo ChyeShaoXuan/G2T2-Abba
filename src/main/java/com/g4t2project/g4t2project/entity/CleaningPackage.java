@@ -3,7 +3,7 @@ import jakarta.persistence.*;
 import java.util.ArrayList;
 
 @Entity
-public class Package {
+public class CleaningPackage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int packageId;
@@ -26,9 +26,9 @@ public class Package {
 
     
 
-    protected Package() {}
+    protected CleaningPackage() {}
 
-    public Package(PackageType packageType, int price, int hours, int hourly_rate, String property_details, ArrayList<Property> properties) {
+    public CleaningPackage(PackageType packageType, int price, int hours, int hourly_rate, String property_details, ArrayList<Property> properties) {
         this.packageType = packageType;
         this.price = price;
         this.hours = hours;

@@ -73,7 +73,7 @@ CREATE TABLE IF NOT EXISTS leavestats (
     workerId INT
 );
 
-CREATE TABLE IF NOT EXISTS package (
+CREATE TABLE IF NOT EXISTS cleaning_package (
     packageId INT PRIMARY KEY,
     packageType VARCHAR(50),
     price DECIMAL(10, 2),
@@ -149,7 +149,7 @@ INSERT INTO leavestats (monthYear, alCount, mcCount, hlCount, elCount, workerId)
 ('2024-10', 1, 2, 1, 0, 2),
 ('2024-09', 2, 0, 1, 1, 2);
 
-INSERT INTO package (packageId, packageType, price, hours, hourly_rate, property_details) VALUES
+INSERT INTO cleaning_package (packageId, packageType, price, hours, hourly_rate, property_details) VALUES
 (1, 'Weekly', 200, 5, 40, '2-bedroom apartment'),
 (2, 'BiWeekly', 350, 10, 35, '3-bedroom house with garden'),
 (3, 'Weekly', 150, 3, 50, 'Studio apartment'),

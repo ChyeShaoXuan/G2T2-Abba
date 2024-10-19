@@ -30,6 +30,7 @@ public class Worker {
     private boolean deployed;
     private String tele_Id;
     private int curPropertyId = 0;
+    private boolean available;
 
     protected Worker() {}
 
@@ -41,6 +42,7 @@ public class Worker {
         this.deployed = deployed;
         this.tele_Id = tele_Id;
         this.curPropertyId = curPropertyId;
+        this.available = true;
     }
 
     public Long getWorkerId() {
@@ -97,6 +99,14 @@ public class Worker {
 
     public void setTele_Id(String tele_Id) {
         this.tele_Id = tele_Id;
+    }
+
+    public boolean isAvailable() {
+        return available;
+    }
+
+    public void setAvailable(boolean available) {
+        this.available = available;
     }
 
 }
