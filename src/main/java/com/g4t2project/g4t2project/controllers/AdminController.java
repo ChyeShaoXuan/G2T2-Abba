@@ -74,6 +74,15 @@ public class AdminController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
-
+    
+    @PutMapping("/{adminId}/tasks/{taskId}/assign/{workerId}")
+    public ResponseEntity<String> assignTaskToWorker(@PathVariable int taskId, @PathVariable Long workerId) {
+        try {
+            adminService.assignTaskToWorker(taskId, workerId);
+            return new ResponseEntity<>("Task assigned successfully", HttpStatus.OK);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        }
+    }
     
 }
