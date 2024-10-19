@@ -7,7 +7,7 @@ import java.util.ArrayList;
 public class Client {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long clientId;
+    private int clientId;
 
     private String name;
     private String phoneNumber;
@@ -19,6 +19,10 @@ public class Client {
     
     @OneToMany(mappedBy = "client")
     private ArrayList<Property> properties = new ArrayList<Property>();
+
+    @ManyToOne
+    @JoinColumn(name = "packageId")
+    private Package preferredPackage;
 
     @ManyToOne
     @JoinColumn(name = "admin_id")
@@ -43,14 +47,6 @@ public class Client {
 
     public void setProperties(ArrayList<Property> properties) {
         this.properties = properties;
-    }
-
-    public Long getClientId() {
-        return clientId;
-    }
-
-    public void setClientId(Long clientId) {
-        this.clientId = clientId;
     }
 
     public String getName() {
@@ -85,7 +81,13 @@ public class Client {
         this.preferredWorker = preferredWorker;
     }
 
-    
+    public int getClientId() {
+        return clientId;
+    }
+
+    public void setClientId(int clientId) {
+        this.clientId = clientId;
+    }
     
     
 }
