@@ -22,6 +22,9 @@ public class AdminService {
     @Autowired
     private ClientRepository clientRepository;
 
+    @Autowired
+    private CleaningTaskRepository cleaningTaskRepository;
+
 
     public Admin addWorkerUnderAdmin(Long adminId, Worker worker) {
         Admin admin = adminRepository.findById(adminId).orElseThrow(() -> new RuntimeException("Admin not found"));
@@ -80,6 +83,21 @@ public class AdminService {
         Admin admin = adminRepository.findById(adminId).orElseThrow(() -> new RuntimeException("Admin not found"));
         admin.updateClientInfo(clientId, updatedClient);  // Using the method in Admin entity
         return adminRepository.save(admin);
+    }
+
+    
+
+    
+
+    public CleaningTask assignTaskToWorker(int taskId, Long workerId) {
+       
+        CleaningTask task = cleaningTaskRepository.findById(taskId).orElseThrow(() -> new RuntimeException("Task not found"));
+        Worker worker = workerRepository.findById(workerId).orElseThrow(() -> new RuntimeException("Worker not found"));
+
+        task.setWorker(worker);
+        task.setStatus(CleaningTask.Status.Assigned);
+
+        return cleaningTaskRepository.save(task);
     }
 
 
