@@ -23,8 +23,8 @@ public class WorkerController {
 
     // Method to accept a task
     @PutMapping("/{workerId}/tasks/{taskId}/accept")
-    public ResponseEntity<Boolean> acceptTask(@PathVariable Long workerId, @PathVariable int taskId) {
-        boolean isAccepted = workerService.acceptTask(taskId, workerId);
+    public ResponseEntity<Boolean> acceptAssignedTask(@PathVariable Long workerId, @PathVariable int taskId) {
+        boolean isAccepted = workerService.acceptAssignedTask(taskId, workerId);
         if (isAccepted) {
             return ResponseEntity.ok(true);
         } else {
