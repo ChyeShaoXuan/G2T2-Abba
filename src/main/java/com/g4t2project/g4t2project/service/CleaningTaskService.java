@@ -1,3 +1,18 @@
+package com.g4t2project.g4t2project.service;
+
+import com.g4t2project.g4t2project.entity.CleaningTask;
+import com.g4t2project.g4t2project.entity.LeaveApplication;
+import com.g4t2project.g4t2project.entity.Worker;
+import com.g4t2project.g4t2project.repository.CleaningTaskRepository;
+import com.g4t2project.g4t2project.repository.WorkerRepository;
+import com.g4t2project.g4t2project.repository.LeaveApplicationRepository;
+import com.g4t2project.g4t2project.service.NotificationService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Optional;
+
 @Service
 public class CleaningTaskService {
     @Autowired

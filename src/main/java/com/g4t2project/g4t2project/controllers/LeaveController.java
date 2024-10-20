@@ -1,3 +1,12 @@
+package com.g4t2project.g4t2project.controller;
+
+import com.g4t2project.g4t2project.entity.LeaveApplication;
+import com.g4t2project.g4t2project.service.LeaveApplicationService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
 @RestController
 @RequestMapping("/leave")
 public class LeaveController {
@@ -5,8 +14,8 @@ public class LeaveController {
     private LeaveApplicationService leaveApplicationService;
 
     @PostMapping("/apply")
-    public ResponseEntity<String> applyForLeave(@RequestBody LeaveApplicationDto leaveApplicationDto) {
-        leaveApplicationService.applyForLeave(leaveApplicationDto);
+    public ResponseEntity<String> applyForLeave(@RequestBody LeaveApplication leaveApplication) {
+        leaveApplicationService.applyForLeave(leaveApplication);
         return ResponseEntity.ok("Leave application submitted successfully");
     }
 
@@ -22,3 +31,4 @@ public class LeaveController {
         return ResponseEntity.ok("Leave approved");
     }
 }
+
