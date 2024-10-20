@@ -1,11 +1,16 @@
 package com.g4t2project.g4t2project.service;
 
-import com.g4t2project.g4t2project.entity.*;
-import com.g4t2project.g4t2project.repository.*;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+import com.g4t2project.g4t2project.entity.CleaningTask;
+import com.g4t2project.g4t2project.entity.LeaveApplication;
+import com.g4t2project.g4t2project.entity.Worker;
+import com.g4t2project.g4t2project.repository.CleaningTaskRepository;
+import com.g4t2project.g4t2project.repository.LeaveApplicationRepository;
+import com.g4t2project.g4t2project.repository.WorkerRepository;
 
 @Service
 public class WorkerService {
@@ -19,21 +24,20 @@ public class WorkerService {
     @Autowired
     private LeaveApplicationRepository leaveApplicationRepository;
 
-    public boolean acceptTask(int taskId, Long workerId) {
-        Optional<CleaningTask> taskOpt = cleaningTaskRepository.findById(taskId);
-        Optional<Worker> workerOpt = workerRepository.findById(workerId);
+    
+    public boolean acceptAssignedTask(int taskId, Long workerId) {
+        CleaningTask task = cleaningTaskRepository.findById(taskId)
+                            .orElseThrow(() -> new RuntimeException("Task not found"));
+        Worker worker = workerRepository.findById(workerId)
+                            .orElseThrow(() -> new RuntimeException("Worker not found"));
 
-        if (taskOpt.isPresent() && workerOpt.isPresent()) {
-            CleaningTask task = taskOpt.get();
-            Worker worker = workerOpt.get();
-
-            if (task.getWorker().equals(worker) && task.getStatus() == CleaningTask.Status.Assigned) {
-                task.setStatus(CleaningTask.Status.Accepted);
-                cleaningTaskRepository.save(task);
-                return true;
-            }
+        if (task.getWorker().getWorkerId().equals(workerId) && task.getStatus() == CleaningTask.Status.Assigned) {
+            task.setStatus(CleaningTask.Status.Accepted); // Automatically accept the task
+            cleaningTaskRepository.save(task);
+            return true;
+        } else {
+            throw new RuntimeException("Task not assigned to this worker or task cannot be accepted");
         }
-        return false;
     }
 
     public void applyLeave(Long workerId, LeaveApplication leaveApplication) {
