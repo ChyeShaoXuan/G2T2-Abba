@@ -6,3 +6,8 @@
 
 ### All entities are in src/main/java/com/g4t2project/g4t2project/entity/
 
+- cd front-end
+- npm install
+- npm run dev
+- Go to `localhost:3000`
+
