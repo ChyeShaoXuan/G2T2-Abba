@@ -19,7 +19,6 @@ public class WorkerService {
     @Autowired
     private LeaveApplicationRepository leaveApplicationRepository;
 
-    // Method for accepting a task
     public boolean acceptTask(int taskId, Long workerId) {
         Optional<CleaningTask> taskOpt = cleaningTaskRepository.findById(taskId);
         Optional<Worker> workerOpt = workerRepository.findById(workerId);
@@ -37,7 +36,6 @@ public class WorkerService {
         return false;
     }
 
-    // Method for workers to apply for leave
     public void applyLeave(Long workerId, LeaveApplication leaveApplication) {
         Worker worker = workerRepository.findById(workerId)
                 .orElseThrow(() -> new RuntimeException("Worker not found"));
@@ -47,7 +45,6 @@ public class WorkerService {
         leaveApplicationRepository.save(leaveApplication);  // Save the leave application
     }
 
-    // Method for confirming task completion
     public boolean confirmCompletion(int taskId, Long workerId) {
         Optional<CleaningTask> taskOpt = cleaningTaskRepository.findById(taskId);
         Optional<Worker> workerOpt = workerRepository.findById(workerId);
