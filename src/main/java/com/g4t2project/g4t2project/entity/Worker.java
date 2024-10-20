@@ -5,7 +5,8 @@ import java.util.List;
 public class Worker {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int workerId;
+    @Column(name = "worker_id")
+    private Long worker_id;
 
     @ManyToOne
     @JoinColumn(name = "adminId")
@@ -29,6 +30,7 @@ public class Worker {
     private boolean deployed;
     private String tele_Id;
     private int curPropertyId = 0;
+    private boolean available;
 
     protected Worker() {}
 
@@ -40,13 +42,14 @@ public class Worker {
         this.deployed = deployed;
         this.tele_Id = tele_Id;
         this.curPropertyId = curPropertyId;
+        this.available = true;
     }
 
-    public int getWorkerId() {
-        return workerId;
+    public Long getWorkerId() {
+        return worker_id;
     }
 
-    public int getSupervisorId() {
+    public Long getSupervisorId() {
         return admin.getAdminId();
     }
 
@@ -96,6 +99,14 @@ public class Worker {
 
     public void setTele_Id(String tele_Id) {
         this.tele_Id = tele_Id;
+    }
+
+    public boolean isAvailable() {
+        return available;
+    }
+
+    public void setAvailable(boolean available) {
+        this.available = available;
     }
 
 }

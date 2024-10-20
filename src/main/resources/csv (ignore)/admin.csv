@@ -1,0 +1,5 @@
+adminId,name,isRoot
+1,John Doe,true
+2,Jane Smith,false
+3,Michael Brown,false
+4,Alice Johnson,false

@@ -7,12 +7,17 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.CascadeType;
 import java.util.List;
+
 @Entity
 public class Admin {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int adminId;
+    private Long adminId;
+
+    @OneToMany(mappedBy = "admin", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Client> clients = new ArrayList<>();
 
     private String name;
     private boolean isRoot;
@@ -20,7 +25,7 @@ public class Admin {
     @OneToMany(mappedBy = "admin")
     private ArrayList<Worker> workers = new ArrayList<>();
 
-    public int getAdminId() {
+    public Long getAdminId() {
         return adminId;
     }
     public String getName() {
@@ -48,6 +53,32 @@ public class Admin {
 
     public void removeWorker(Worker worker) {
         workers.remove(worker);
+    }
+
+    // Add a client
+    public void addClient(Client client) {
+        clients.add(client);
+        client.setAdmin(this);  // Set the relationship from Client's side
+    }
+
+    // Remove a client
+    public void removeClient(Client client) {
+        clients.remove(client);
+        client.setAdmin(null);  // Break the relationship
+    }
+
+    // Update client info
+    public void updateClientInfo(Long clientId, Client updatedClient) {
+        for (Client client : clients) {
+            if (client.getClientId().equals(clientId)) {
+                client.setName(updatedClient.getName());      // Update fields
+                client.setPhoneNumber(updatedClient.getPhoneNumber());
+                client.setEmail(updatedClient.getEmail());
+                client.setPreferredWorker(updatedClient.getPreferredWorker());
+                client.setProperties(updatedClient.getProperties());
+                break;
+            }
+        }
     }
    
 }

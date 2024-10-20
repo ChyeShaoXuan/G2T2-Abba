@@ -19,22 +19,28 @@ public class AdminService {
     @Autowired
     private WorkerRepository workerRepository;
 
+    @Autowired
+    private ClientRepository clientRepository;
 
-    public Admin addWorkerUnderAdmin(int adminId, Worker worker) {
+    @Autowired
+    private CleaningTaskRepository cleaningTaskRepository;
+
+
+    public Admin addWorkerUnderAdmin(Long adminId, Worker worker) {
         Admin admin = adminRepository.findById(adminId).orElseThrow(() -> new RuntimeException("Admin not found"));
         admin.addWorker(worker);
         return adminRepository.save(admin);
     }
 
     
-    public Admin removeWorkerUnderAdmin(int adminId, int workerId) {
+    public Admin removeWorkerUnderAdmin(Long adminId, Long workerId) {
         Admin admin = adminRepository.findById(adminId).orElseThrow(() -> new RuntimeException("Admin not found"));
         Worker worker = workerRepository.findById(workerId).orElseThrow(() -> new RuntimeException("Worker not found"));
         admin.removeWorker(worker);
         return adminRepository.save(admin);
     }
    
-    public Worker updateWorker(int workerId, Worker updatedWorker) {
+    public Worker updateWorker(Long workerId, Worker updatedWorker) {
         Optional<Worker> existingWorkerOpt = workerRepository.findById(workerId);
         if (existingWorkerOpt.isPresent()) {
             Worker existingWorker = existingWorkerOpt.get();
@@ -57,6 +63,44 @@ public class AdminService {
             throw new RuntimeException("Leave Application not found");
         }
     }
+
+    public Admin addClientUnderAdmin(Long adminId, Client client) {
+        Admin admin = adminRepository.findById(adminId).orElseThrow(() -> new RuntimeException("Admin not found"));
+        admin.addClient(client);  // Using the method in Admin entity
+        return adminRepository.save(admin);
+    }
+
+    // Remove a Client under Admin
+    public Admin removeClientUnderAdmin(Long adminId, Long clientId) {
+        Admin admin = adminRepository.findById(adminId).orElseThrow(() -> new RuntimeException("Admin not found"));
+        Client client = clientRepository.findById(clientId).orElseThrow(() -> new RuntimeException("Client not found"));
+        admin.removeClient(client);  // Using the method in Admin entity
+        return adminRepository.save(admin);
+    }
+
+    // Update Client Info
+    public Admin updateClientUnderAdmin(Long adminId, Long clientId, Client updatedClient) {
+        Admin admin = adminRepository.findById(adminId).orElseThrow(() -> new RuntimeException("Admin not found"));
+        admin.updateClientInfo(clientId, updatedClient);  // Using the method in Admin entity
+        return adminRepository.save(admin);
+    }
+
+    
+
+    
+
+    public CleaningTask assignTaskToWorker(int taskId, Long workerId) {
+       
+        CleaningTask task = cleaningTaskRepository.findById(taskId).orElseThrow(() -> new RuntimeException("Task not found"));
+        Worker worker = workerRepository.findById(workerId).orElseThrow(() -> new RuntimeException("Worker not found"));
+
+        task.setWorker(worker);
+        task.setStatus(CleaningTask.Status.Assigned);
+
+        return cleaningTaskRepository.save(task);
+    }
+
+
 
     
 }

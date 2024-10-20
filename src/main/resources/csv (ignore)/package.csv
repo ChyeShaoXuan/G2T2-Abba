@@ -1,0 +1,5 @@
+packageId,packageType,price,hours,hourly_rate,property_details
+1,Weekly,200,5,40,"2-bedroom apartment"
+2,BiWeekly,350,10,35,"3-bedroom house with garden"
+3,Weekly,150,3,50,"Studio apartment"
+4,BiWeekly,500,15,33,"4-bedroom family home"

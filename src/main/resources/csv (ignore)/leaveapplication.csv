@@ -1,0 +1,5 @@
+leaveApplicationId,workerId,adminId,startDate,endDate,leaveType,status,submissionDateTime
+1,1,1,2024-10-01,2024-10-05,MC,Pending,2024-09-30T12:00:00
+2,2,1,2024-10-10,2024-10-12,AL,Approved,2024-10-01T14:30:00
+3,3,2,2024-10-15,2024-10-20,HL,Rejected,2024-10-02T09:00:00
+4,1,2,2024-10-22,2024-10-24,EL,Pending,2024-10-15T10:15:00

@@ -16,7 +16,7 @@ public class ClientController {
     private ClientService clientService;
 
     @PostMapping("/{clientId}/placeOrder")
-    public ResponseEntity<CleaningTask> placeOrder(@PathVariable Integer clientId, @RequestParam Integer packageID,
+    public ResponseEntity<CleaningTask> placeOrder(@PathVariable Long clientId, @RequestParam Integer packageID,
     @RequestParam Integer propertyID, @RequestParam CleaningTask.Shift shift, @RequestParam String date) {
         LocalDate localDate = LocalDate.parse(date);
         CleaningTask task = clientService.placeOrder(clientId, packageID, propertyID, shift, localDate);
@@ -24,7 +24,7 @@ public class ClientController {
     }
 
     @PostMapping("/{clientId}/rateSession")
-    public ResponseEntity<Feedback> rateSession(@PathVariable int clientId, @RequestParam int taskID, @RequestParam int rating, @RequestParam String comments) 
+    public ResponseEntity<Feedback> rateSession(@PathVariable Long clientId, @RequestParam int taskID, @RequestParam int rating, @RequestParam String comments) 
     {
         Feedback feedback = clientService.rateSession(clientId, taskID, rating, comments);
         return ResponseEntity.ok(feedback);

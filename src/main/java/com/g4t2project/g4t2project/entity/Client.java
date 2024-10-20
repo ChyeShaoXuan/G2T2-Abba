@@ -7,7 +7,7 @@ import java.util.ArrayList;
 public class Client {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int clientId;
+    private Long clientId;
 
     private String name;
     private String phoneNumber;
@@ -22,7 +22,11 @@ public class Client {
 
     @ManyToOne
     @JoinColumn(name = "packageId")
-    private Package preferredPackage;
+    private CleaningPackage preferredPackage;
+
+    @ManyToOne
+    @JoinColumn(name = "admin_id")
+    private Admin admin;
 
     protected Client() {}
 
@@ -30,6 +34,19 @@ public class Client {
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.email = email;
+    }
+    public void setAdmin(Admin admin) {
+        this.admin = admin;
+    }
+    
+    
+
+    public ArrayList<Property> getProperties() {
+        return properties;
+    }
+
+    public void setProperties(ArrayList<Property> properties) {
+        this.properties = properties;
     }
 
     public String getName() {
@@ -64,13 +81,24 @@ public class Client {
         this.preferredWorker = preferredWorker;
     }
 
-    public int getClientId() {
+    public Long getClientId() {
         return clientId;
     }
 
-    public void setClientId(int clientId) {
+    public void setClientId(Long clientId) {
         this.clientId = clientId;
     }
-    
+
+    public CleaningPackage getPreferredPackage() {
+        return preferredPackage;
+    }
+
+    public void setPreferredPackage(CleaningPackage preferredPackage) {
+        this.preferredPackage = preferredPackage;
+    }
+
+    public Admin getAdmin() {
+        return admin;
+    }
     
 }

@@ -1,0 +1,5 @@
+taskId,propertyId,workerId,feedbackId,shift,status,date,Acknowledged
+1,101,1,,Morning,Scheduled,2024-10-15,false
+2,102,2,,Afternoon,InProgress,2024-10-16,true
+3,103,3,,Evening,Cancelled,2024-10-17,false
+4,104,1,,Morning,Completed,2024-10-18,true
