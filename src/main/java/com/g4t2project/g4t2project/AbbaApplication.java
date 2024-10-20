@@ -8,6 +8,7 @@ import io.github.cdimascio.dotenv.Dotenv;
 
 @SpringBootApplication
 @RestController
+@EnableScheduling
 public class AbbaApplication {
 
 	@RequestMapping("/")
