@@ -7,10 +7,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import java.util.List;
 
 @RestController
 @RequestMapping("/admin")
+@CrossOrigin(origins = "http://localhost:3000")
 public class AdminController {
 
     @Autowired
@@ -85,4 +86,9 @@ public class AdminController {
         }
     }
     
+    @GetMapping("/workers")
+    public ResponseEntity<List<Worker>> getAllWorkers() {
+        List<Worker> workers = adminService.getAllWorkers();
+        return ResponseEntity.ok(workers);
+    }
 }
