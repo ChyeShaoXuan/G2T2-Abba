@@ -29,13 +29,13 @@ public class CleaningTaskService {
         List<CleaningTask> tasks = cleaningTaskRepository.findTasksByWorkerAndDate(worker, leaveApplication.getLeaveDate());
 
         for (CleaningTask task : tasks) {
-            // try to reassign the task to another worker
+            // try reassign task to another worker
             Optional<Worker> replacementWorker = findReplacementWorker(task);
             if (replacementWorker.isPresent()) {
                 task.setWorker(replacementWorker.get());
                 cleaningTaskRepository.save(task);
             } else {
-                // notify client to reschedule or cancel the session
+                // notify client to reschedule or cancel session
                 notificationService.notifyClientForReschedule(task.getProperty().getClient(), task);
             }
         }

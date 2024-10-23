@@ -28,8 +28,9 @@ public class LeaveApplicationService {
 
     public void uploadMcDocument(int leaveId, MultipartFile mcDocument) {
         LeaveApplication leaveApplication = leaveApplicationRepository.findById(leaveId).orElseThrow();
-        String fileName = mcDocument.getOriginalFilename();
+        String fileName = leaveId + "_" + mcDocument.getOriginalFilename();  // Appending leaveId for uniqueness
         Path filePath = Paths.get(MC_UPLOAD_DIR + fileName);
+    
         try {
             Files.write(filePath, mcDocument.getBytes());
             leaveApplication.setMcDocumentUrl(filePath.toString());
@@ -41,8 +42,9 @@ public class LeaveApplicationService {
 
     public void approveLeave(int leaveId) {
         LeaveApplication leaveApplication = leaveApplicationRepository.findById(leaveId).orElseThrow();
-        leaveApplication.setApproved(true);
+        leaveApplication.setStatus(LeaveApplication.Status.Approved);
         leaveApplicationRepository.save(leaveApplication);
     }
+    
 }
 

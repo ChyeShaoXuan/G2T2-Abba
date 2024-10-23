@@ -17,7 +17,7 @@ public class NotificationService {
     }
 
     private void sendEmail(String to, String message) {
-        // placeholder for actual email sending logic
+        // placeholder for actual email sending logic (Not done yet)
         System.out.println("Sending email to: " + to + "\nMessage: " + message);
     }
 }
