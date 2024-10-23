@@ -26,7 +26,7 @@ public class CleaningTaskService {
 
     public void handleWorkerLeave(LeaveApplication leaveApplication) {
         Worker worker = leaveApplication.getWorker();
-        List<CleaningTask> tasks = cleaningTaskRepository.findTasksByWorkerAndDate(worker, leaveApplication.getLeaveDate());
+        List<CleaningTask> tasks = cleaningTaskRepository.findTasksByWorkerAndDate(worker, leaveApplication.getStartDate());
 
         for (CleaningTask task : tasks) {
             // try reassign task to another worker

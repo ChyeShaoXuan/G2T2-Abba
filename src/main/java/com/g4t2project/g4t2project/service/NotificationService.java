@@ -2,6 +2,7 @@ package com.g4t2project.g4t2project.service;
 
 import com.g4t2project.g4t2project.entity.CleaningTask;
 import com.g4t2project.g4t2project.entity.Client;
+import com.g4t2project.g4t2project.entity.LeaveApplication;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -12,7 +13,7 @@ public class NotificationService {
     }
 
     public void notifyAdminForPendingMC(LeaveApplication leaveApplication) {
-        String message = "Worker " + leaveApplication.getWorker().getName() + " has not uploaded their MC slip for leave on " + leaveApplication.getLeaveDate();
+        String message = "Worker " + leaveApplication.getWorker().getName() + " has not uploaded their MC slip for leave on " + leaveApplication.getStartDate() + " to " + leaveApplication.getEndDate() + ".";
         sendEmail("admin@company.com", message);
     }
 

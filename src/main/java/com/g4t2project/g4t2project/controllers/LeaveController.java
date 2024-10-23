@@ -1,4 +1,4 @@
-package com.g4t2project.g4t2project.controller;
+package com.g4t2project.g4t2project.controllers;
 
 import com.g4t2project.g4t2project.entity.LeaveApplication;
 import com.g4t2project.g4t2project.service.LeaveApplicationService;
