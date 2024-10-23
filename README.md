@@ -3,7 +3,7 @@
 - Install Maven
 - Run `mvn clean install`
 - Get WAMP/MAMP up and running. Then create a database called `abbaschedulingsystem` or whatever is your DATASOURCE_URL in `.env`
-- Run the `data.sql` SQL script in that database to create new tables
+- Run the `deploy.sql` SQL script in that database to create new tables
 - Run `mvn spring-boot:run`
 - Go to `localhost:8080`. You should see 'hello world'
 
