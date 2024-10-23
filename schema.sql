@@ -1,7 +1,7 @@
 -- Create tables
 
 CREATE TABLE IF NOT EXISTS worker (
-    workerId INT PRIMARY KEY,
+    worker_id INT PRIMARY KEY,
     supervisorId INT,
     name VARCHAR(255),
     phoneNumber VARCHAR(50),

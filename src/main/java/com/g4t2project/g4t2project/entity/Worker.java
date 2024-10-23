@@ -11,7 +11,7 @@ public class Worker {
     @ManyToOne
     @JoinColumn(name = "adminId")
     private Admin admin;
-
+    
     @OneToMany(mappedBy = "preferredWorker", targetEntity = Client.class) // Establishing One-to-Many relationship
     private List<Client> clients;
 
