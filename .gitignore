@@ -33,6 +33,8 @@ build/
 .vscode/
 
 *.DS_Store
+node_modules
+front-end/node_modules
 .env
 
 node_modules/

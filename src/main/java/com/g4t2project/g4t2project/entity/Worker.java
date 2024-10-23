@@ -1,5 +1,7 @@
 package com.g4t2project.g4t2project.entity;
 import jakarta.persistence.*;
+
+import java.time.LocalDate;
 import java.util.List;
 @Entity
 public class Worker {
@@ -11,7 +13,7 @@ public class Worker {
     @ManyToOne
     @JoinColumn(name = "adminId")
     private Admin admin;
-
+    
     @OneToMany(mappedBy = "preferredWorker", targetEntity = Client.class) // Establishing One-to-Many relationship
     private List<Client> clients;
 
@@ -100,13 +102,29 @@ public class Worker {
     public void setTele_Id(String tele_Id) {
         this.tele_Id = tele_Id;
     }
-
+    // probably no need for this method
     public boolean isAvailable() {
         return available;
     }
 
     public void setAvailable(boolean available) {
         this.available = available;
+    }
+
+    public boolean isAvailableOn(LocalDate date, CleaningTask.Shift shift) {
+        // Check if the worker is deployed and available in general
+        if (!this.deployed || !this.available) {
+            return false;
+        }
+
+        // Check if the worker has any conflicting tasks on the given date and shift
+        for (CleaningTask task : cleaningTasks) {
+            if (task.getDate().equals(date) && task.getShift() == shift) {
+                return false; // Worker already has a task for the given date and shift
+            }
+        }
+        // If no conflicting tasks or leaves, the worker is available
+        return true;
     }
 
 }

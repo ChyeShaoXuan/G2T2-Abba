@@ -4,7 +4,7 @@ import org.springframework.stereotype.Service;
 
 import com.g4t2project.g4t2project.repository.*;
 import com.g4t2project.g4t2project.entity.*;
-
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -83,6 +83,10 @@ public class AdminService {
         Admin admin = adminRepository.findById(adminId).orElseThrow(() -> new RuntimeException("Admin not found"));
         admin.updateClientInfo(clientId, updatedClient);  // Using the method in Admin entity
         return adminRepository.save(admin);
+    }
+
+    public List<Worker> getAllWorkers() {
+        return workerRepository.findAll();
     }
 
     

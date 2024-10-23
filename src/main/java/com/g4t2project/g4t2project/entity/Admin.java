@@ -1,6 +1,5 @@
 package com.g4t2project.g4t2project.entity;
 
-import java.util.ArrayList;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -17,13 +16,13 @@ public class Admin {
     private Long adminId;
 
     @OneToMany(mappedBy = "admin", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Client> clients = new ArrayList<>();
+    private List<Client> clients;
 
     private String name;
     private boolean isRoot;
 
-    @OneToMany(mappedBy = "admin")
-    private ArrayList<Worker> workers = new ArrayList<>();
+    @OneToMany(mappedBy = "admin",cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Worker> workers;
 
     public Long getAdminId() {
         return adminId;
@@ -43,7 +42,7 @@ public class Admin {
         return workers;
     }
 
-    public void setWorkers(ArrayList<Worker> workers) {
+    public void setWorkers(List<Worker> workers) {
         this.workers = workers;
     }
 
