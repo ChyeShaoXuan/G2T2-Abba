@@ -131,8 +131,34 @@ public class CleaningTaskService {
         return R * c; // Distance in km
     }
     
+    private double[] getWorkerCurrentLocation(Worker worker, LocalDate date, CleaningTask.Shift shift) {
+        // Fetch the last task assigned to the worker before the given date and shift
+        Optional<CleaningTask> lastTaskOpt = cleaningTaskRepository.findLastTaskByWorkerBeforeShift(worker.getWorkerId(), date, shift);
     
-
+        if (lastTaskOpt.isPresent()) {
+            CleaningTask lastTask = lastTaskOpt.get();
+            Property lastProperty = lastTask.getProperty();
+            return new double[] { lastProperty.getLatitude(), lastProperty.getLongitude() };
+        } else {
+            // If no previous task, use the worker's current property
+            if (worker.getCurPropertyId() != 0) {
+                Optional<Property> currentPropertyOpt = propertyRepository.findById(worker.getCurPropertyId());
+                if (currentPropertyOpt.isPresent()) {
+                    Property currentProperty = currentPropertyOpt.get();
+                    return new double[] { currentProperty.getLatitude(), currentProperty.getLongitude() };
+                }
+            }
+            // Default to HQ location
+            Optional<Property> hqPropertyOpt = propertyRepository.findById(0); // Assuming HQ property has ID 0
+            if (hqPropertyOpt.isPresent()) {
+                Property hqProperty = hqPropertyOpt.get();
+                return new double[] { hqProperty.getLatitude(), hqProperty.getLongitude() };
+            } else {
+                throw new IllegalStateException("Cannot determine worker's current location.");
+            }
+        }
+    }
+    
 
 }
 

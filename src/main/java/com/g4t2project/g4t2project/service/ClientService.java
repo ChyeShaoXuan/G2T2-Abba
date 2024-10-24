@@ -7,6 +7,8 @@ import com.g4t2project.g4t2project.repository.*;
 import com.g4t2project.g4t2project.entity.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Optional;
 
 @Service
@@ -30,14 +32,60 @@ public class ClientService {
     @Autowired
     private WorkerRepository workerRepository;
 
-    public CleaningTask placeOrder(Long clientId, int packageID, int propertyID, CleaningTask.Shift shift, LocalDate date) {
-        Client client = clientRepository.findById(clientId).orElseThrow(() -> new IllegalArgumentException("Client not found"));
-        Property property = propertyRepository.findById(propertyID).orElseThrow(() -> new IllegalArgumentException("Property not found"));
-        CleaningPackage pkg = cleaningPackageRepository.findById(packageID).orElseThrow(() -> new IllegalArgumentException("Package not found"));
+    @Autowired
+    private CleaningTaskService cleaningTaskService;
 
-        Worker worker = assignWorker(property, shift, date);
+    public CleaningTask placeOrder(
+        Long clientId,
+        int packageID,
+        int propertyID,
+        String propertyType,
+        int numberOfRooms,
+        CleaningTask.Shift shift,
+        LocalDate date,
+        Long preferredWorkerId
+    ) {
+        // Enforce booking constraints
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime earliestAllowed = now.plusHours(24);
+        LocalDateTime shiftStartDateTime = date.atTime(getShiftStartTime(shift));
+        if (shiftStartDateTime.isBefore(earliestAllowed)) {
+            throw new IllegalArgumentException("Orders must be placed at least 24 hours in advance.");
+        }
+        if (!date.isEqual(LocalDate.now().plusDays(1))) {
+            throw new IllegalArgumentException("Orders can only be placed one day in advance.");
+        }
 
-        CleaningTask cleaningTask = new CleaningTask(property, worker, shift, CleaningTask.Status.Scheduled, date, false);
+        // Fetch entities
+        Client client = clientRepository.findById(clientId)
+            .orElseThrow(() -> new IllegalArgumentException("Client not found"));
+        Property property = propertyRepository.findById(propertyID)
+            .orElseThrow(() -> new IllegalArgumentException("Property not found"));
+        CleaningPackage pkg = cleaningPackageRepository.findById(packageID)
+            .orElseThrow(() -> new IllegalArgumentException("Package not found"));
+
+        // Update property details
+        property.setPropertyType(propertyType);
+        property.setNumberOfRooms(numberOfRooms);
+        propertyRepository.save(property);
+
+        // Create new CleaningTask without worker
+        CleaningTask cleaningTask = new CleaningTask(property, null, shift, CleaningTask.Status.Scheduled, date, false);
+
+        if (preferredWorkerId != null) {
+            // Assign preferred worker
+            Worker preferredWorker = workerRepository.findById(preferredWorkerId)
+                .orElseThrow(() -> new IllegalArgumentException("Preferred worker not found"));
+            if (preferredWorker.isAvailableOn(date, shift)) {
+                cleaningTask.setWorker(preferredWorker);
+            } else {
+                throw new IllegalStateException("Preferred worker is not available at the selected time.");
+            }
+        } else {
+            // Use CleaningTaskService to assign the best-matched worker
+            cleaningTaskService.addCleaningTask(cleaningTask);
+            // Worker is assigned within addCleaningTask
+        }
 
         return cleaningTaskRepository.save(cleaningTask);
     }
@@ -116,5 +164,18 @@ public class ClientService {
         propertyRepository.save(property);
     
         return selectedPackage;
+    }
+
+    private LocalTime getShiftStartTime(CleaningTask.Shift shift) {
+        switch (shift) {
+            case Morning:
+                return LocalTime.of(8, 0);
+            case Afternoon:
+                return LocalTime.of(13, 0);
+            case Evening:
+                return LocalTime.of(18, 0);
+            default:
+                throw new IllegalArgumentException("Invalid shift: " + shift);
+        }
     }
 }

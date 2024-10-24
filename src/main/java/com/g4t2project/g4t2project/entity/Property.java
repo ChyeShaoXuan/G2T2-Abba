@@ -18,10 +18,12 @@ public class Property {
     @OneToMany(mappedBy = "property")
     private ArrayList<CleaningTask> cleaningTasks = new ArrayList<CleaningTask>();
 
+    private int numberOfRooms;
     private String address;
     private double latitude;
     private double longitude;
     private String postalCode;
+    private String propertyType;
 
     protected Property() {}
 
@@ -93,4 +95,21 @@ public class Property {
         this.pkg = pkg;
     }
 
+    public int getNumberOfRooms() {
+        return numberOfRooms;
+    }
+
+    public void setNumberOfRooms(int numberOfRooms) {
+        this.numberOfRooms = numberOfRooms;
+    }
+
+    public String getPropertyType() {
+        return propertyType;
+    }
+
+    public void setPropertyType(String propertyType) {
+        this.propertyType = propertyType;
+    }
+    
 }
+
