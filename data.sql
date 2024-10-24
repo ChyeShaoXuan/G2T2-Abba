@@ -7,10 +7,10 @@ INSERT INTO admin (adminId, name, isRoot) VALUES
 (4, 'Alice Johnson', false);
 
 INSERT INTO worker (worker_id, adminId, name, phoneNumber, shortBio, deployed, tele_Id, curPropertyId, available) VALUES
-(1, 1, 'John Smith', '+6512345678', 'Experienced cleaner, pet-friendly', true, '@johnsmith', 101),
-(2, 1, 'Mary Tan', '+6598765432', 'Specializes in disinfection treatment', false, '@marytan', 0),
-(3, 1, 'Ahmed Ali', '+6581234567', 'No pets due to allergies', true, '@ahmedali', 103),
-(4, 1, 'Susan Lee', '+6587654321', 'Background in carpet shampooing', false, '@susanlee', 0);
+(1, 1, 'John Smith', '+6512345678', 'Experienced cleaner, pet-friendly', true, '@johnsmith', 101, True),
+(2, 1, 'Mary Tan', '+6598765432', 'Specializes in disinfection treatment', false, '@marytan', 0, True),
+(3, 1, 'Ahmed Ali', '+6581234567', 'No pets due to allergies', true, '@ahmedali', 103, False),
+(4, 1, 'Susan Lee', '+6587654321', 'Background in carpet shampooing', false, '@susanlee', 0, False);
 
 INSERT INTO client (clientId, name, phoneNumber, email, workerId) VALUES
 (1, 'John Doe', '123-456-7890', 'johndoe@example.com', 1),
@@ -23,6 +23,13 @@ INSERT INTO cleaningpackage (packageId, packageType, price, hours, hourly_rate, 
 (2, 'BiWeekly', 350, 10, 35, '3-bedroom house with garden'),
 (3, 'Weekly', 150, 3, 50, 'Studio apartment'),
 (4, 'BiWeekly', 500, 15, 33, '4-bedroom family home');
+
+INSERT INTO Property (propertyId, clientId, packageId, address, latitude, longitude) VALUES
+(101, 1, 1, '123 Street', 1.12345, 103.12345),
+(102, 2, 2, '456 Avenue', 1.23456, 103.23456),
+(103, 3, 3, '789 Road', 1.34567, 103.34567),
+(104, 4, 4, '101 Boulevard', 1.45678, 103.45678);
+
 
 INSERT INTO cleaningtask (taskId, propertyId, workerId, feedbackId, shift, status, date, Acknowledged) VALUES
 (1, 101, 1, NULL, 'Morning', 'Scheduled', '2024-10-15', false),
@@ -42,30 +49,20 @@ INSERT INTO jobstats (monthYear, totalHours, totalCleaningTasks, totalClients, t
 ('08-2024', 170, 85, 22, 16, 12, 8),
 ('07-2024', 180, 90, 25, 20, 15, 10);
 
-INSERT INTO leaveapplication (leaveApplicationId, workerId, adminId, startDate, endDate, leaveType, status, submissionDateTime) VALUES
-(1, 1, 1, '2024-10-01', '2024-10-05', 'MC', 'Pending', '2024-09-30T12:00:00'),
-(2, 2, 1, '2024-10-10', '2024-10-12', 'AL', 'Approved', '2024-10-01T14:30:00'),
-(3, 3, 2, '2024-10-15', '2024-10-20', 'HL', 'Rejected', '2024-10-02T09:00:00'),
-(4, 1, 2, '2024-10-22', '2024-10-24', 'EL', 'Pending', '2024-10-15T10:15:00');
+INSERT INTO leaveapplication (leaveApplicationId, workerId, adminId, startDate, endDate, leaveType, status, submissionDateTime, mcDocumentSubmitted) 
+VALUES 
+(1, 1, 1, '2024-10-01', '2024-10-05', 'MC', 'Pending', '2024-09-30T12:00:00', TRUE),
+(2, 2, 1, '2024-10-10', '2024-10-12', 'AL', 'Approved', '2024-10-01T14:30:00', FALSE),
+(3, 3, 2, '2024-10-15', '2024-10-20', 'HL', 'Rejected', '2024-10-02T09:00:00', FALSE),
+(4, 1, 2, '2024-10-22', '2024-10-24', 'EL', 'Pending', '2024-10-15T10:15:00', FALSE);
 
-INSERT INTO leave_stats (monthYear, alCount, mcCount, hlCount, elCount, workerId) VALUES
-('2024-10', 2, 1, 0, 1, 1),
-('2024-09', 3, 0, 0, 0, 1),
-('2024-10', 1, 2, 1, 0, 2),
-('2024-09', 2, 0, 1, 1, 2);
-
-INSERT INTO workerhours (workerHoursId, workerId, monthYear, totalHoursWorked, overtimeHours) VALUES
-(1, 1, '2024-01', 160, 10),
-(2, 2, '2024-01', 150, 5),
-(3, 1, '2024-02', 170, 15),
-(4, 3, '2024-01', 180, 20),
-(5, 2, '2024-02', 160, 0);
 
 INSERT INTO leave_stats (monthYear, alCount, mcCount, hlCount, elCount, workerId) VALUES
 ('2024-11', 2, 1, 0, 1, 1),
 ('2024-10', 3, 0, 0, 0, 1),
 ('2024-09', 1, 2, 1, 0, 2),
 ('2024-08', 2, 0, 1, 1, 2);
+
 
 INSERT INTO worker_hours_stats (workerHoursId, worker_id, monthYear, totalHoursWorked, overtimeHours) VALUES
 (1, 1, '2024-01', 160, 10),
