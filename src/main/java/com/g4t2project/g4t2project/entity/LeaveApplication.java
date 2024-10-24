@@ -28,6 +28,10 @@ public class LeaveApplication {
 
     private LocalDateTime submissionDateTime;
 
+    private String mcDocumentUrl;
+
+    boolean mcDocumentSubmitted;
+
     public enum LeaveType {
         MC,
         AL,
@@ -105,4 +109,7 @@ public class LeaveApplication {
         return submissionDateTime;
     }
 
+    public void setMcDocumentUrl(String mcDocumentUrl) {
+        this.mcDocumentUrl = mcDocumentUrl;
+    }
 }

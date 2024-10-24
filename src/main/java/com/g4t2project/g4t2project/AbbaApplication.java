@@ -5,9 +5,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import io.github.cdimascio.dotenv.Dotenv;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
 @RestController
+@EnableScheduling
 public class AbbaApplication {
 
 	@RequestMapping("/")
