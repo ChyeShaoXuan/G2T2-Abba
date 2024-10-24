@@ -1,6 +1,5 @@
 package com.g4t2project.g4t2project.entity;
 
-import java.util.ArrayList;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
