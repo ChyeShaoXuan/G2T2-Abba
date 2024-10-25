@@ -6,10 +6,10 @@ INSERT INTO admin (adminId, name, isRoot) VALUES
 (3, 'Michael Brown', false),
 (4, 'Alice Johnson', false);
 
-INSERT INTO worker (worker_id, adminId, name, phoneNumber, shortBio, deployed, tele_Id, curPropertyId, available) VALUES
-(1, 1, 'John Smith', '+6512345678', 'Experienced cleaner, pet-friendly', true, '@johnsmith', 101, True),
-(2, 1, 'Mary Tan', '+6598765432', 'Specializes in disinfection treatment', false, '@marytan', 0, True),
-(3, 1, 'Ahmed Ali', '+6581234567', 'No pets due to allergies', true, '@ahmedali', 103, False),
+INSERT INTO worker (worker_id, adminId, name, phoneNumber, shortBio, deployed, tele_Id, curPropertyId, available, adminId) VALUES
+(1, 1, 'John Smith', '+6512345678', 'Experienced cleaner, pet-friendly', true, '@johnsmith', 101, True,1),
+(2, 1, 'Mary Tan', '+6598765432', 'Specializes in disinfection treatment', false, '@marytan', 0, True,1),
+(3, 1, 'Ahmed Ali', '+6581234567', 'No pets due to allergies', true, '@ahmedali', 103, False,1),
 (4, 1, 'Susan Lee', '+6587654321', 'Background in carpet shampooing', false, '@susanlee', 0, False);
 
 INSERT INTO client (clientId, name, phoneNumber, email, workerId) VALUES
@@ -64,7 +64,7 @@ INSERT INTO leave_stats (monthYear, alCount, mcCount, hlCount, elCount, workerId
 ('2024-08', 2, 0, 1, 1, 2);
 
 
-INSERT INTO worker_hours_stats (workerHoursId, worker_id, monthYear, totalHoursWorked, overtimeHours) VALUES
+INSERT INTO worker_hours_stats (workerHoursId, workerId, monthYear, totalHoursWorked, overtimeHours) VALUES
 (1, 1, '2024-01', 160, 10),
 (2, 2, '2024-01', 150, 5),
 (3, 1, '2024-02', 170, 15),
