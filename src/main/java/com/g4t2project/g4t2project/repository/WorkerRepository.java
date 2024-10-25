@@ -23,4 +23,6 @@ public interface WorkerRepository extends JpaRepository<Worker, Long> {
     // Custom query to find all not deployed workers
     @Query("SELECT w FROM Worker w WHERE w.curPropertyId = :value")
     List<Worker> findAllNotDeployed(@Param("value") int value);
+
+    List<Worker> findByAdmin_AdminId(Long adminId);
 }

@@ -17,6 +17,8 @@ interface Worker {
   supervisorId: number
 }
 
+
+
 export default function ViewWorkers() {
   const [workers, setWorkers] = useState<Worker[]>([])
   const [newWorker, setNewWorker] = useState<Omit<Worker, 'workerId'>>({
@@ -29,7 +31,6 @@ export default function ViewWorkers() {
     available: false,
     supervisorId: 0
   })
-  const adminId = 1 // Replace with the actual adminId as needed
 
   useEffect(() => {
     // Fetch workers from the backend
@@ -43,12 +44,16 @@ export default function ViewWorkers() {
     }
 
     fetchWorkers()
-  }, )
+  }, [])
 
-  const deleteWorker = async (workerId: number) => {
+  const deleteWorker = async (worker: Worker) => {
     try {
-      await axios.delete(`http://localhost:8080/admin/${adminId}/workers/${workerId}`)
-      setWorkers(prevWorkers => prevWorkers.filter(worker => worker.workerId !== workerId))
+      if (worker.supervisorId === undefined || worker.supervisorId === null) {
+        console.error('Error: adminId is undefined or null')
+        return
+      }
+      await axios.delete(`http://localhost:8080/admin/${worker.supervisorId}/workers/${worker.workerId}`)
+      setWorkers(prevWorkers => prevWorkers.filter(w => w.workerId !== worker.workerId))
     } catch (error) {
       console.error('Error deleting worker:', error)
     }
@@ -56,7 +61,10 @@ export default function ViewWorkers() {
 
   const addWorker = async () => {
     try {
-      const response = await axios.post(`http://localhost:8080/admin/${adminId}/workers`, newWorker)
+      const response = await axios.post(`http://localhost:8080/admin/${newWorker.supervisorId}/workers`, {
+        ...newWorker,
+        adminId: newWorker.supervisorId // Ensure adminId is included in the payload
+      })
       setWorkers(prevWorkers => [...prevWorkers, response.data])
       setNewWorker({
         name: '',
@@ -102,7 +110,7 @@ export default function ViewWorkers() {
               <TableCell>{worker.available ? 'Yes' : 'No'}</TableCell>
               <TableCell>{worker.supervisorId}</TableCell>
               <TableCell>
-                <Button onClick={() => deleteWorker(worker.workerId)}>Remove</Button>
+                <Button onClick={() => deleteWorker(worker)}>Remove</Button>
               </TableCell>
             </TableRow>
           ))}
@@ -147,7 +155,7 @@ export default function ViewWorkers() {
         />
         <input
           type="text"
-          placeholder="Supervisor ID"
+          placeholder="Admin ID"
           value={newWorker.supervisorId}
           onChange={(e) => setNewWorker({ ...newWorker, supervisorId: Number(e.target.value) })}
           className="border p-2 mb-2"
