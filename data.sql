@@ -54,12 +54,6 @@ INSERT INTO leave_stats (monthYear, alCount, mcCount, hlCount, elCount, workerId
 ('2024-10', 1, 2, 1, 0, 2),
 ('2024-09', 2, 0, 1, 1, 2);
 
-INSERT INTO workerhours (workerHoursId, workerId, monthYear, totalHoursWorked, overtimeHours) VALUES
-(1, 1, '2024-01', 160, 10),
-(2, 2, '2024-01', 150, 5),
-(3, 1, '2024-02', 170, 15),
-(4, 3, '2024-01', 180, 20),
-(5, 2, '2024-02', 160, 0);
 
 INSERT INTO leave_stats (monthYear, alCount, mcCount, hlCount, elCount, workerId) VALUES
 ('2024-11', 2, 1, 0, 1, 1),
