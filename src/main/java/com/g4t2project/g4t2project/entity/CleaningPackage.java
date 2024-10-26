@@ -1,6 +1,6 @@
 package com.g4t2project.g4t2project.entity;
 import jakarta.persistence.*;
-import java.util.ArrayList;
+import java.util.*;
 
 @Entity
 public class CleaningPackage {
@@ -22,7 +22,7 @@ public class CleaningPackage {
     }
 
     @OneToMany(mappedBy = "pkg")
-    private ArrayList<Property> properties = new ArrayList<Property>();
+    private List<Property> properties = new ArrayList<Property>();
 
     
 
@@ -85,7 +85,7 @@ public class CleaningPackage {
         this.property_details = property_details;
     }
 
-    public ArrayList<Property> getProperties() {
+    public List<Property> getProperties() {
         return properties;
     }
 

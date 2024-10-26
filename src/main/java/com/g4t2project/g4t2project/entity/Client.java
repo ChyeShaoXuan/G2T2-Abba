@@ -1,6 +1,6 @@
 package com.g4t2project.g4t2project.entity;
 import jakarta.persistence.*;
-import java.util.ArrayList;
+import java.util.*;
 
 
 @Entity
@@ -18,7 +18,7 @@ public class Client {
     private Worker preferredWorker;
     
     @OneToMany(mappedBy = "client")
-    private ArrayList<Property> properties = new ArrayList<Property>();
+    private List<Property> properties = new ArrayList<Property>();
 
     @ManyToOne
     @JoinColumn(name = "packageId")
@@ -41,11 +41,11 @@ public class Client {
     
     
 
-    public ArrayList<Property> getProperties() {
+    public List<Property> getProperties() {
         return properties;
     }
 
-    public void setProperties(ArrayList<Property> properties) {
+    public void setProperties(List<Property> properties) {
         this.properties = properties;
     }
 

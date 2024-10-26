@@ -14,4 +14,7 @@ public interface CleaningTaskRepository extends JpaRepository<CleaningTask, Inte
     @Query("SELECT c FROM CleaningTask c WHERE c.worker = :worker AND c.date = :date")
     List<CleaningTask> findTasksByWorkerAndDate(@Param("worker") Worker worker, @Param("date") LocalDate date);
 
+    @Query("SELECT c FROM CleaningTask c WHERE c.property.client.clientId = :clientId")
+    List<CleaningTask> findTasksByClient(@Param("clientId") Integer clientId);
+
 }

@@ -56,7 +56,7 @@ public class CleaningTask {
         Completed,
     }
 
-    protected CleaningTask() {}
+    public CleaningTask() {}
 
     public CleaningTask(Property property, Worker worker, Shift shift, Status status, LocalDate date, boolean Acknowledged) {
         this.property = property;
@@ -114,5 +114,18 @@ public class CleaningTask {
     public void setFeedback(Feedback feedback) {
         this.feedback = feedback;
     }    
+    
+    public Feedback getFeedback() {
+        return feedback;
+    }
+
+    public void setDate(LocalDate date) {
+        this.date = date;
+    }
+
+    public void setProperty(Property property) {
+        this.property = property;
+    }
+
     
 }
