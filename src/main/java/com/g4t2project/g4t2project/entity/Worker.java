@@ -3,15 +3,19 @@ import jakarta.persistence.*;
 
 import java.time.LocalDate;
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
 @Entity
 public class Worker {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonBackReference
     @Column(name = "WorkerId")
     private Long workerId;
 
     @ManyToOne
-    @JoinColumn(name = "AdminId")
+    @JoinColumn(name = "admin_id")
+    @JsonBackReference
     private Admin admin;
     
     @OneToMany(mappedBy = "preferredWorker", targetEntity = Client.class) // Establishing One-to-Many relationship
@@ -51,7 +55,8 @@ public class Worker {
         return workerId;
     }
 
-    public Long getSupervisorId() {
+
+    public Long getAdminId() {
         return admin.getAdminId();
     }
 
@@ -60,6 +65,10 @@ public class Worker {
     }
     
     
+    public Admin getAdmin() {
+        return admin;
+    }
+
     public void setAdmin(Admin admin) {
         this.admin = admin;
     }

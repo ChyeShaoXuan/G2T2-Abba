@@ -1,21 +1,27 @@
 package com.g4t2project.g4t2project.entity;
 import jakarta.persistence.*;
 import java.util.*;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
 @Entity
 public class Property {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonBackReference
     private int propertyId;
 
     @ManyToOne
     @JoinColumn(name = "clientId")
+    @JsonBackReference
     private Client client;
 
     @ManyToOne
+    @JsonBackReference
     @JoinColumn(name = "packageId")
     private CleaningPackage pkg;
 
     @OneToMany(mappedBy = "property")
+    @JsonBackReference
     private List<CleaningTask> cleaningTasks = new ArrayList<CleaningTask>();
 
     private String address;

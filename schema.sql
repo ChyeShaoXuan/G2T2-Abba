@@ -8,7 +8,8 @@ CREATE TABLE IF NOT EXISTS worker (
     shortBio VARCHAR(255),
     deployed BOOLEAN,
     tele_Id VARCHAR(50),
-    curPropertyId INT
+    curPropertyId INT,
+    available BOOLEAN
 );
 
 CREATE TABLE IF NOT EXISTS admin (
@@ -33,7 +34,9 @@ CREATE TABLE IF NOT EXISTS client (
     name VARCHAR(255),
     phoneNumber VARCHAR(50),
     email VARCHAR(100),
-    workerId INT
+    workerId INT,
+    propertyId INT,
+    adminId INT
 );
 
 CREATE TABLE IF NOT EXISTS feedback (

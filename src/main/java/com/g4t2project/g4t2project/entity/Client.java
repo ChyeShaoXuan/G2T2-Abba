@@ -2,6 +2,8 @@ package com.g4t2project.g4t2project.entity;
 import jakarta.persistence.*;
 import java.util.*;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 
 @Entity
 public class Client {
@@ -15,25 +17,32 @@ public class Client {
 
     @ManyToOne // Establishing Many-to-One relationship
     @JoinColumn(name = "workerId") // Foreign key in Client table
+    @JsonBackReference
     private Worker preferredWorker;
     
     @OneToMany(mappedBy = "client")
+    @JsonBackReference
     private List<Property> properties = new ArrayList<Property>();
 
     @ManyToOne
     @JoinColumn(name = "packageId")
+    @JsonBackReference
     private CleaningPackage preferredPackage;
 
     @ManyToOne
     @JoinColumn(name = "admin_id")
+    @JsonBackReference
     private Admin admin;
 
     protected Client() {}
 
-    public Client(String name, String phoneNumber, String email) {
+    public Client(Admin admin, CleaningPackage preferredPackage, Worker preferredWorker, String name, String phoneNumber, String email) {
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.email = email;
+        this.admin = admin;
+        this.preferredPackage = preferredPackage;
+        this.preferredWorker = preferredWorker;
     }
     public void setAdmin(Admin admin) {
         this.admin = admin;

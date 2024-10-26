@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import com. g4t2project.g4t2project.DTO.ClientDTO;
 import java.util.List;
 
 @RestController
@@ -31,12 +32,11 @@ public class AdminController {
         return ResponseEntity.ok(admin);
     }
     
-    @PutMapping("/workers/{id}")
-    public ResponseEntity<Worker> updateWorker(@PathVariable Long id, @RequestBody Worker updatedWorker) {
-        Worker updated = adminService.updateWorker(id, updatedWorker);
-        return ResponseEntity.ok(updated);
+    @PutMapping("/workers/{workerId}")
+    public ResponseEntity<Worker> updateWorker(@PathVariable Long workerId, @RequestBody Worker worker) {
+        Worker updatedWorker = adminService.updateWorker(workerId, worker);
+        return ResponseEntity.ok(updatedWorker);
     }
-
 
     @PutMapping("/leave_applications/{id}")
     public ResponseEntity<Void> updateLeaveApplicationStatus(@PathVariable int id, @RequestParam LeaveApplication.Status status) {
@@ -44,15 +44,6 @@ public class AdminController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/{adminId}/clients")
-    public ResponseEntity<String> addClientUnderAdmin(@PathVariable Long adminId, @RequestBody Client client) {
-        try {
-            adminService.addClientUnderAdmin(adminId, client);
-            return new ResponseEntity<>("Client added successfully under Admin", HttpStatus.CREATED);
-        } catch (RuntimeException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-        }
-    }
 
     // Remove a client under a specific admin
     @DeleteMapping("/{adminId}/clients/{clientId}")
@@ -65,16 +56,16 @@ public class AdminController {
         }
     }
 
-    // Update client info under a specific admin
-    @PutMapping("/{adminId}/clients/{clientId}")
-    public ResponseEntity<String> updateClientUnderAdmin(@PathVariable Long adminId, @PathVariable Long clientId, @RequestBody Client updatedClient) {
-        try {
-            adminService.updateClientUnderAdmin(adminId, clientId, updatedClient);
-            return new ResponseEntity<>("Client updated successfully under Admin", HttpStatus.OK);
-        } catch (RuntimeException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-        }
+    // Adding client record in database under a specific admin
+    @PostMapping("/{adminId}/clients")
+    public ResponseEntity<Client> addClientUnderAdmin(
+            @PathVariable Long adminId,
+            @RequestBody ClientDTO clientDTO) {
+        
+        Client createdClient = adminService.addClientUnderAdmin(adminId, clientDTO);
+        return ResponseEntity.ok(createdClient);
     }
+
     
     @PutMapping("/{adminId}/tasks/{taskId}/assign/{workerId}")
     public ResponseEntity<String> assignTaskToWorker(@PathVariable int taskId, @PathVariable Long workerId) {
@@ -91,4 +82,18 @@ public class AdminController {
         List<Worker> workers = adminService.getAllWorkers();
         return ResponseEntity.ok(workers);
     }
-}
+
+    @GetMapping("/clients")
+    public ResponseEntity<List<ClientDTO>> getAllClients() {
+        List<ClientDTO> clients = adminService.getAllClients();
+        return ResponseEntity.ok(clients);
+    }
+
+
+    @PutMapping("/clients/{clientId}")
+    public ResponseEntity<Client> updateClient(@PathVariable Long clientId, @RequestBody ClientDTO clientDTO) {
+        Client updatedClient = adminService.updateClient(clientId, clientDTO);
+        return ResponseEntity.ok(updatedClient);
+
+    
+}}

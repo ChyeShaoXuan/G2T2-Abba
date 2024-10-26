@@ -2,14 +2,18 @@ package com.g4t2project.g4t2project.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
+import com.g4t2project.g4t2project.DTO.*;
 import com.g4t2project.g4t2project.repository.*;
 import com.g4t2project.g4t2project.entity.*;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class AdminService {
+    @Autowired
+    private CleaningPackageRepository cleaningPackageRepository;
     
     @Autowired
     private AdminRepository adminRepository;
@@ -42,17 +46,30 @@ public class AdminService {
         return adminRepository.save(admin);
     }
    
+    @Transactional
     public Worker updateWorker(Long workerId, Worker updatedWorker) {
-        Optional<Worker> existingWorkerOpt = workerRepository.findById(workerId);
-        if (existingWorkerOpt.isPresent()) {
-            Worker existingWorker = existingWorkerOpt.get();
-            existingWorker.setPhoneNumber(updatedWorker.getPhoneNumber());
-            existingWorker.setShortBio(updatedWorker.getShortBio());
-            existingWorker.setDeployed(updatedWorker.getDeployed());
-            return workerRepository.save(existingWorker);
+        Worker existingWorker = workerRepository.findById(workerId)
+                .orElseThrow(() -> new RuntimeException("Worker not found"));
+
+        existingWorker.setName(updatedWorker.getName());
+        existingWorker.setPhoneNumber(updatedWorker.getPhoneNumber());
+        existingWorker.setShortBio(updatedWorker.getShortBio());
+        existingWorker.setDeployed(updatedWorker.getDeployed());
+        existingWorker.setTele_Id(updatedWorker.getTele_Id());
+        existingWorker.setCurPropertyId(updatedWorker.getCurPropertyId());
+        existingWorker.setAvailable(updatedWorker.isAvailable());
+
+        // Ensure the worker is associated with the correct admin
+        if (updatedWorker.getAdmin() != null) {
+            Admin admin = adminRepository.findById(updatedWorker.getAdmin().getAdminId())
+                    .orElseThrow(() -> new RuntimeException("Admin not found"));
+            existingWorker.setAdmin(admin);
         } else {
-            throw new RuntimeException("Worker not found");
+            // Keep the existing admin if not provided in the update
+            existingWorker.setAdmin(existingWorker.getAdmin());
         }
+
+        return workerRepository.save(existingWorker);
     }
 
     public void updateLeaveApplicationStatus(int leaveApplicationId, LeaveApplication.Status status) {
@@ -66,31 +83,60 @@ public class AdminService {
         }
     }
 
-    public Admin addClientUnderAdmin(Long adminId, Client client) {
-        Admin admin = adminRepository.findById(adminId).orElseThrow(() -> new RuntimeException("Admin not found"));
-        admin.addClient(client);  // Using the method in Admin entity
-        return adminRepository.save(admin);
+
+
+    public Client addClientUnderAdmin(Long adminId, ClientDTO clientDTO) {
+        Admin admin = adminRepository.findById(adminId)
+            .orElseThrow(() -> new RuntimeException("Admin not found"));
+        
+        // Map fields from ClientDTO to Client entity
+        Client client = new Client(
+            admin,
+            clientDTO.getPackageId() != 0 ? cleaningPackageRepository.findById(clientDTO.getPackageId()).orElse(null) : null,
+            clientDTO.getWorkerId() != null ? workerRepository.findById(clientDTO.getWorkerId()).orElse(null) : null,
+            clientDTO.getName(),
+            clientDTO.getPhoneNumber(),
+            clientDTO.getEmail()
+        );
+    
+        // Set the admin to ensure association
+        client.setAdmin(admin);
+    
+        // Save the client entity
+        return clientRepository.save(client);
     }
 
-    // Remove a Client under Admin
     public Admin removeClientUnderAdmin(Long adminId, Long clientId) {
         Admin admin = adminRepository.findById(adminId).orElseThrow(() -> new RuntimeException("Admin not found"));
-        Client client = clientRepository.findById(clientId).orElseThrow(() -> new RuntimeException("Client not found"));
-        admin.removeClient(client);  // Using the method in Admin entity
+        Client client = clientRepository.findById(clientId).orElseThrow(() -> new RuntimeException("Worker not found"));
+        admin.removeClient(client);
         return adminRepository.save(admin);
     }
 
-    // Update Client Info
-    public Admin updateClientUnderAdmin(Long adminId, Long clientId, Client updatedClient) {
-        Admin admin = adminRepository.findById(adminId).orElseThrow(() -> new RuntimeException("Admin not found"));
-        admin.updateClientInfo(clientId, updatedClient);  // Using the method in Admin entity
-        return adminRepository.save(admin);
-    }
 
     public List<Worker> getAllWorkers() {
         return workerRepository.findAll();
     }
-
+    
+    public List<ClientDTO> getAllClients() {
+        List<Client> clients = clientRepository.findAll();
+        List<ClientDTO> clientDTOs = new ArrayList<>();
+    
+        for (Client client : clients) {
+            ClientDTO dto = new ClientDTO(
+                client.getClientId(),
+                client.getEmail(),
+                client.getName(),
+                client.getPhoneNumber(),
+                client.getAdmin() != null ? client.getAdmin().getAdminId() : null,
+                client.getPreferredPackage() != null ? client.getPreferredPackage().getPackageId() : 0,
+                client.getPreferredWorker() != null ? client.getPreferredWorker().getWorkerId() : null
+            );
+            clientDTOs.add(dto);
+        }
+    
+        return clientDTOs;
+    }
     
 
     
@@ -104,6 +150,37 @@ public class AdminService {
         task.setStatus(CleaningTask.Status.Assigned);
 
         return cleaningTaskRepository.save(task);
+    }
+
+
+    @Transactional
+    public Client updateClient(Long clientId, ClientDTO clientDTO) {
+        Client existingClient = clientRepository.findById(clientId)
+                .orElseThrow(() -> new RuntimeException("Client not found"));
+
+        existingClient.setName(clientDTO.getName());
+        existingClient.setPhoneNumber(clientDTO.getPhoneNumber());
+        existingClient.setEmail(clientDTO.getEmail());
+
+        if (clientDTO.getPackageId() != 0) {
+            CleaningPackage cleaningPackage = cleaningPackageRepository.findById(clientDTO.getPackageId())
+                    .orElseThrow(() -> new RuntimeException("Package not found"));
+            existingClient.setPreferredPackage(cleaningPackage);
+        }
+
+        if (clientDTO.getWorkerId() != null) {
+            Worker worker = workerRepository.findById(clientDTO.getWorkerId())
+                    .orElseThrow(() -> new RuntimeException("Worker not found"));
+            existingClient.setPreferredWorker(worker);
+        }
+
+        if (clientDTO.getAdminId() != null) {
+            Admin admin = adminRepository.findById(clientDTO.getAdminId())
+                    .orElseThrow(() -> new RuntimeException("Admin not found"));
+            existingClient.setAdmin(admin);
+        }
+
+        return clientRepository.save(existingClient);
     }
 
 

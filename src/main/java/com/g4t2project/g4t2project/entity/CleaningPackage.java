@@ -2,9 +2,12 @@ package com.g4t2project.g4t2project.entity;
 import jakarta.persistence.*;
 import java.util.*;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 @Entity
 public class CleaningPackage {
     @Id
+    @JsonBackReference
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int packageId;
 
