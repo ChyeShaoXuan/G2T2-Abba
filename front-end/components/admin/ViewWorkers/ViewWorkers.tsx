@@ -17,8 +17,6 @@ interface Worker {
   supervisorId: number
 }
 
-
-
 export default function ViewWorkers() {
   const [workers, setWorkers] = useState<Worker[]>([])
   const [newWorker, setNewWorker] = useState<Omit<Worker, 'workerId'>>({
@@ -31,12 +29,14 @@ export default function ViewWorkers() {
     available: false,
     supervisorId: 0
   })
+  const [editingWorker, setEditingWorker] = useState<Worker | null>(null)
 
   useEffect(() => {
     // Fetch workers from the backend
     const fetchWorkers = async () => {
       try {
         const workersResponse = await axios.get(`http://localhost:8080/admin/workers`)
+        
         setWorkers(workersResponse.data)
       } catch (error) {
         console.error('Error fetching workers:', error)
@@ -49,7 +49,7 @@ export default function ViewWorkers() {
   const deleteWorker = async (worker: Worker) => {
     try {
       if (worker.supervisorId === undefined || worker.supervisorId === null) {
-        console.error('Error: adminId is undefined or null')
+        console.error('Error: supervisorId is undefined or null')
         return
       }
       await axios.delete(`http://localhost:8080/admin/${worker.supervisorId}/workers/${worker.workerId}`)
@@ -59,12 +59,23 @@ export default function ViewWorkers() {
     }
   }
 
+  const updateWorker = async (worker: Worker) => {
+    try {
+      const response = await axios.put(`http://localhost:8080/admin/workers/${worker.workerId}`, worker)
+      setWorkers(prevWorkers => prevWorkers.map(w => (w.workerId === worker.workerId ? response.data : w)))
+      setEditingWorker(null)
+    } catch (error) {
+      console.error('Error updating worker:', error)
+    }
+  }
+
   const addWorker = async () => {
     try {
-      const response = await axios.post(`http://localhost:8080/admin/${newWorker.supervisorId}/workers`, {
-        ...newWorker,
-        adminId: newWorker.supervisorId // Ensure adminId is included in the payload
-      })
+      if (newWorker.supervisorId === 0) {
+        console.error('Error: supervisorId is not set')
+        return
+      }
+      const response = await axios.post(`http://localhost:8080/admin/${newWorker.supervisorId}/workers`, newWorker)
       setWorkers(prevWorkers => [...prevWorkers, response.data])
       setNewWorker({
         name: '',
@@ -81,6 +92,30 @@ export default function ViewWorkers() {
     }
   }
 
+  const handleEditClick = (worker: Worker) => {
+    setEditingWorker(worker)
+  }
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (editingWorker) {
+      const { name, value } = e.target
+      setEditingWorker({ ...editingWorker, [name]: value })
+    } else {
+      const { name, value } = e.target
+      setNewWorker({ ...newWorker, [name]: value })
+    }
+  }
+
+  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (editingWorker) {
+      const { name, checked } = e.target
+      setEditingWorker({ ...editingWorker, [name]: checked })
+    } else {
+      const { name, checked } = e.target
+      setNewWorker({ ...newWorker, [name]: checked })
+    }
+  }
+
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">Worker Records</h1>
@@ -94,22 +129,109 @@ export default function ViewWorkers() {
             <TableHead>Telegram ID</TableHead>
             <TableHead>Current Property ID</TableHead>
             <TableHead>Available</TableHead>
-            <TableHead>Supervisor ID</TableHead>
-            <TableHead>Remove Worker</TableHead>
+            <TableHead>supervisor ID</TableHead>
+            <TableHead>Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {workers.map(worker => (
             <TableRow key={worker.workerId}>
-              <TableCell>{worker.name}</TableCell>
-              <TableCell>{worker.phoneNumber}</TableCell>
-              <TableCell>{worker.shortBio}</TableCell>
-              <TableCell>{worker.deployed ? 'Yes' : 'No'}</TableCell>
-              <TableCell>{worker.tele_Id}</TableCell>
-              <TableCell>{worker.curPropertyId}</TableCell>
-              <TableCell>{worker.available ? 'Yes' : 'No'}</TableCell>
+              <TableCell>
+                {editingWorker && editingWorker.workerId === worker.workerId ? (
+                  <input
+                    type="text"
+                    name="name"
+                    value={editingWorker.name}
+                    onChange={handleInputChange}
+                    className="border p-2"
+                  />
+                ) : (
+                  worker.name
+                )}
+              </TableCell>
+              <TableCell>
+                {editingWorker && editingWorker.workerId === worker.workerId ? (
+                  <input
+                    type="text"
+                    name="phoneNumber"
+                    value={editingWorker.phoneNumber}
+                    onChange={handleInputChange}
+                    className="border p-2"
+                  />
+                ) : (
+                  worker.phoneNumber
+                )}
+              </TableCell>
+              <TableCell>
+                {editingWorker && editingWorker.workerId === worker.workerId ? (
+                  <input
+                    type="text"
+                    name="shortBio"
+                    value={editingWorker.shortBio}
+                    onChange={handleInputChange}
+                    className="border p-2"
+                  />
+                ) : (
+                  worker.shortBio
+                )}
+              </TableCell>
+              <TableCell>
+                {editingWorker && editingWorker.workerId === worker.workerId ? (
+                  <input
+                    type="checkbox"
+                    name="deployed"
+                    checked={editingWorker.deployed}
+                    onChange={handleCheckboxChange}
+                  />
+                ) : (
+                  worker.deployed ? 'Yes' : 'No'
+                )}
+              </TableCell>
+              <TableCell>
+                {editingWorker && editingWorker.workerId === worker.workerId ? (
+                  <input
+                    type="text"
+                    name="tele_Id"
+                    value={editingWorker.tele_Id}
+                    onChange={handleInputChange}
+                    className="border p-2"
+                  />
+                ) : (
+                  worker.tele_Id
+                )}
+              </TableCell>
+              <TableCell>
+                {editingWorker && editingWorker.workerId === worker.workerId ? (
+                  <input
+                    type="number"
+                    name="curPropertyId"
+                    value={editingWorker.curPropertyId}
+                    onChange={handleInputChange}
+                    className="border p-2"
+                  />
+                ) : (
+                  worker.curPropertyId
+                )}
+              </TableCell>
+              <TableCell>
+                {editingWorker && editingWorker.workerId === worker.workerId ? (
+                  <input
+                    type="checkbox"
+                    name="available"
+                    checked={editingWorker.available}
+                    onChange={handleCheckboxChange}
+                  />
+                ) : (
+                  worker.available ? 'Yes' : 'No'
+                )}
+              </TableCell>
               <TableCell>{worker.supervisorId}</TableCell>
               <TableCell>
+                {editingWorker && editingWorker.workerId === worker.workerId ? (
+                  <Button onClick={() => updateWorker(editingWorker)}>Save</Button>
+                ) : (
+                  <Button onClick={() => handleEditClick(worker)}>Edit</Button>
+                )}
                 <Button onClick={() => deleteWorker(worker)}>Remove</Button>
               </TableCell>
             </TableRow>
@@ -121,59 +243,67 @@ export default function ViewWorkers() {
         <input
           type="text"
           placeholder="Name"
+          name="name"
           value={newWorker.name}
-          onChange={(e) => setNewWorker({ ...newWorker, name: e.target.value })}
+          onChange={handleInputChange}
           className="border p-2 mb-2"
         />
         <input
           type="text"
           placeholder="Phone Number"
+          name="phoneNumber"
           value={newWorker.phoneNumber}
-          onChange={(e) => setNewWorker({ ...newWorker, phoneNumber: e.target.value })}
+          onChange={handleInputChange}
           className="border p-2 mb-2"
         />
         <input
           type="text"
           placeholder="Short Bio"
+          name="shortBio"
           value={newWorker.shortBio}
-          onChange={(e) => setNewWorker({ ...newWorker, shortBio: e.target.value })}
+          onChange={handleInputChange}
           className="border p-2 mb-2"
         />
         <input
           type="text"
           placeholder="Telegram ID"
+          name="tele_Id"
           value={newWorker.tele_Id}
-          onChange={(e) => setNewWorker({ ...newWorker, tele_Id: e.target.value })}
+          onChange={handleInputChange}
           className="border p-2 mb-2"
         />
         <input
-          type="text"
+          type="number"
           placeholder="Current Property ID"
+          name="curPropertyId"
           value={newWorker.curPropertyId}
-          onChange={(e) => setNewWorker({ ...newWorker, curPropertyId: Number(e.target.value) })}
+          onChange={handleInputChange}
           className="border p-2 mb-2"
         />
         <input
-          type="text"
-          placeholder="Admin ID"
+          type="number"
+          placeholder="supervisor ID"
+          name="supervisorId"
           value={newWorker.supervisorId}
-          onChange={(e) => setNewWorker({ ...newWorker, supervisorId: Number(e.target.value) })}
+          onChange={handleInputChange}
           className="border p-2 mb-2"
         />
         <div className="flex items-center mb-2">
           <label className="mr-2">Deployed</label>
           <input
             type="checkbox"
+            name="deployed"
             checked={newWorker.deployed}
-            onChange={(e) => setNewWorker({ ...newWorker, deployed: e.target.checked })}
+            onChange={handleCheckboxChange}
           />
         </div>
         <div className="flex items-center mb-2">
           <label className="mr-2">Available</label>
           <input
             type="checkbox"
+            name="available"
             checked={newWorker.available}
-            onChange={(e) => setNewWorker({ ...newWorker, available: e.target.checked })}
+            onChange={handleCheckboxChange}
           />
         </div>
         <Button onClick={addWorker}>Add Worker</Button>

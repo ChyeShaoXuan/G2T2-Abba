@@ -9,19 +9,24 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.CascadeType;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 @Entity
 public class Admin {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long adminId;
-
+     
     @OneToMany(mappedBy = "admin", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonBackReference
     private List<Client> clients;
 
     private String name;
     private boolean isRoot;
 
     @OneToMany(mappedBy = "admin",cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<Worker> workers;
 
     public Long getAdminId() {
