@@ -23,6 +23,9 @@ public class AbbaApplication {
         System.setProperty("DATASOURCE_URL", dotenv.get("DATASOURCE_URL"));
         System.setProperty("DATASOURCE_USERNAME", dotenv.get("DATASOURCE_USERNAME"));
         System.setProperty("DATASOURCE_PASSWORD", dotenv.get("DATASOURCE_PASSWORD"));
+
+		System.setProperty("MAIL_USERNAME", dotenv.get("MAIL_USERNAME"));
+		System.setProperty("MAIL_PASSWORD", dotenv.get("MAIL_PASSWORD"));
         
 
 		SpringApplication.run(AbbaApplication.class, args);
