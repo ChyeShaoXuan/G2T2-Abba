@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 
 @RestController
 @RequestMapping("/clients")
+@CrossOrigin(origins = "http://localhost:3000")
 public class ClientController {
 
     @Autowired

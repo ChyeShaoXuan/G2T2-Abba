@@ -65,7 +65,7 @@ public class ClientService {
             .orElseThrow(() -> new IllegalArgumentException("Package not found"));
 
         // Update property details
-        property.setPropertyType(propertyType);
+        // property.setPropertyType(propertyType);
         property.setNumberOfRooms(numberOfRooms);
         propertyRepository.save(property);
 

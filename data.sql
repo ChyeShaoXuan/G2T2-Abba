@@ -20,7 +20,7 @@ INSERT INTO cleaningpackage (packageId, packageType, price, hours, hourly_rate, 
 (4, 'BiWeekly', 500, 15, 33, '4-bedroom family home');
 
 
-INSERT INTO client (clientId, name, phoneNumber, email, admin_id, packageId, workerId) VALUES
+INSERT INTO client (clientId, name, phoneNumber, email, adminId, packageId, workerId) VALUES
 (1, 'John Doe', '123-456-7890', 'johndoe@example.com', 1,1,1),
 (2, 'Jane Smith', '987-654-3210', 'janesmith@example.com', 2,1,1),
 (3, 'Bob Johnson', '555-0123', 'bobjohnson@example.com', 1,1,1),

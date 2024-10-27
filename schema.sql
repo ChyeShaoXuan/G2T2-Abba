@@ -79,11 +79,15 @@ CREATE TABLE IF NOT EXISTS leavestats (
 CREATE TABLE IF NOT EXISTS cleaning_package (
     packageId INT PRIMARY KEY,
     packageType VARCHAR(50),
+    propertyType VARCHAR(50),
     price DECIMAL(10, 2),
-    hours INT,
+    hours DECIMAL(10, 2),
     hourly_rate DECIMAL(10, 2),
-    property_details VARCHAR(255)
+    property_details VARCHAR(255),
+    pax INT,
+    manualBookingRequired BOOLEAN
 );
+
 
 CREATE TABLE IF NOT EXISTS property (
     propertyId INT PRIMARY KEY,
