@@ -13,5 +13,13 @@ public class GlobalExceptionHandler {
         return e.getMessage();
     }
 
+    //Handle NoAvailableWorkerException
+    @ExceptionHandler(NoAvailableWorkerException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR) // or another appropriate status
+    @ResponseBody
+    public String handleNoAvailableWorker(NoAvailableWorkerException e) {
+        return e.getMessage(); // Return the message from the exception
+    }
+
     // Handle other exceptions as needed
 }

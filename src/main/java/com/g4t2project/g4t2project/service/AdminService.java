@@ -1,6 +1,7 @@
 package com.g4t2project.g4t2project.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.g4t2project.g4t2project.repository.*;
 import com.g4t2project.g4t2project.entity.*;
@@ -26,10 +27,11 @@ public class AdminService {
     private CleaningTaskRepository cleaningTaskRepository;
 
 
-    public Admin addWorkerUnderAdmin(Long adminId, Worker worker) {
+    @Transactional
+    public Worker addWorkerUnderAdmin(Long adminId, Worker worker) {
         Admin admin = adminRepository.findById(adminId).orElseThrow(() -> new RuntimeException("Admin not found"));
-        admin.addWorker(worker);
-        return adminRepository.save(admin);
+        worker.setAdmin(admin); // Ensure the worker is associated with the admin
+        return workerRepository.save(worker); // Save the worker
     }
 
     

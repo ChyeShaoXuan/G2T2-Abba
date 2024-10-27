@@ -19,9 +19,9 @@ public class AdminController {
 
 
     @PostMapping("/{adminId}/workers")
-    public ResponseEntity<Admin> addWorker(@PathVariable Long adminId, @RequestBody Worker worker) {
-        Admin admin = adminService.addWorkerUnderAdmin(adminId, worker);
-        return ResponseEntity.ok(admin);
+    public ResponseEntity<Worker> addWorker(@PathVariable Long adminId, @RequestBody Worker worker) {
+        Worker newWorker = adminService.addWorkerUnderAdmin(adminId, worker);
+        return ResponseEntity.ok(newWorker);
     }
 
     // Remove worker under an admin

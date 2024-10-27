@@ -3,6 +3,7 @@ package com.g4t2project.g4t2project.service;
 import com.g4t2project.g4t2project.entity.CleaningTask;
 import com.g4t2project.g4t2project.entity.LeaveApplication;
 import com.g4t2project.g4t2project.entity.Worker;
+import com.g4t2project.g4t2project.exception.NoAvailableWorkerException;
 import com.g4t2project.g4t2project.entity.Property;
 
 import com.g4t2project.g4t2project.repository.CleaningTaskRepository;
@@ -55,7 +56,7 @@ public class CleaningTaskService {
     public void addCleaningTask(CleaningTask cleaningTask) {
         // Retrieve the Property based on the propertyId from the task
         Property property = cleaningTask.getProperty();
-
+        System.out.println("Property found: " + property);
         // Find the closest worker based on proximity to the property
         Optional<Worker> closestWorkerOpt = findClosestWorker(property, cleaningTask.getDate(), cleaningTask.getShift());
 
@@ -67,7 +68,9 @@ public class CleaningTaskService {
             cleaningTaskRepository.save(cleaningTask); // Save the task
         } else {
             // Handle the case when no worker is available
-            throw new RuntimeException("No worker available for the task.");
+            throw new NoAvailableWorkerException
+            ("No worker available for the task on " + cleaningTask.getDate() + " during " + cleaningTask.getShift() 
+            + " shift.");
         }
     }
 
@@ -80,6 +83,8 @@ public class CleaningTaskService {
         
         double taskLat = taskProperty.getLatitude();
         double taskLon = taskProperty.getLongitude();
+        System.out.println("Task lat: " + taskLat + " Task lon: " + taskLon);
+        System.out.println("_________________________________________________________");
         
         // First, try to find a deployed worker who is closest and available
         for (Worker worker : deployedWorkers) {
@@ -102,8 +107,11 @@ public class CleaningTaskService {
             }
         }
 
-        double hqLat = propertyRepository.findById(0).get().getLatitude(); // Fetch HQ latitude
-        double hqLon = propertyRepository.findById(0).get().getLongitude(); // Fetch HQ latitude;
+        double hqLat = propertyRepository.findById(100).get().getLatitude(); // Fetch HQ latitude
+        double hqLon = propertyRepository.findById(100).get().getLongitude(); // Fetch HQ latitude;
+        System.out.println("HQ lat: " + hqLat + " HQ lon: " + hqLon);
+        System.out.println("_________________________________________________________");
+        System.out.println("_________________________________________________________");
         double hqToTaskDistance = calculateDistance(hqLat, hqLon, taskLat, taskLon); // Distance from HQ to task
     
         // If no deployed worker was found, assign a worker from HQ
@@ -130,35 +138,16 @@ public class CleaningTaskService {
         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
         return R * c; // Distance in km
     }
-    
-    private double[] getWorkerCurrentLocation(Worker worker, LocalDate date, CleaningTask.Shift shift) {
-        // Fetch the last task assigned to the worker before the given date and shift
-        Optional<CleaningTask> lastTaskOpt = cleaningTaskRepository.findLastTaskByWorkerBeforeShift(worker.getWorkerId(), date, shift);
-    
-        if (lastTaskOpt.isPresent()) {
-            CleaningTask lastTask = lastTaskOpt.get();
-            Property lastProperty = lastTask.getProperty();
-            return new double[] { lastProperty.getLatitude(), lastProperty.getLongitude() };
-        } else {
-            // If no previous task, use the worker's current property
-            if (worker.getCurPropertyId() != 0) {
-                Optional<Property> currentPropertyOpt = propertyRepository.findById(worker.getCurPropertyId());
-                if (currentPropertyOpt.isPresent()) {
-                    Property currentProperty = currentPropertyOpt.get();
-                    return new double[] { currentProperty.getLatitude(), currentProperty.getLongitude() };
-                }
-            }
-            // Default to HQ location
-            Optional<Property> hqPropertyOpt = propertyRepository.findById(0); // Assuming HQ property has ID 0
-            if (hqPropertyOpt.isPresent()) {
-                Property hqProperty = hqPropertyOpt.get();
-                return new double[] { hqProperty.getLatitude(), hqProperty.getLongitude() };
-            } else {
-                throw new IllegalStateException("Cannot determine worker's current location.");
-            }
-        }
+
+    public Property getPropertyById(int propertyId) {
+        return propertyRepository.findById(propertyId).orElse(null);
     }
     
+    public List<CleaningTask> getCleaningTasksByClient(Integer clientId) {
+        return cleaningTaskRepository.findTasksByClient(clientId);
+    }
+    
+
 
 }
 

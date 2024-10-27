@@ -12,9 +12,10 @@ import java.util.Optional;
 
 @Repository
 public interface CleaningTaskRepository extends JpaRepository<CleaningTask, Integer> {
-    List<CleaningTask> findTasksByWorkerAndDate(Worker worker, LocalDate date);
-    boolean existsByWorkerAndDateAndShift(Worker worker, LocalDate date, CleaningTask.Shift shift);
+    @Query("SELECT c FROM CleaningTask c WHERE c.worker = :worker AND c.date = :date")
+    List<CleaningTask> findTasksByWorkerAndDate(@Param("worker") Worker worker, @Param("date") LocalDate date);
 
-    // @Query("SELECT t FROM CleaningTask t WHERE t.worker.workerId = :workerId AND t.date = :date AND t.shift < :shift ORDER BY t.shift DESC")
-    // Optional<CleaningTask> findLastTaskByWorkerBeforeShift(@Param("workerId") Long workerId, @Param("date") LocalDate date, @Param("shift") CleaningTask.Shift shift);
+    @Query("SELECT c FROM CleaningTask c WHERE c.property.client.clientId = :clientId")
+    List<CleaningTask> findTasksByClient(@Param("clientId") Integer clientId);
+
 }

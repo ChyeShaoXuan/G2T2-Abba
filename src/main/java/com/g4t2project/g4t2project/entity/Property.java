@@ -1,6 +1,6 @@
 package com.g4t2project.g4t2project.entity;
 import jakarta.persistence.*;
-import java.util.ArrayList;
+import java.util.*;
 @Entity
 public class Property {
     @Id
@@ -16,7 +16,7 @@ public class Property {
     private CleaningPackage pkg;
 
     @OneToMany(mappedBy = "property")
-    private ArrayList<CleaningTask> cleaningTasks = new ArrayList<CleaningTask>();
+    private List<CleaningTask> cleaningTasks = new ArrayList<CleaningTask>();
 
     private int numberOfRooms;
     private String address;
@@ -55,7 +55,7 @@ public class Property {
     public double getLongitude() {
         return longitude;
     }
-    public ArrayList<CleaningTask> getCleaningTasks() {
+    public List<CleaningTask> getCleaningTasks() {
         return cleaningTasks;
     }
 

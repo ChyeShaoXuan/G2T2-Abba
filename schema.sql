@@ -2,7 +2,7 @@
 
 CREATE TABLE IF NOT EXISTS worker (
     worker_id INT PRIMARY KEY,
-    supervisorId INT,
+    adminId INT,
     name VARCHAR(255),
     phoneNumber VARCHAR(50),
     shortBio VARCHAR(255),

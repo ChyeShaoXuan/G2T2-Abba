@@ -7,11 +7,11 @@ import java.util.List;
 public class Worker {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "worker_id")
-    private Long worker_id;
+    @Column(name = "WorkerId")
+    private Long workerId;
 
     @ManyToOne
-    @JoinColumn(name = "adminId")
+    @JoinColumn(name = "AdminId")
     private Admin admin;
     
     @OneToMany(mappedBy = "preferredWorker", targetEntity = Client.class) // Establishing One-to-Many relationship
@@ -48,7 +48,7 @@ public class Worker {
     }
 
     public Long getWorkerId() {
-        return worker_id;
+        return workerId;
     }
 
     public Long getSupervisorId() {
@@ -57,6 +57,11 @@ public class Worker {
 
     public String getName() {
         return name;
+    }
+    
+    
+    public void setAdmin(Admin admin) {
+        this.admin = admin;
     }
 
     public String getPhoneNumber() {

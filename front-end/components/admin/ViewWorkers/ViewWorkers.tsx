@@ -17,14 +17,26 @@ interface Worker {
   supervisorId: number
 }
 
+
+
 export default function ViewWorkers() {
   const [workers, setWorkers] = useState<Worker[]>([])
+  const [newWorker, setNewWorker] = useState<Omit<Worker, 'workerId'>>({
+    name: '',
+    phoneNumber: '',
+    shortBio: '',
+    deployed: false,
+    tele_Id: '',
+    curPropertyId: 0,
+    available: false,
+    supervisorId: 0
+  })
 
   useEffect(() => {
     // Fetch workers from the backend
     const fetchWorkers = async () => {
       try {
-        const workersResponse = await axios.get('http://localhost:8080/admin/workers')
+        const workersResponse = await axios.get(`http://localhost:8080/admin/workers`)
         setWorkers(workersResponse.data)
       } catch (error) {
         console.error('Error fetching workers:', error)
@@ -33,6 +45,41 @@ export default function ViewWorkers() {
 
     fetchWorkers()
   }, [])
+
+  const deleteWorker = async (worker: Worker) => {
+    try {
+      if (worker.supervisorId === undefined || worker.supervisorId === null) {
+        console.error('Error: adminId is undefined or null')
+        return
+      }
+      await axios.delete(`http://localhost:8080/admin/${worker.supervisorId}/workers/${worker.workerId}`)
+      setWorkers(prevWorkers => prevWorkers.filter(w => w.workerId !== worker.workerId))
+    } catch (error) {
+      console.error('Error deleting worker:', error)
+    }
+  }
+
+  const addWorker = async () => {
+    try {
+      const response = await axios.post(`http://localhost:8080/admin/${newWorker.supervisorId}/workers`, {
+        ...newWorker,
+        adminId: newWorker.supervisorId // Ensure adminId is included in the payload
+      })
+      setWorkers(prevWorkers => [...prevWorkers, response.data])
+      setNewWorker({
+        name: '',
+        phoneNumber: '',
+        shortBio: '',
+        deployed: false,
+        tele_Id: '',
+        curPropertyId: 0,
+        available: false,
+        supervisorId: 0
+      })
+    } catch (error) {
+      console.error('Error adding worker:', error)
+    }
+  }
 
   return (
     <div className="container mx-auto p-4">
@@ -48,6 +95,7 @@ export default function ViewWorkers() {
             <TableHead>Current Property ID</TableHead>
             <TableHead>Available</TableHead>
             <TableHead>Supervisor ID</TableHead>
+            <TableHead>Remove Worker</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -61,10 +109,75 @@ export default function ViewWorkers() {
               <TableCell>{worker.curPropertyId}</TableCell>
               <TableCell>{worker.available ? 'Yes' : 'No'}</TableCell>
               <TableCell>{worker.supervisorId}</TableCell>
+              <TableCell>
+                <Button onClick={() => deleteWorker(worker)}>Remove</Button>
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>
       </Table>
+      <div className="mt-4">
+        <h2 className="text-xl font-bold mb-2">Add New Worker</h2>
+        <input
+          type="text"
+          placeholder="Name"
+          value={newWorker.name}
+          onChange={(e) => setNewWorker({ ...newWorker, name: e.target.value })}
+          className="border p-2 mb-2"
+        />
+        <input
+          type="text"
+          placeholder="Phone Number"
+          value={newWorker.phoneNumber}
+          onChange={(e) => setNewWorker({ ...newWorker, phoneNumber: e.target.value })}
+          className="border p-2 mb-2"
+        />
+        <input
+          type="text"
+          placeholder="Short Bio"
+          value={newWorker.shortBio}
+          onChange={(e) => setNewWorker({ ...newWorker, shortBio: e.target.value })}
+          className="border p-2 mb-2"
+        />
+        <input
+          type="text"
+          placeholder="Telegram ID"
+          value={newWorker.tele_Id}
+          onChange={(e) => setNewWorker({ ...newWorker, tele_Id: e.target.value })}
+          className="border p-2 mb-2"
+        />
+        <input
+          type="text"
+          placeholder="Current Property ID"
+          value={newWorker.curPropertyId}
+          onChange={(e) => setNewWorker({ ...newWorker, curPropertyId: Number(e.target.value) })}
+          className="border p-2 mb-2"
+        />
+        <input
+          type="text"
+          placeholder="Admin ID"
+          value={newWorker.supervisorId}
+          onChange={(e) => setNewWorker({ ...newWorker, supervisorId: Number(e.target.value) })}
+          className="border p-2 mb-2"
+        />
+        <div className="flex items-center mb-2">
+          <label className="mr-2">Deployed</label>
+          <input
+            type="checkbox"
+            checked={newWorker.deployed}
+            onChange={(e) => setNewWorker({ ...newWorker, deployed: e.target.checked })}
+          />
+        </div>
+        <div className="flex items-center mb-2">
+          <label className="mr-2">Available</label>
+          <input
+            type="checkbox"
+            checked={newWorker.available}
+            onChange={(e) => setNewWorker({ ...newWorker, available: e.target.checked })}
+          />
+        </div>
+        <Button onClick={addWorker}>Add Worker</Button>
+      </div>
     </div>
   )
 }
