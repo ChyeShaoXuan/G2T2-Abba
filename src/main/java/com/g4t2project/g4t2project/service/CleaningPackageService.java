@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Service
 public class CleaningPackageService {
 
     public List<CleaningPackage> getAvailablePackages(PackageType packageType, PropertyType propertyType) {
