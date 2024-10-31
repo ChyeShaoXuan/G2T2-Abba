@@ -1,9 +1,12 @@
 package com.g4t2project.g4t2project.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.g4t2project.g4t2project.entity.CleaningTask;
 import java.util.List;
 import com.g4t2project.g4t2project.entity.Worker;
@@ -16,5 +19,10 @@ public interface CleaningTaskRepository extends JpaRepository<CleaningTask, Inte
 
     @Query("SELECT c FROM CleaningTask c WHERE c.property.client.clientId = :clientId")
     List<CleaningTask> findTasksByClient(@Param("clientId") Integer clientId);
+
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM CleaningTask p WHERE p.worker.workerId = :workerId")
+    void deleteTaskByWorkerId(Long workerId);
 
 }

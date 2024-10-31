@@ -17,21 +17,19 @@ public class Client {
 
     @ManyToOne // Establishing Many-to-One relationship
     @JoinColumn(name = "workerId") // Foreign key in Client table
-    @JsonBackReference
     private Worker preferredWorker;
     
-    @OneToMany(mappedBy = "client")
+    @OneToMany(mappedBy = "client",cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonBackReference
     private List<Property> properties = new ArrayList<Property>();
 
+
     @ManyToOne
     @JoinColumn(name = "packageId")
-    @JsonBackReference
     private CleaningPackage preferredPackage;
 
     @ManyToOne
     @JoinColumn(name = "admin_id")
-    @JsonBackReference
     private Admin admin;
 
     protected Client() {}
@@ -48,8 +46,6 @@ public class Client {
         this.admin = admin;
     }
     
-    
-
     public List<Property> getProperties() {
         return properties;
     }

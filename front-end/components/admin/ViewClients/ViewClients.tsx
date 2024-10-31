@@ -201,11 +201,11 @@ export default function ViewClients() {
               </TableCell>
               <TableCell>
                 {editingClient && editingClient.clientId === client.clientId ? (
-                  <Button onClick={() => updateClient(editingClient)}>Save</Button>
+                  <Button className="bg-blue-700 hover:bg-blue-900 mr-3" onClick={() => updateClient(editingClient)}>Save</Button>
                 ) : (
-                  <Button onClick={() => handleEditClick(client)}>Edit</Button>
+                  <Button className="bg-blue-700 hover:bg-blue-900 mr-3" onClick={() => handleEditClick(client)}>Edit</Button>
                 )}
-                <Button onClick={() => deleteClient(client)}>Remove</Button>
+                <Button className="bg-blue-700 hover:bg-blue-900 ml-2" onClick={() => deleteClient(client)}>Remove</Button>
               </TableCell>
             </TableRow>
           ))}
@@ -261,7 +261,7 @@ export default function ViewClients() {
           onChange={handleInputChange}
           className="border p-2 mb-2"
         />
-        <Button onClick={addClient}>Add Client</Button>
+        <Button className="ml-4 bg-blue-700 hover:bg-blue-900" onClick={addClient}>Add Client</Button>
       </div>
     </div>
   )

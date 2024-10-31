@@ -7,21 +7,17 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 public class Property {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @JsonBackReference
     private int propertyId;
 
     @ManyToOne
     @JoinColumn(name = "clientId")
-    @JsonBackReference
     private Client client;
 
     @ManyToOne
-    @JsonBackReference
     @JoinColumn(name = "packageId")
     private CleaningPackage pkg;
 
-    @OneToMany(mappedBy = "property")
-    @JsonBackReference
+    @OneToMany(mappedBy = "property", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CleaningTask> cleaningTasks = new ArrayList<CleaningTask>();
 
     private String address;

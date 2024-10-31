@@ -25,4 +25,7 @@ public interface WorkerRepository extends JpaRepository<Worker, Long> {
     List<Worker> findAllNotDeployed(@Param("value") int value);
 
     List<Worker> findByAdmin_AdminId(Long adminId);
+
+    @Query("SELECT w.workerId FROM Worker w")
+    List<Long> findAllWorkerIds();
 }

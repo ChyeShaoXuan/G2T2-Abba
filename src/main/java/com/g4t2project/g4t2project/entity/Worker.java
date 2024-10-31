@@ -9,25 +9,25 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 public class Worker {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @JsonBackReference
+    
     @Column(name = "WorkerId")
     private Long workerId;
 
     @ManyToOne
     @JoinColumn(name = "admin_id")
-    @JsonBackReference
+    @JsonBackReference(value = "adminId")
     private Admin admin;
     
-    @OneToMany(mappedBy = "preferredWorker", targetEntity = Client.class) // Establishing One-to-Many relationship
+    @OneToMany(mappedBy = "preferredWorker", targetEntity = Client.class, cascade = CascadeType.ALL, orphanRemoval = true) // Establishing One-to-Many relationship
     private List<Client> clients;
 
-    @OneToMany(mappedBy = "worker")
+    @OneToMany(mappedBy = "worker", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CleaningTask> cleaningTasks;
 
-    @OneToMany(mappedBy = "worker")
+    @OneToMany(mappedBy = "worker", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<WorkerHours> workerHours;
 
-    @OneToMany(mappedBy = "worker")
+    @OneToMany(mappedBy = "worker", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<LeaveStats> leaveStats;
 
     private String name;

@@ -8,7 +8,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com. g4t2project.g4t2project.DTO.ClientDTO;
+import com.g4t2project.g4t2project.DTO.StatsDTO;
+
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/admin")
@@ -94,6 +97,24 @@ public class AdminController {
     public ResponseEntity<Client> updateClient(@PathVariable Long clientId, @RequestBody ClientDTO clientDTO) {
         Client updatedClient = adminService.updateClient(clientId, clientDTO);
         return ResponseEntity.ok(updatedClient);
+    }
+    @GetMapping("/stats")
+    public ResponseEntity<Map<String, StatsDTO>> getAllStats() {
+            Map<String, StatsDTO> stats = adminService.getAllStats();
+            return ResponseEntity.ok(stats);
+        }
+    
+    @GetMapping("/get_all_worker_ids")
+    public ResponseEntity<List<Long>> getAllWorkerIds() {
+        List<Long> workerIds = adminService.getAllWorkerIds();
+        return ResponseEntity.ok(workerIds);
+    }
+    @GetMapping("/{workerId}/hours")
+    public ResponseEntity<List<WorkerHours>> getWorkerHoursByWorkerId(@PathVariable Long workerId) {
+        List<WorkerHours> workerHours = adminService.getWorkerHoursByWorkerId(workerId);
+        return ResponseEntity.ok(workerHours);
+    }
+
+    }
 
     
-}}

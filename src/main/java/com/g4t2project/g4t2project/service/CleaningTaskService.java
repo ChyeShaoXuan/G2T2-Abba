@@ -1,5 +1,6 @@
 package com.g4t2project.g4t2project.service;
 
+import com.g4t2project.g4t2project.DTO.OverwriteCleaningTaskDTO;
 import com.g4t2project.g4t2project.entity.CleaningTask;
 import com.g4t2project.g4t2project.entity.LeaveApplication;
 import com.g4t2project.g4t2project.entity.Worker;
@@ -10,6 +11,7 @@ import com.g4t2project.g4t2project.repository.CleaningTaskRepository;
 import com.g4t2project.g4t2project.repository.WorkerRepository;
 import com.g4t2project.g4t2project.repository.LeaveApplicationRepository;
 import com.g4t2project.g4t2project.repository.PropertyRepository;
+import com.g4t2project.g4t2project.repository.FeedbackRepository;
 import com.g4t2project.g4t2project.service.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,9 +19,12 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class CleaningTaskService {
+    @Autowired
+    private FeedbackRepository feedbackRepository;
     @Autowired
     private CleaningTaskRepository cleaningTaskRepository;
     @Autowired
@@ -147,7 +152,57 @@ public class CleaningTaskService {
         return cleaningTaskRepository.findTasksByClient(clientId);
     }
     
+    public List<OverwriteCleaningTaskDTO> getAllCleaningTasks() {
+        List<CleaningTask> tasks = cleaningTaskRepository.findAll();
+        return tasks.stream().map(this::convertToDTO).collect(Collectors.toList());
+    }
 
+    public OverwriteCleaningTaskDTO convertToDTO(CleaningTask task) {
+        OverwriteCleaningTaskDTO dto = new OverwriteCleaningTaskDTO();
+        dto.setTaskId(task.getTaskId());
+        dto.setAcknowledged(task.isAcknowledged());
+        dto.setDate(task.getDate());
+        dto.setShift(task.getShift().name());
+        dto.setStatus(task.getStatus().name());
+        dto.setFeedbackId(task.getFeedback() != null ? task.getFeedback().getFeedbackId() : null);
+        dto.setPropertyId(task.getProperty().getPropertyId());
+        dto.setWorkerId(task.getWorker() != null ? task.getWorker().getWorkerId() : null);
+        return dto;
+    }
+
+    public CleaningTask updateCleaningTask(OverwriteCleaningTaskDTO taskDTO) {
+        CleaningTask existingTask = cleaningTaskRepository.findById(taskDTO.getTaskId())
+                .orElseThrow(() -> new RuntimeException("Task not found"));
+
+        existingTask.setAcknowledged(taskDTO.isAcknowledged());
+        existingTask.setDate(taskDTO.getDate());
+        existingTask.setShift(CleaningTask.Shift.valueOf(taskDTO.getShift()));
+        existingTask.setStatus(CleaningTask.Status.valueOf(taskDTO.getStatus()));
+
+        if (taskDTO.getFeedbackId() != null) {
+            // Assuming there's a method to fetch feedback by ID
+            existingTask.setFeedback(feedbackRepository.findById(taskDTO.getFeedbackId()).orElse(null));
+        } else {
+            existingTask.setFeedback(null);
+        }
+
+        if (taskDTO.getPropertyId() != null) {
+            existingTask.setProperty(propertyRepository.findById(taskDTO.getPropertyId())
+                    .orElseThrow(() -> new RuntimeException("Property not found")));
+        }
+
+        if (taskDTO.getWorkerId() != null) {
+            existingTask.setWorker(workerRepository.findById(taskDTO.getWorkerId())
+                    .orElseThrow(() -> new RuntimeException("Worker not found")));
+        } else {
+            existingTask.setWorker(null);
+        }
+
+        return cleaningTaskRepository.save(existingTask);
+    }
 
 }
+
+
+
 

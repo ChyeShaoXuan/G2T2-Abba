@@ -8,7 +8,7 @@ public class Feedback {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int feedbackId;
 
-    @OneToOne(mappedBy = "feedback")
+    @OneToOne(mappedBy = "feedback", cascade = CascadeType.ALL, orphanRemoval = true)
     private CleaningTask cleaningTask;
 
     private int rating;
@@ -41,5 +41,14 @@ public class Feedback {
     public CleaningTask getCleaningTask() {
         return cleaningTask;
     }
+
+    public int getFeedbackId() {
+        return feedbackId;
+    }
+
+    public void setFeedbackId(int feedbackId) {
+        this.feedbackId = feedbackId;
+    }
+    
     
 }
