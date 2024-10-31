@@ -7,11 +7,23 @@ import com.g4t2project.g4t2project.repository.*;
 import com.g4t2project.g4t2project.entity.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
-
+import java.util.Map;
 @Service
 public class AdminService {
+    @Autowired
+    private PropertyRepository propertyRepository;
+  
+    @Autowired
+    private WorkerHoursRepository workerHoursRepository;
+    @Autowired
+    private JobStatsRepository jobStatsRepository;
+
+    @Autowired
+    private LeaveStatsRepository leaveStatsRepository;
+
     @Autowired
     private CleaningPackageRepository cleaningPackageRepository;
     
@@ -42,6 +54,9 @@ public class AdminService {
     public Admin removeWorkerUnderAdmin(Long adminId, Long workerId) {
         Admin admin = adminRepository.findById(adminId).orElseThrow(() -> new RuntimeException("Admin not found"));
         Worker worker = workerRepository.findById(workerId).orElseThrow(() -> new RuntimeException("Worker not found"));
+        workerHoursRepository.deleteWorkerHourByWorkerId(workerId);
+        leaveApplicationRepository.deletePropertyByWorkerId(workerId);
+        cleaningTaskRepository.deleteTaskByWorkerId(workerId);
         admin.removeWorker(worker);
         return adminRepository.save(admin);
     }
@@ -106,13 +121,18 @@ public class AdminService {
         return clientRepository.save(client);
     }
 
+    @Transactional
     public Admin removeClientUnderAdmin(Long adminId, Long clientId) {
-        Admin admin = adminRepository.findById(adminId).orElseThrow(() -> new RuntimeException("Admin not found"));
-        Client client = clientRepository.findById(clientId).orElseThrow(() -> new RuntimeException("Worker not found"));
-        admin.removeClient(client);
+        Admin admin = adminRepository.findById(adminId)
+          .orElseThrow(() -> new RuntimeException("Admin not found"));
+        Client client = clientRepository.findById(clientId)
+          .orElseThrow(() -> new RuntimeException("Client not found"));
+
+        admin.removeClient(client);  // remove association
+        clientRepository.delete(client);  // cascade delete will handle properties and tasks
+
         return adminRepository.save(admin);
     }
-
 
     public List<Worker> getAllWorkers() {
         return workerRepository.findAll();
@@ -182,6 +202,48 @@ public class AdminService {
 
         return clientRepository.save(existingClient);
     }
+    
+    
+    public Map<String, StatsDTO> getAllStats() {
+        List<JobStats> jobStatsList = jobStatsRepository.findAll();
+        List<LeaveStats> leaveStatsList = leaveStatsRepository.findAll();
+
+        Map<String, StatsDTO> statsMap = new HashMap<>();
+
+        for (JobStats jobStats : jobStatsList) {
+            StatsDTO statsDTO = new StatsDTO();
+            statsDTO.setMonthYear(jobStats.getMonthYear());
+            statsDTO.setTotalHours(jobStats.getTotalHours());
+            statsDTO.setTotalCleaningTasks(jobStats.getTotalCleaningTasks());
+            statsDTO.setTotalClients(jobStats.getTotalClients());
+            statsDTO.setTotalProperties(jobStats.getTotalProperties());
+            statsDTO.setTotalWorkers(jobStats.getTotalWorkers());
+            statsDTO.setTotalPackages(jobStats.getTotalPackages());
+            statsMap.put(jobStats.getMonthYear(), statsDTO);
+        }
+
+        for (LeaveStats leaveStats : leaveStatsList) {
+            StatsDTO statsDTO = statsMap.getOrDefault(leaveStats.getMonthYear(), new StatsDTO());
+            statsDTO.setMonthYear(leaveStats.getMonthYear());
+            statsDTO.setAlCount(leaveStats.getAlCount());
+            statsDTO.setMcCount(leaveStats.getMcCount());
+            statsDTO.setHlCount(leaveStats.getHlCount());
+            statsDTO.setElCount(leaveStats.getElCount());
+            statsMap.put(leaveStats.getMonthYear(), statsDTO);
+        }
+
+        return statsMap;
+    }
+
+    public List<Long> getAllWorkerIds() {
+        return workerRepository.findAllWorkerIds();
+    }
+
+    public List<WorkerHours> getWorkerHoursByWorkerId(Long workerId) {
+        return workerHoursRepository.findByWorker_WorkerId(workerId);
+    }
+
+
 
 
 

@@ -14,7 +14,7 @@ interface Worker {
   tele_Id: string
   curPropertyId: number
   available: boolean
-  supervisorId: number
+  adminId: number
 }
 
 export default function ViewWorkers() {
@@ -27,8 +27,9 @@ export default function ViewWorkers() {
     tele_Id: '',
     curPropertyId: 0,
     available: false,
-    supervisorId: 0
+    adminId: 0
   })
+  const [editingWorkerId, setEditingWorkerId] = useState<number | null>(null)
   const [editingWorker, setEditingWorker] = useState<Worker | null>(null)
 
   useEffect(() => {
@@ -36,8 +37,8 @@ export default function ViewWorkers() {
     const fetchWorkers = async () => {
       try {
         const workersResponse = await axios.get(`http://localhost:8080/admin/workers`)
-        
         setWorkers(workersResponse.data)
+        console.log(workersResponse.data)
       } catch (error) {
         console.error('Error fetching workers:', error)
       }
@@ -48,11 +49,11 @@ export default function ViewWorkers() {
 
   const deleteWorker = async (worker: Worker) => {
     try {
-      if (worker.supervisorId === undefined || worker.supervisorId === null) {
-        console.error('Error: supervisorId is undefined or null')
+      if (worker.adminId === undefined || worker.adminId === null) {
+        console.error('Error: adminId is undefined or null')
         return
       }
-      await axios.delete(`http://localhost:8080/admin/${worker.supervisorId}/workers/${worker.workerId}`)
+      await axios.delete(`http://localhost:8080/admin/${worker.adminId}/workers/${worker.workerId}`)
       setWorkers(prevWorkers => prevWorkers.filter(w => w.workerId !== worker.workerId))
     } catch (error) {
       console.error('Error deleting worker:', error)
@@ -63,6 +64,7 @@ export default function ViewWorkers() {
     try {
       const response = await axios.put(`http://localhost:8080/admin/workers/${worker.workerId}`, worker)
       setWorkers(prevWorkers => prevWorkers.map(w => (w.workerId === worker.workerId ? response.data : w)))
+      setEditingWorkerId(null)
       setEditingWorker(null)
     } catch (error) {
       console.error('Error updating worker:', error)
@@ -71,11 +73,19 @@ export default function ViewWorkers() {
 
   const addWorker = async () => {
     try {
-      if (newWorker.supervisorId === 0) {
-        console.error('Error: supervisorId is not set')
+      if (newWorker.adminId === 0) {
+        console.error('Error: adminId is not set')
         return
       }
-      const response = await axios.post(`http://localhost:8080/admin/${newWorker.supervisorId}/workers`, newWorker)
+      const response = await axios.post(
+        `http://localhost:8080/admin/${newWorker.adminId}/workers`,
+        newWorker,
+        {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }
+      )
       setWorkers(prevWorkers => [...prevWorkers, response.data])
       setNewWorker({
         name: '',
@@ -85,7 +95,7 @@ export default function ViewWorkers() {
         tele_Id: '',
         curPropertyId: 0,
         available: false,
-        supervisorId: 0
+        adminId: 0
       })
     } catch (error) {
       console.error('Error adding worker:', error)
@@ -93,6 +103,7 @@ export default function ViewWorkers() {
   }
 
   const handleEditClick = (worker: Worker) => {
+    setEditingWorkerId(worker.workerId)
     setEditingWorker(worker)
   }
 
@@ -129,7 +140,7 @@ export default function ViewWorkers() {
             <TableHead>Telegram ID</TableHead>
             <TableHead>Current Property ID</TableHead>
             <TableHead>Available</TableHead>
-            <TableHead>supervisor ID</TableHead>
+            <TableHead>Supervisor ID</TableHead>
             <TableHead>Actions</TableHead>
           </TableRow>
         </TableHeader>
@@ -137,11 +148,11 @@ export default function ViewWorkers() {
           {workers.map(worker => (
             <TableRow key={worker.workerId}>
               <TableCell>
-                {editingWorker && editingWorker.workerId === worker.workerId ? (
+                {editingWorkerId === worker.workerId ? (
                   <input
                     type="text"
                     name="name"
-                    value={editingWorker.name}
+                    value={editingWorker?.name || ''}
                     onChange={handleInputChange}
                     className="border p-2"
                   />
@@ -150,11 +161,11 @@ export default function ViewWorkers() {
                 )}
               </TableCell>
               <TableCell>
-                {editingWorker && editingWorker.workerId === worker.workerId ? (
+                {editingWorkerId === worker.workerId ? (
                   <input
                     type="text"
                     name="phoneNumber"
-                    value={editingWorker.phoneNumber}
+                    value={editingWorker?.phoneNumber || ''}
                     onChange={handleInputChange}
                     className="border p-2"
                   />
@@ -163,11 +174,11 @@ export default function ViewWorkers() {
                 )}
               </TableCell>
               <TableCell>
-                {editingWorker && editingWorker.workerId === worker.workerId ? (
+                {editingWorkerId === worker.workerId ? (
                   <input
                     type="text"
                     name="shortBio"
-                    value={editingWorker.shortBio}
+                    value={editingWorker?.shortBio || ''}
                     onChange={handleInputChange}
                     className="border p-2"
                   />
@@ -176,11 +187,11 @@ export default function ViewWorkers() {
                 )}
               </TableCell>
               <TableCell>
-                {editingWorker && editingWorker.workerId === worker.workerId ? (
+                {editingWorkerId === worker.workerId ? (
                   <input
                     type="checkbox"
                     name="deployed"
-                    checked={editingWorker.deployed}
+                    checked={editingWorker?.deployed || false}
                     onChange={handleCheckboxChange}
                   />
                 ) : (
@@ -188,11 +199,11 @@ export default function ViewWorkers() {
                 )}
               </TableCell>
               <TableCell>
-                {editingWorker && editingWorker.workerId === worker.workerId ? (
+                {editingWorkerId === worker.workerId ? (
                   <input
                     type="text"
                     name="tele_Id"
-                    value={editingWorker.tele_Id}
+                    value={editingWorker?.tele_Id || ''}
                     onChange={handleInputChange}
                     className="border p-2"
                   />
@@ -201,11 +212,11 @@ export default function ViewWorkers() {
                 )}
               </TableCell>
               <TableCell>
-                {editingWorker && editingWorker.workerId === worker.workerId ? (
+                {editingWorkerId === worker.workerId ? (
                   <input
                     type="number"
                     name="curPropertyId"
-                    value={editingWorker.curPropertyId}
+                    value={editingWorker?.curPropertyId || 0}
                     onChange={handleInputChange}
                     className="border p-2"
                   />
@@ -214,21 +225,21 @@ export default function ViewWorkers() {
                 )}
               </TableCell>
               <TableCell>
-                {editingWorker && editingWorker.workerId === worker.workerId ? (
+                {editingWorkerId === worker.workerId ? (
                   <input
                     type="checkbox"
                     name="available"
-                    checked={editingWorker.available}
+                    checked={editingWorker?.available || false}
                     onChange={handleCheckboxChange}
                   />
                 ) : (
                   worker.available ? 'Yes' : 'No'
                 )}
               </TableCell>
-              <TableCell>{worker.supervisorId}</TableCell>
+              <TableCell>{worker.adminId}</TableCell>
               <TableCell>
-                {editingWorker && editingWorker.workerId === worker.workerId ? (
-                  <Button onClick={() => updateWorker(editingWorker)}>Save</Button>
+                {editingWorkerId === worker.workerId ? (
+                  <Button onClick={() => editingWorker && updateWorker(editingWorker)}>Save</Button>
                 ) : (
                   <Button onClick={() => handleEditClick(worker)}>Edit</Button>
                 )}
@@ -282,9 +293,9 @@ export default function ViewWorkers() {
         />
         <input
           type="number"
-          placeholder="supervisor ID"
-          name="supervisorId"
-          value={newWorker.supervisorId}
+          placeholder="Supervisor ID"
+          name="adminId"
+          value={newWorker.adminId}
           onChange={handleInputChange}
           className="border p-2 mb-2"
         />

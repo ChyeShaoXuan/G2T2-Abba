@@ -9,6 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.util.List;
+import com.g4t2project.g4t2project.DTO.OverwriteCleaningTaskDTO;
+import com.g4t2project.g4t2project.DTO.OverwriteCleaningTaskDTO;
 import com.g4t2project.g4t2project.DTO.cleaningTaskDTO;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -17,6 +19,7 @@ import java.time.format.DateTimeParseException;
 
 @RestController
 @RequestMapping("/cleaningTasks")
+@CrossOrigin(origins = "http://localhost:3000")
 public class CleaningTaskController {
 
     @Autowired
@@ -63,6 +66,20 @@ public class CleaningTaskController {
     public ResponseEntity<List<CleaningTask>> getCleaningTasks(@RequestParam Integer clientId) {
         List<CleaningTask> tasks = cleaningTaskService.getCleaningTasksByClient(clientId);
         return new ResponseEntity<>(tasks, HttpStatus.OK);
+    }
+
+    @GetMapping("/tasks")
+    public ResponseEntity<List<OverwriteCleaningTaskDTO>> getCleaningTasks() {
+        List<OverwriteCleaningTaskDTO> tasks = cleaningTaskService.getAllCleaningTasks();
+        return new ResponseEntity<>(tasks, HttpStatus.OK);
+    }
+
+    @PutMapping("/{taskId}")
+    public ResponseEntity<OverwriteCleaningTaskDTO> updateCleaningTask(@PathVariable Integer taskId, @RequestBody OverwriteCleaningTaskDTO taskDTO) {
+        taskDTO.setTaskId(taskId); // Ensure the task ID is set correctly
+        CleaningTask updatedTask = cleaningTaskService.updateCleaningTask(taskDTO);
+        OverwriteCleaningTaskDTO updatedTaskDTO = cleaningTaskService.convertToDTO(updatedTask);
+        return new ResponseEntity<>(updatedTaskDTO, HttpStatus.OK);
     }
 }
  

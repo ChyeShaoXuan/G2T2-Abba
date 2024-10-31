@@ -1,7 +1,7 @@
 package com.g4t2project.g4t2project.service;
 
 import java.util.Optional;
-
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -64,5 +64,9 @@ public class WorkerService {
             }
         }
         return false;
+    }
+
+    public List<Long> getAllWorkerIds() {
+        return workerRepository.findAllWorkerIds();
     }
 }

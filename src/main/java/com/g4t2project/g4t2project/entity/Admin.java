@@ -26,7 +26,6 @@ public class Admin {
     private boolean isRoot;
 
     @OneToMany(mappedBy = "admin",cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
     private List<Worker> workers;
 
     public Long getAdminId() {
