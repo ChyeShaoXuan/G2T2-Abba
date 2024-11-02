@@ -1,7 +1,8 @@
 package com.g4t2project.g4t2project.service;
 
-import java.util.Optional;
 import java.util.List;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +25,11 @@ public class WorkerService {
     @Autowired
     private LeaveApplicationRepository leaveApplicationRepository;
 
+    // Authentication method for worker login
+    public boolean authenticate(Long username, String password) {  
+        Worker worker = workerRepository.findById(username).orElse(null);
+        return worker != null && worker.getTele_Id().equals(password); 
+    }
     
     public boolean acceptAssignedTask(int taskId, Long workerId) {
         CleaningTask task = cleaningTaskRepository.findById(taskId)

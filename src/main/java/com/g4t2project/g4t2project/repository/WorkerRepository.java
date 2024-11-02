@@ -1,12 +1,15 @@
 package com.g4t2project.g4t2project.repository;
 
-import java.util.Optional;
-import org.springframework.data.jpa.repository.JpaRepository;
-import com.g4t2project.g4t2project.entity.*;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
+import com.g4t2project.g4t2project.entity.CleaningTask;
+import com.g4t2project.g4t2project.entity.Worker;
 
 public interface WorkerRepository extends JpaRepository<Worker, Long> {
     Optional<Worker> findFirstByAvailableTrue();
