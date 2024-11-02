@@ -1,46 +1,75 @@
 package com.g4t2project.g4t2project.service;
+
+import com.courier.api.Courier;
+import com.courier.api.requests.SendMessageRequest;
+import com.courier.api.resources.send.types.MessageRecipient;
+import com.courier.api.resources.send.types.Recipient;
+import com.courier.api.resources.send.types.TemplateMessage;
+import com.courier.api.resources.send.types.UserRecipient;
 import com.g4t2project.g4t2project.entity.CleaningTask;
 import com.g4t2project.g4t2project.entity.Client;
 import com.g4t2project.g4t2project.entity.LeaveApplication;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class NotificationService {
-    private final JavaMailSender mailSender;
-    @Autowired
-    public NotificationService(JavaMailSender mailSender) {
-        this.mailSender = mailSender;
-    }
+    private static final Logger LOGGER = LoggerFactory.getLogger(NotificationService.class);
+
+    @Value("${courier.auth.token}")
+    private String courierAuthToken;
+
+    @Value("${courier.template.id.reschedule}")
+    private String rescheduleTemplateId;
+
+    @Value("${courier.template.id.pendingMc}")
+    private String pendingMcTemplateId;
+
     public void notifyClientForReschedule(Client client, CleaningTask task) {
-        String message = "Dear " + client.getName() + ", your cleaning session on " + task.getDate() + " has been affected. Please reschedule or cancel.";
-        sendEmail(client.getEmail(), message);
-        String subject = "Reschedule Required for Your Cleaning Session";
-        sendEmail(client.getEmail(), subject, message);
+        Map<String, Object> data = new HashMap<>();
+        data.put("client_name", client.getName());
+        data.put("task_date", task.getDate());
+
+        sendEmailWithTemplate(client.getEmail(), rescheduleTemplateId, data);
     }
 
     public void notifyAdminForPendingMC(LeaveApplication leaveApplication) {
-        String message = "Worker " + leaveApplication.getWorker().getName() + " has not uploaded their MC slip for leave on " + leaveApplication.getStartDate() + " to " + leaveApplication.getEndDate() + ".";
-        sendEmail("admin@company.com", message);
-        String subject = "Pending MC Slip Upload Notification";
-        sendEmail("admin@company.com", subject, message);
+        Map<String, Object> data = new HashMap<>();
+        data.put("worker_name", leaveApplication.getWorker().getName());
+        data.put("start_date", leaveApplication.getStartDate());
+        data.put("end_date", leaveApplication.getEndDate());
+
+        sendEmailWithTemplate("admin@company.com", pendingMcTemplateId, data);
     }
 
-    private void sendEmail(String to, String message) {
-        // placeholder for actual email sending logic (Not done yet)
-        System.out.println("Sending email to: " + to + "\nMessage: " + message);
-    }
-    private void sendEmail(String to, String subject, String message) {
-        SimpleMailMessage email = new SimpleMailMessage();
-        email.setTo(to);
-        email.setSubject(subject);
-        email.setText(message);
-        mailSender.send(email);
-        System.out.println("Email sent to: " + to + "\nSubject: " + subject + "\nMessage: " + message);
+    private void sendEmailWithTemplate(String recipientEmail, String templateId, Map<String, Object> data) {
+        try {
+            Courier courier = Courier.builder()
+                .authorizationToken(courierAuthToken)
+                .build();
+
+            SendMessageRequest request = SendMessageRequest.builder()
+                .message(com.courier.api.resources.send.types.Message.of(
+                    TemplateMessage.builder()
+                        .template(templateId)
+                        .to(MessageRecipient.of(Recipient.of(
+                            UserRecipient.builder()
+                                .email(recipientEmail)
+                                .build())))
+                        .data(data)
+                        .build()))
+                .build();
+
+            courier.send(request);
+            LOGGER.info("Email sent successfully to: {}", recipientEmail);
+        } catch (Exception e) {
+            LOGGER.error("Error while sending email to {}: {}", recipientEmail, e.getMessage());
+            throw new RuntimeException("Error while sending email: " + e.getMessage());
+        }
     }
 }
-
-
-
