@@ -7,6 +7,7 @@ import { useState, useEffect } from 'react'
 import { Button } from "@/components/ui/button"
 import axios from 'axios'
 import Papa from 'papaparse'
+import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, PieChart, Pie, Cell, ResponsiveContainer } from 'recharts'
 
 interface Worker {
   workerId: number
@@ -35,6 +36,8 @@ interface StatsDTO {
   elCount: number
 }
 
+const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042']
+
 export default function JobStatisticsDashboard() {
   const [selectedMonth, setSelectedMonth] = useState<string>('')
   const [monthlyStats, setMonthlyStats] = useState<StatsDTO[]>([])
@@ -42,6 +45,11 @@ export default function JobStatisticsDashboard() {
   const [workerHours, setWorkerHours] = useState<WorkerHours[]>([])
   const [selectedWorkerId, setSelectedWorkerId] = useState<number | null>(null)
   const [viewMode, setViewMode] = useState<'monthly' | 'annual'>('monthly')
+  const [isClient, setIsClient] = useState(false)
+
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -113,7 +121,7 @@ export default function JobStatisticsDashboard() {
   }
 
   const exportWorkerHoursToCSV = () => {
-    let csvData = []
+    let csvData: WorkerHoursCSV[] | AnnualWorkerHoursCSV[] = []
 
     if (viewMode === 'monthly') {
       csvData = workerHours.map(wh => ({
@@ -159,14 +167,17 @@ export default function JobStatisticsDashboard() {
       .reduce((total, wh) => total + wh.totalHoursWorked, 0)
   }
 
+  const selectedMonthStats = monthlyStats.find(stat => stat.monthYear === selectedMonth)
+  const filteredWorkerHours = workerHours.filter(wh => wh.worker.workerId === selectedWorkerId)
+
   return (
-    <div className="container mx-auto p-4">
+    <div className="container mx-auto p-4 ">
       <h1 className="text-2xl font-bold mb-4">Admin Statistics Dashboard</h1>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
         <Card>
           <CardHeader>
-            <CardTitle>Monthly Overview</CardTitle>
+            <CardTitle>Monthly Stats Overview</CardTitle>
           </CardHeader>
           <CardContent>
             <Select onValueChange={setSelectedMonth} defaultValue={selectedMonth}>
@@ -179,22 +190,97 @@ export default function JobStatisticsDashboard() {
                 ))}
               </SelectContent>
             </Select>
-            <div className="mt-4">
-              {monthlyStats.find(stat => stat.monthYear === selectedMonth) && (
-                <ul>
-                  <li>Jobs: {monthlyStats.find(stat => stat.monthYear === selectedMonth)?.totalCleaningTasks}</li>
-                  <li>Clients: {monthlyStats.find(stat => stat.monthYear === selectedMonth)?.totalClients}</li>
-                  <li>Total Hours: {monthlyStats.find(stat => stat.monthYear === selectedMonth)?.totalHours}</li>
-                  <li>Total Properties: {monthlyStats.find(stat => stat.monthYear === selectedMonth)?.totalProperties}</li>
-                  <li>Total Workers: {monthlyStats.find(stat => stat.monthYear === selectedMonth)?.totalWorkers}</li>
-                  <li>Total Packages: {monthlyStats.find(stat => stat.monthYear === selectedMonth)?.totalPackages}</li>
-                  <li>Annual Leave Count: {monthlyStats.find(stat => stat.monthYear === selectedMonth)?.alCount}</li>
-                  <li>Medical Leave Count: {monthlyStats.find(stat => stat.monthYear === selectedMonth)?.mcCount}</li>
-                  <li>Holiday Leave Count: {monthlyStats.find(stat => stat.monthYear === selectedMonth)?.hlCount}</li>
-                  <li>Emergency Leave Count: {monthlyStats.find(stat => stat.monthYear === selectedMonth)?.elCount}</li>
-                </ul>
+            <div className="mt-4 mb-4">
+              
+            </div>
+            <div className="ml-5 mt-4 mr-2">
+              {isClient && (
+                <ResponsiveContainer width="70%" height={220}>
+                  <BarChart data={[selectedMonthStats]} layout="vertical">
+                    <defs>
+                      <linearGradient id="colorTotalHours" x1="0" y1="0" x2="1" y2="1">
+                        <stop offset="5%" stopColor="#8884d8" stopOpacity={0.8}/>
+                        <stop offset="95%" stopColor="#8884d8" stopOpacity={0.4}/>
+                      </linearGradient>
+                      <linearGradient id="colorTotalCleaningTasks" x1="0" y1="0" x2="1" y2="1">
+                        <stop offset="5%" stopColor="#82ca9d" stopOpacity={0.8}/>
+                        <stop offset="95%" stopColor="#82ca9d" stopOpacity={0.4}/>
+                      </linearGradient>
+                    </defs>
+                    <XAxis type="number" />
+                    <YAxis type="category" dataKey="monthYear" />
+                    <Tooltip />
+                    <Legend />
+                    <Bar dataKey="totalHours" name="Total Hours" fill="url(#colorTotalHours)" barSize={30} />
+                    <Bar dataKey="totalCleaningTasks" name="Total Cleaning Tasks" fill="url(#colorTotalCleaningTasks)" barSize={30} />
+                  </BarChart>
+                </ResponsiveContainer>
               )}
             </div>
+            <div className="ml-5 mt-4 mr-2">
+              {isClient && (
+                <ResponsiveContainer width="90%" height={220}>
+                  <BarChart data={[selectedMonthStats]} layout="vertical">
+                    <defs>
+                      <linearGradient id="colorTotalProperties" x1="0" y1="0" x2="1" y2="1">
+                        <stop offset="5%" stopColor="#8884d8" stopOpacity={0.8}/>
+                        <stop offset="95%" stopColor="#8884d8" stopOpacity={0.2}/>
+                      </linearGradient>
+                      <linearGradient id="colorTotalPackages" x1="0" y1="0" x2="1" y2="1">
+                        <stop offset="5%" stopColor="#82ca9d" stopOpacity={0.8}/>
+                        <stop offset="95%" stopColor="#82ca9d" stopOpacity={0.2}/>
+                      </linearGradient>
+                      <linearGradient id="colorTotalClients" x1="0" y1="0" x2="1" y2="1">
+                        <stop offset="5%" stopColor="#FFBB28" stopOpacity={0.8}/>
+                        <stop offset="95%" stopColor="#FFBB28" stopOpacity={0.2}/>
+                      </linearGradient>
+                    </defs>
+                    <XAxis type="number" />
+                    <YAxis type="category" dataKey="monthYear" />
+                    <Tooltip />
+                    <Legend />
+                    <Bar dataKey="totalProperties" name="Total Properties"fill="url(#colorTotalProperties)" barSize={30} />
+                    <Bar dataKey="totalPackages" name="Total Packages"fill="url(#colorTotalPackages)" barSize={30} />
+                    <Bar dataKey="totalClients" name="Total Clients" fill="url(#colorTotalClients)" barSize={30} />
+                  </BarChart>
+                </ResponsiveContainer>
+              )}
+            </div>
+            <div className="ml-5 mt-4 mr-2">
+              {isClient && (
+                <ResponsiveContainer width="90%" height={220}>
+                  <BarChart data={[selectedMonthStats]} layout="vertical">
+                    <defs>
+                      <linearGradient id="colorALCount" x1="0" y1="0" x2="1" y2="1">
+                        <stop offset="5%" stopColor="#8884d8" stopOpacity={0.8}/>
+                        <stop offset="95%" stopColor="#8884d8" stopOpacity={0.2}/>
+                      </linearGradient>
+                      <linearGradient id="colorMCCount" x1="0" y1="0" x2="1" y2="1">
+                        <stop offset="5%" stopColor="#82ca9d" stopOpacity={0.8}/>
+                        <stop offset="95%" stopColor="#82ca9d" stopOpacity={0.2}/>
+                      </linearGradient>
+                      <linearGradient id="colorHLCount" x1="0" y1="0" x2="1" y2="1">
+                        <stop offset="5%" stopColor="#FFBB28" stopOpacity={0.8}/>
+                        <stop offset="95%" stopColor="#FFBB28" stopOpacity={0.2}/>
+                      </linearGradient>
+                      <linearGradient id="colorELCount" x1="0" y1="0" x2="1" y2="1">
+                        <stop offset="5%" stopColor="#FF8042" stopOpacity={0.8}/>
+                        <stop offset="95%" stopColor="#FF8042" stopOpacity={0.2}/>
+                      </linearGradient>
+                    </defs>
+                    <XAxis type="number" />
+                    <YAxis type="category" dataKey="monthYear" />
+                    <Tooltip />
+                    <Legend />
+                    <Bar dataKey="alCount" name="Annual leave" fill="url(#colorALCount)" barSize={30} />
+                    <Bar dataKey="mcCount" name="Medical leave" fill="url(#colorMCCount)" barSize={30} />
+                    <Bar dataKey="hlCount" name="Holiday leave" fill="url(#colorHLCount)" barSize={30} />
+                    <Bar dataKey="elCount" name="Emergency leave" fill="url(#colorELCount)" barSize={30} />
+                  </BarChart>
+                </ResponsiveContainer>
+              )}
+            </div>
+            <Button className="mt-3 ml-4 bg-green-600" onClick={exportMonthlyStatsToCSV}>Export Monthly Stats to CSV</Button>
           </CardContent>
         </Card>
 
@@ -226,7 +312,7 @@ export default function JobStatisticsDashboard() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {viewMode === 'monthly' && workerHours.filter(wh => wh.worker.workerId === selectedWorkerId).map(wh => (
+                {viewMode === 'monthly' && filteredWorkerHours.map(wh => (
                   <TableRow key={wh.workerHoursId}>
                     <TableCell>{wh.monthYear}</TableCell>
                     <TableCell>{wh.totalHoursWorked}</TableCell>
@@ -237,17 +323,39 @@ export default function JobStatisticsDashboard() {
                   <TableRow>
                     <TableCell>Annual</TableCell>
                     <TableCell>{getAnnualHours(selectedWorkerId)}</TableCell>
-                    <TableCell>{workerHours.filter(wh => wh.worker.workerId === selectedWorkerId).reduce((total, wh) => total + wh.overtimeHours, 0)}</TableCell>
+                    <TableCell>{filteredWorkerHours.reduce((total, wh) => total + wh.overtimeHours, 0)}</TableCell>
                   </TableRow>
                 )}
               </TableBody>
             </Table>
+            <div className="mt-4">
+              {isClient && (
+                <ResponsiveContainer width='100%' height={400}>
+                <PieChart width={300} height={300}>
+                  <Pie
+                    data={filteredWorkerHours}
+                    dataKey="totalHoursWorked"
+                    nameKey="monthYear"
+                    cx="50%"
+                    cy="50%"
+                    outerRadius={150}
+                    fill="#8884d8"
+                    label
+                  >
+                    {filteredWorkerHours.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                </PieChart>
+                </ResponsiveContainer>
+              )}
+            </div>
+            <Button className="mt-4 ml-4 bg-green-600" onClick={exportWorkerHoursToCSV}>Export Worker Hours to CSV</Button>
           </CardContent>
         </Card>
       </div>
 
-      <Button className="ml-4 bg-green-600" onClick={exportMonthlyStatsToCSV}>Export Monthly Stats to CSV</Button>
-      <Button className="ml-4 bg-green-600" onClick={exportWorkerHoursToCSV}>Export Worker Hours to CSV</Button>
     </div>
   )
 }
