@@ -58,16 +58,41 @@ export default function LeaveApplicationForm() {
 
   const watchLeaveType = form.watch("leaveType")
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    // Here you would typically send the data to your backend
-    console.log(values)
-    // Simulating an API call
-    setTimeout(() => {
-      setSubmitStatus('success')
-      // Reset form after successful submission
-      form.reset()
-      setFile(null)
-    }, 1000)
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    // Create a FormData object to handle file uploads
+    const formData = new FormData();
+    
+    // Append all the fields from the form
+    formData.append('workerName', values.workerName);
+    formData.append('workerID', values.workerID);
+    formData.append('leaveType', values.leaveType);
+    formData.append('startDate', format(values.startDate, 'yyyy-MM-dd'));
+    formData.append('endDate', format(values.endDate, 'yyyy-MM-dd'));
+    formData.append('reason', values.reason);
+    
+    // Append the file if it exists
+    if (values.leaveType === "mc" && file) {
+      formData.append('mcDocument', file);
+    }
+
+    try {
+      // Send the leave application to the backend
+      const response = await fetch('http://localhost:8080/leave/apply', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (response.ok) {
+        setSubmitStatus('success');
+        form.reset();  // Reset the form
+        setFile(null); // Clear the file state
+      } else {
+        throw new Error('Failed to submit leave application');
+      }
+    } catch (error) {
+      console.error(error);
+      setSubmitStatus('error');
+    }
   }
 
   return (

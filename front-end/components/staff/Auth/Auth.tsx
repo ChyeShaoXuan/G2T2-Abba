@@ -1,19 +1,21 @@
 'use client'
 
-import { useState } from 'react'
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import * as z from 'zod'
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { AlertCircle } from 'lucide-react'
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { AlertCircle } from 'lucide-react';
+// import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const workerAuthSchema = z.object({
-  employeeId: z.string().min(1, "Employee ID is required"),
-  password: z.string().min(8, "Password must be at least 8 characters"),
+  workerId: z.string().min(1, "Worker ID is required"),
+  password: z.string().min(5, "Password must be at least 5 characters"),
 })
 
 export default function StaffAuth() {
@@ -23,34 +25,53 @@ export default function StaffAuth() {
   const form = useForm<z.infer<typeof workerAuthSchema>>({
     resolver: zodResolver(workerAuthSchema),
     defaultValues: {
-      employeeId: "",
+      workerId: "",
       password: "",
     },
   })
 
-  function onSubmit(values: z.infer<typeof workerAuthSchema>) {
-    // Here you would typically send a request to your backend to authenticate
-    // For demonstration, we'll use a mock authentication
-    if (values.employeeId === "W12345" && values.password === "password123") {
-      setIsAuthenticated(true)
-      setError(null)
-    } else {
-      setError("Invalid employee ID or password")
+  // frontend post username (WorkerId), password (tele_Id) -> WorkerController.java login endpoint -> WorkerDTO.java 
+  async function onSubmit(values: z.infer<typeof workerAuthSchema>) {
+    console.log("Form values:", values);
+    try {
+      const response = await axios.post('http://localhost:8080/worker/authenticate', values, {
+        headers: { 'Content-Type': 'application/json' },
+      });
+
+      console.log(response.data)
+
+      if (response.data.success) {
+        setIsAuthenticated(true);
+        setError(null);
+        // navigate('/dashboard'); // Redirect to the desired route
+      } else {
+        setError("Invalid employee ID or password");
+      }
+    } catch (error) {
+      setError("An error occurred during login.");
     }
   }
 
   if (isAuthenticated) {
     return (
-      <Card className="w-full max-w-md mx-auto">
-        <CardHeader>
-          <CardTitle>Worker Dashboard</CardTitle>
-          <CardDescription>You are logged in as a worker.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Button onClick={() => setIsAuthenticated(false)}>Logout</Button>
-        </CardContent>
-      </Card>
-    )
+      <div className="relative w-full max-w-md mx-auto">
+        <div className="text-white text-lg font-bold">Worker Dashboard
+          <Button className="text-white hover:text-gray-400 mt-5">Jobs Display</Button>
+          <Button className="text-white hover:text-gray-400 mt-5">Leave Application</Button>
+        </div>
+
+        <div>
+          <Card className="mx-auto fixed top-4 right-4">
+            <CardHeader>
+              <CardDescription>You are logged in as a worker.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button onClick={() => setIsAuthenticated(false)}>Logout</Button>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -64,10 +85,10 @@ export default function StaffAuth() {
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             <FormField
               control={form.control}
-              name="employeeId"
+              name="workerId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Employee ID</FormLabel>
+                  <FormLabel>Worker ID</FormLabel>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>

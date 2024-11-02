@@ -6,7 +6,7 @@ INSERT INTO admin (adminId, name, isRoot) VALUES
 (3, 'Michael Brown', false),
 (4, 'Alice Johnson', false);
 
-INSERT INTO worker (worker_id, adminId, name, phoneNumber, shortBio, deployed, tele_Id, curPropertyId, available) VALUES
+INSERT INTO worker (WorkerId, admin_id, name, phoneNumber, shortBio, deployed, tele_Id, curPropertyId, available) VALUES
 (1, 1, 'John Smith', '+6512345678', 'Experienced cleaner, pet-friendly', true, '@johnsmith', 101, True),
 (2, 1, 'Mary Tan', '+6598765432', 'Specializes in disinfection treatment', false, '@marytan', 0, True),
 (3, 1, 'Ahmed Ali', '+6581234567', 'No pets due to allergies', true, '@ahmedali', 103, False),
