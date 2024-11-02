@@ -60,7 +60,7 @@ const Login = () => {
 
                 else if (res.data.role === 'Worker') {
 
-                    router.push('/worker/Dashboard')
+                    router.push('/staff/Dashboard')
                 
                 }
 

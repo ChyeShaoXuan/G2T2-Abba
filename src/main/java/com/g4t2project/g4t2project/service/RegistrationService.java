@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+
+import java.util.Optional;
 import java.io.IOException;
 import java.util.UUID;
 
@@ -25,7 +27,8 @@ public class RegistrationService {
     // process user data, save new users to db , w encoded pw
     public User registerUser(User user) {
 
-        if (userRepository.findByEmail(user.getEmail()) != null) {
+        Optional<User> existingUser = userRepository.findByEmail(user.getEmail());
+        if (existingUser.isPresent()) {
             throw new RuntimeException("Email is already in use");
         }
         

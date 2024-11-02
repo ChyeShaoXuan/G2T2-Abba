@@ -6,15 +6,16 @@ import { useRouter } from 'next/navigation';
 
 import styles from './Register.module.css'; // Import the CSS module
 
-const REGISTER_URL = 'http://localhost:8080/authentication/register'; 
+const REGISTER_URL = 'http://localhost:8080/authentication/register';
 
 const Register = () => {
-  const [name, setName] = useState(''); 
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState(''); 
-  const [role, setRole]  = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [role, setRole] = useState('');
   const [isBlank, setIsBlank] = useState(true);
+  const [errorMessage, setErrorMessage] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
 
   const router = useRouter();
@@ -32,27 +33,30 @@ const Register = () => {
 
     try {
       const res = await axios.post(REGISTER_URL, {
-        name, 
+        name,
         email,
         password,
-        phoneNumber, 
+        phoneNumber,
         role
       });
 
       if (res.status === 200) {
         console.log(res.data);
-        
         router.push('/auth/verify-success');
       }
-    } 
-    
-    catch (error) {
-      console.log(error);
-      router.push('/auth/verify-failure');
+    } catch (error) {
+      if (error.response && error.response.data) {
+        const errorMessage = error.response.data.message;
+        if (errorMessage === 'Verification email failed to send') {
+          router.push('/auth/verify-failure');
+        } else {
+          setErrorMessage(errorMessage);
+        }
+      } else {
+        setErrorMessage('Registration failed');
+      }
     }
   };
-
-  // handle 2fa verification 
 
   return (
     <form onSubmit={register}>
@@ -63,7 +67,7 @@ const Register = () => {
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="Name"
-            className={`form-control ${styles['input-outline']}`} 
+            className={`form-control ${styles['input-outline']}`}
           />
           <label htmlFor="name" className={styles['form-label']}>
             Name:
@@ -77,7 +81,7 @@ const Register = () => {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="Email"
-            className={`form-control ${styles['input-outline']}`} 
+            className={`form-control ${styles['input-outline']}`}
           />
           <label htmlFor="email" className={styles['form-label']}>
             Email address:
@@ -91,7 +95,7 @@ const Register = () => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="Password"
-            className={`form-control ${styles['input-outline']}`} 
+            className={`form-control ${styles['input-outline']}`}
           />
           <label htmlFor="password" className={styles['form-label']}>
             Password:
@@ -105,7 +109,7 @@ const Register = () => {
             value={phoneNumber}
             onChange={(e) => setPhoneNumber(e.target.value)}
             placeholder="Phone Number"
-            className={`form-control ${styles['input-outline']}`} 
+            className={`form-control ${styles['input-outline']}`}
           />
           <label htmlFor="phoneNumber" className={styles['form-label']}>
             Phone Number:
@@ -120,18 +124,19 @@ const Register = () => {
             id="role"
             value={role}
             onChange={(e) => setRole(e.target.value)}
-            className={`form-control ${styles['input-outline']}`} 
+            className={`form-control ${styles['input-outline']}`}
           >
+            <option value="">Select Role</option>
             <option value="Client">Client</option>
             <option value="Worker">Worker</option>
           </select>
         </div>
 
         {isBlank && isSubmitted && (
-          <div style={{ marginBottom: '15px' }}>Something is missing...</div>
+          <div style={{ marginBottom: '15px', color: 'red' }}>All fields are required.</div>
         )}
-        {!isBlank && isSubmitted && (
-          <div style={{ marginBottom: '15px' }}>Successfully Registered!</div>
+        {errorMessage && (
+          <div style={{ marginBottom: '15px', color: 'red' }}>{errorMessage}</div>
         )}
 
         <div className={styles['button-container']}>
