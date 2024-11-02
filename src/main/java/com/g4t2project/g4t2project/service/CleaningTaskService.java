@@ -180,7 +180,6 @@ public class CleaningTaskService {
         existingTask.setStatus(CleaningTask.Status.valueOf(taskDTO.getStatus()));
 
         if (taskDTO.getFeedbackId() != null) {
-            // Assuming there's a method to fetch feedback by ID
             existingTask.setFeedback(feedbackRepository.findById(taskDTO.getFeedbackId()).orElse(null));
         } else {
             existingTask.setFeedback(null);
