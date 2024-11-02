@@ -1,0 +1,28 @@
+# spring:
+#   mail:
+#     host: ${SMTP_HOST}
+#     port: ${SMTP_PORT}
+#     username: ${SMTP_USERNAME}
+#     password: ${SMTP_PASSWORD}
+#     properties:
+#       mail:
+#         smtp:
+#           auth: true
+#           starttls:
+#             enable: true
+
+#   application:
+#     name: ${APPLICATION_NAME:MyApp}
+
+#   datasource:
+#     url: ${DATASOURCE_URL}
+#     username: ${DATASOURCE_USERNAME}
+#     password: ${DATASOURCE_PASSWORD}
+#     driver-class-name: com.mysql.cj.jdbc.Driver
+#     hikari:
+#       maximum-pool-size: 10
+#       minimum-idle: 2
+#       idle-timeout: 30000
+#       max-lifetime: 1800000
+#       connection-timeout: 30000
+#       pool-name: HikariCP
