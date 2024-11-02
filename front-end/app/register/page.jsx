@@ -53,7 +53,7 @@ const Register = () => {
           setErrorMessage(errorMessage);
         }
       } else {
-        setErrorMessage('Registration failed');
+        setErrorMessage('An account is tied to this email address. Use another email.');
       }
     }
   };
