@@ -3,6 +3,7 @@ package com.g4t2project.g4t2project.controllers;
 import com.g4t2project.g4t2project.DTO.PlaceOrderRequestDTO;
 import com.g4t2project.g4t2project.entity.*;
 import com.g4t2project.g4t2project.service.*;
+import com.g4t2project.g4t2project.DTO.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
@@ -20,9 +21,9 @@ public class ClientController {
     private ClientService clientService;
 
     @PostMapping("/{clientId}/placeOrder")
-    public ResponseEntity<CleaningTask> placeOrder(@PathVariable Long clientId, @RequestBody PlaceOrderRequestDTO request) {
+    public ResponseEntity<cleaningTaskDTO> placeOrder(@PathVariable Long clientId, @RequestBody PlaceOrderRequestDTO request) {
         LocalDate localDate = LocalDate.parse(request.getDate());
-        CleaningTask task = clientService.placeOrder(clientId, request.getPackageID(), request.getPropertyID(), request.getShift(), localDate);
+        cleaningTaskDTO task = clientService.placeOrder(clientId, request.getPackageID(), request.getPropertyID(), request.getShift(), localDate);
         return ResponseEntity.ok(task);
     }
 

@@ -2,10 +2,6 @@ package com.g4t2project.g4t2project.entity;
 import jakarta.persistence.*;
 import java.util.*;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-
-
 @Entity
 public class Client {
     @Id
@@ -18,17 +14,14 @@ public class Client {
 
     @ManyToOne // Establishing Many-to-One relationship
     @JoinColumn(name = "workerId") // Foreign key in Client table
-    @JsonManagedReference
     private Worker preferredWorker;
     
     @OneToMany(mappedBy = "client",cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonBackReference
     private List<Property> properties = new ArrayList<Property>();
 
 
     @ManyToOne
     @JoinColumn(name = "packageId")
-    @JsonManagedReference
     private CleaningPackage preferredPackage;
 
     @ManyToOne

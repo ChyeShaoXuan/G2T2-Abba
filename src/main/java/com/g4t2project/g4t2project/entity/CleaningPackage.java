@@ -2,8 +2,6 @@ package com.g4t2project.g4t2project.entity;
 import jakarta.persistence.*;
 import java.util.*;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-
 @Entity
 public class CleaningPackage {
     @Id
@@ -36,7 +34,6 @@ public class CleaningPackage {
     
 
     @OneToMany(mappedBy = "pkg", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
     private List<Property> properties = new ArrayList<Property>();
 
     

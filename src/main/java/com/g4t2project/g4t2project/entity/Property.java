@@ -2,8 +2,6 @@ package com.g4t2project.g4t2project.entity;
 import jakarta.persistence.*;
 import java.util.*;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 @Entity
 public class Property {
     @Id
@@ -12,12 +10,10 @@ public class Property {
 
     @ManyToOne
     @JoinColumn(name = "clientId")
-    @JsonManagedReference
     private Client client;
 
     @ManyToOne
     @JoinColumn(name = "packageId")
-    @JsonBackReference
     private CleaningPackage pkg;
 
     @OneToMany(mappedBy = "property", cascade = CascadeType.ALL, orphanRemoval = true)

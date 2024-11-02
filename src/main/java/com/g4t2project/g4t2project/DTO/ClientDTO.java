@@ -4,20 +4,27 @@ public class ClientDTO {
     private Long clientId;
     private String email;
     private String name;
-    // private Long adminId; 
-    // private Long packageId;
-    // private Long workerId;
+    private Long adminId; 
+    private Long packageId;
+    private Long workerId;
     private String phoneNumber;
 
     // Constructors
+    public ClientDTO(Long clientId, String email, String name, String phoneNumber, Long adminId, Long packageId, Long workerId) {   
+        this.clientId = clientId;
+        this.email = email;
+        this.name = name;
+        this.phoneNumber = phoneNumber;
+        this.adminId = adminId;
+        this.packageId = packageId;
+        this.workerId = workerId;
+    }
+
     public ClientDTO(Long clientId, String email, String name, String phoneNumber) {
         this.clientId = clientId;
         this.email = email;
         this.name = name;
         this.phoneNumber = phoneNumber;
-        // this.adminId = adminId;
-        // this.packageId = packageId;
-        // this.workerId = workerId;
     }
 
     // Getters and Setters
@@ -52,27 +59,27 @@ public class ClientDTO {
         this.name = name;
     }
 
-    // public Long getAdminId() {
-    //     return adminId;
-    // }
+    public Long getAdminId() {
+        return adminId;
+    }
 
-    // public void setAdminId(Long adminId) {
-    //     this.adminId = adminId;
-    // }
+    public void setAdminId(Long adminId) {
+        this.adminId = adminId;
+    }
 
-    // public Long getPackageId() {
-    //     return packageId;
-    // }
+    public Long getPackageId() {
+        return packageId;
+    }
 
-    // public void setPackageId(Long packageId) {
-    //     this.packageId = packageId;
-    // }
+    public void setPackageId(Long packageId) {
+        this.packageId = packageId;
+    }
 
-    // public Long getWorkerId() {
-    //     return workerId;
-    // }
+    public Long getWorkerId() {
+        return workerId;
+    }
 
-    // public void setWorkerId(Long workerId) {
-    //     this.workerId = workerId;
-    // }
+    public void setWorkerId(Long workerId) {
+        this.workerId = workerId;
+    }
 }

@@ -6,16 +6,16 @@ public class PropertyDTO {
     private String address;
     private double latitude;
     private double longitude;
-    private String postalCode;
+    // private String postalCode;
 
     // Constructors
-    public PropertyDTO(Long propertyId, int numberOfRooms, String address, double latitude, double longitude, String postalCode) {
+    public PropertyDTO(Long propertyId, int numberOfRooms, String address, double latitude, double longitude) {
         this.propertyId = propertyId;
         this.numberOfRooms = numberOfRooms;
         this.address = address;
         this.latitude = latitude;
         this.longitude = longitude;
-        this.postalCode = postalCode;
+        // this.postalCode = postalCode;
     }
 
     public Long getPropertyId() {
@@ -58,13 +58,13 @@ public class PropertyDTO {
         this.longitude = longitude;
     }
 
-    public String getPostalCode() {
-        return postalCode;
-    }
+    // public String getPostalCode() {
+    //     return postalCode;
+    // }
 
-    public void setPostalCode(String postalCode) {
-        this.postalCode = postalCode;
-    }
+    // public void setPostalCode(String postalCode) {
+    //     this.postalCode = postalCode;
+    // }
 
     
 }

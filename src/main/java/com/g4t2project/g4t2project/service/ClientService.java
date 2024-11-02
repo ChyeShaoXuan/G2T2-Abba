@@ -4,9 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.g4t2project.g4t2project.repository.*;
-import com.g4t2project.g4t2project.DTO.ClientDTO;
-import com.g4t2project.g4t2project.DTO.PropertyDTO;
-import com.g4t2project.g4t2project.DTO.cleaningTaskDTO;
+import com.g4t2project.g4t2project.DTO.*;
 import com.g4t2project.g4t2project.entity.*;
 
 import java.time.*;
@@ -48,15 +46,15 @@ public class ClientService {
     }
 
     public cleaningTaskDTO convertToCleaningTaskDTO(CleaningTask task) {
-        PropertyDTO propertyDTO = convertToPropertyDTO(task.getProperty());
-        return new cleaningTaskDTO(task.getTaskId(), propertyDTO, task.getShift().name(), task.getDate().toString(), task.isAcknowledged());
+        Long propertyId = task.getProperty().getPropertyId();
+        return new cleaningTaskDTO(propertyId, task.getShift().name(), task.getDate().toString(), task.isAcknowledged());
     }
 
-    public CleaningTask placeOrder(Long clientId, Long packageID, Long propertyID, CleaningTask.Shift shift, LocalDate date) {
+    public cleaningTaskDTO placeOrder(Long clientId, Long packageID, Long propertyID, CleaningTask.Shift shift, LocalDate date) {
 
         // Enforce booking constraints
-        // LocalDateTime now = LocalDateTime.now();
-        // LocalDateTime earliestAllowed = now.plusHours(24);
+        // LocalDateTime currentDateTime = LocalDateTime.now();
+        // LocalDateTime earliestAllowed = currentDateTime.plusHours(24);
         // LocalDateTime shiftStartDateTime = date.atTime(getShiftStartTime(shift));
         // if (shiftStartDateTime.isBefore(earliestAllowed)) {
         //     throw new IllegalArgumentException("Orders must be placed at least 24 hours in advance.");
@@ -74,7 +72,9 @@ public class ClientService {
 
         CleaningTask cleaningTask = new CleaningTask(property, worker, shift, CleaningTask.Status.Scheduled, date, false);
 
-        return cleaningTaskRepository.save(cleaningTask);
+        CleaningTask savedTask = cleaningTaskRepository.save(cleaningTask);
+
+        return convertToCleaningTaskDTO(savedTask);
     }
 
     private Worker assignWorker(Property property, CleaningTask.Shift shift, LocalDate date) {
