@@ -9,7 +9,7 @@ public class OverwriteCleaningTaskDTO {
     private String shift;
     private String status;
     private Integer feedbackId;
-    private Integer propertyId;
+    private Long propertyId;
     private Long workerId;
 
     // Getters and Setters
@@ -61,11 +61,11 @@ public class OverwriteCleaningTaskDTO {
         this.feedbackId = feedbackId;
     }
 
-    public Integer getPropertyId() {
+    public Long getPropertyId() {
         return propertyId;
     }
 
-    public void setPropertyId(Integer propertyId) {
+    public void setPropertyId(Long propertyId) {
         this.propertyId = propertyId;
     }
 

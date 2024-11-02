@@ -1,5 +1,6 @@
 package com.g4t2project.g4t2project.controllers;
 
+import com.g4t2project.g4t2project.DTO.PlaceOrderRequestDTO;
 import com.g4t2project.g4t2project.entity.*;
 import com.g4t2project.g4t2project.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,25 +20,15 @@ public class ClientController {
     private ClientService clientService;
 
     @PostMapping("/{clientId}/placeOrder")
-    public ResponseEntity<CleaningTask> placeOrder(
-        @PathVariable Long clientId,
-        @RequestBody Map<String, Object> payload) {
-
-        int packageID = (int) payload.get("packageID");
-        int propertyID = (int) payload.get("propertyID");
-        String propertyType = (String) payload.get("propertyType");
-        int numberOfRooms = (int) payload.get("numberOfRooms");
-        CleaningTask.Shift shift = CleaningTask.Shift.valueOf((String) payload.get("shift"));
-        String dateStr = (String) payload.get("date");
-        LocalDate date = LocalDate.parse(dateStr);
-        Long preferredWorkerId = payload.get("preferredWorkerId") != null ? Long.valueOf(payload.get("preferredWorkerId").toString()) : null;
-
-        CleaningTask task = clientService.placeOrder(clientId, packageID, propertyID, propertyType, numberOfRooms, shift, date, preferredWorkerId);
+    public ResponseEntity<CleaningTask> placeOrder(@PathVariable Long clientId, @RequestBody PlaceOrderRequestDTO request) {
+        LocalDate localDate = LocalDate.parse(request.getDate());
+        CleaningTask task = clientService.placeOrder(clientId, request.getPackageID(), request.getPropertyID(), request.getShift(), localDate);
         return ResponseEntity.ok(task);
     }
 
+
     @PostMapping("/{clientId}/rateSession")
-    public ResponseEntity<Feedback> rateSession(@PathVariable Long clientId, @RequestParam int taskID, @RequestParam int rating, @RequestParam String comments) 
+    public ResponseEntity<Feedback> rateSession(@PathVariable Long clientId, @RequestBody int taskID, @RequestBody int rating, @RequestBody String comments) 
     {
         Feedback feedback = clientService.rateSession(clientId, taskID, rating, comments);
         return ResponseEntity.ok(feedback);
@@ -49,25 +40,25 @@ public class ClientController {
             @RequestBody Map<String, Object> payload) {
 
         String address = (String) payload.get("address");
-        String postalCode = (String) payload.get("postalCode");
-        int packageID = (int) payload.get("packageID");
+        // String postalCode = (String) payload.get("postalCode");
+        Long packageID = (Long) payload.get("packageID");
         double latitude = Double.parseDouble(payload.get("latitude").toString());
         double longitude = Double.parseDouble(payload.get("longitude").toString());
 
-        Property property = clientService.addProperty(clientId, address, postalCode, packageID, latitude, longitude);
+        Property property = clientService.addProperty(clientId, address, packageID, latitude, longitude);
         return ResponseEntity.ok(property);
     }
 
     @PutMapping("/{clientId}/modifyProperty/{propertyID}")
     public ResponseEntity<Boolean> modifyProperty(
             @PathVariable Long clientId,
-            @PathVariable int propertyID,
+            @PathVariable Long propertyID,
             @RequestBody Map<String, String> payload) {
 
         String newAddress = payload.get("newAddress");
-        String newPostalCode = payload.get("newPostalCode");
+        // String newPostalCode = payload.get("newPostalCode");
 
-        boolean success = clientService.modifyProperty(clientId, propertyID, newAddress, newPostalCode);
+        boolean success = clientService.modifyProperty(clientId, propertyID, newAddress);
         return ResponseEntity.ok(success);
     }
 
@@ -85,8 +76,8 @@ public class ClientController {
     @PostMapping("/{clientId}/selectPackage")
     public ResponseEntity<CleaningPackage> selectPackage(
             @PathVariable Long clientId,
-            @RequestParam int propertyID,
-            @RequestParam int packageID) {
+            @RequestParam Long propertyID,
+            @RequestParam Long packageID) {
 
         CleaningPackage selectedPackage = clientService.selectPackage(clientId, propertyID, packageID);
         return ResponseEntity.ok(selectedPackage);

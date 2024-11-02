@@ -1,7 +1,7 @@
 package com.g4t2project.g4t2project.DTO;
 
 public class PropertyDTO {
-    private int propertyId;
+    private Long propertyId;
     private int numberOfRooms;
     private String address;
     private double latitude;
@@ -9,7 +9,7 @@ public class PropertyDTO {
     private String postalCode;
 
     // Constructors
-    public PropertyDTO(int propertyId, int numberOfRooms, String address, double latitude, double longitude, String postalCode) {
+    public PropertyDTO(Long propertyId, int numberOfRooms, String address, double latitude, double longitude, String postalCode) {
         this.propertyId = propertyId;
         this.numberOfRooms = numberOfRooms;
         this.address = address;
@@ -18,11 +18,11 @@ public class PropertyDTO {
         this.postalCode = postalCode;
     }
 
-    public int getPropertyId() {
+    public Long getPropertyId() {
         return propertyId;
     }
 
-    public void setPropertyId(int propertyId) {
+    public void setPropertyId(Long propertyId) {
         this.propertyId = propertyId;
     }
 

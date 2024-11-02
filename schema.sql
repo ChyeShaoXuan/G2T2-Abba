@@ -1,7 +1,7 @@
 -- Create tables
 
 CREATE TABLE IF NOT EXISTS worker (
-    worker_id INT PRIMARY KEY,
+    workerId INT PRIMARY KEY,
     adminId INT,
     name VARCHAR(255),
     phoneNumber VARCHAR(50),
@@ -36,7 +36,8 @@ CREATE TABLE IF NOT EXISTS client (
     email VARCHAR(100),
     workerId INT,
     propertyId INT,
-    adminId INT
+    adminId INT,
+    packageId INT PRIMARY KEY,
 );
 
 CREATE TABLE IF NOT EXISTS feedback (
@@ -95,7 +96,8 @@ CREATE TABLE IF NOT EXISTS property (
     packageId INT,
     address VARCHAR(255),
     latitude DOUBLE,
-    longitude DOUBLE
+    longitude DOUBLE,
+    numberOfRooms INT
 );
 
 CREATE TABLE IF NOT EXISTS workerhours (

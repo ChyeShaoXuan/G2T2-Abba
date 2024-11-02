@@ -4,14 +4,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.g4t2project.g4t2project.repository.*;
+import com.g4t2project.g4t2project.DTO.ClientDTO;
+import com.g4t2project.g4t2project.DTO.PropertyDTO;
+import com.g4t2project.g4t2project.DTO.cleaningTaskDTO;
 import com.g4t2project.g4t2project.entity.*;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
+import java.time.*;
 import java.util.Optional;
 
+import org.springframework.transaction.annotation.Transactional;
+
 @Service
+@Transactional
 public class ClientService {
 
     @Autowired
@@ -35,57 +39,40 @@ public class ClientService {
     @Autowired
     private CleaningTaskService cleaningTaskService;
 
-    public CleaningTask placeOrder(
-        Long clientId,
-        int packageID,
-        int propertyID,
-        String propertyType,
-        int numberOfRooms,
-        CleaningTask.Shift shift,
-        LocalDate date,
-        Long preferredWorkerId
-    ) {
+    public ClientDTO convertToClientDTO(Client client) {
+        return new ClientDTO(client.getClientId(), client.getEmail(), client.getName(), client.getPhoneNumber());
+    }
+
+    public PropertyDTO convertToPropertyDTO(Property property) {
+        return new PropertyDTO(property.getPropertyId(), property.getNumberOfRooms(), property.getAddress(), property.getLatitude(), property.getLongitude());
+    }
+
+    public cleaningTaskDTO convertToCleaningTaskDTO(CleaningTask task) {
+        PropertyDTO propertyDTO = convertToPropertyDTO(task.getProperty());
+        return new cleaningTaskDTO(task.getTaskId(), propertyDTO, task.getShift().name(), task.getDate().toString(), task.isAcknowledged());
+    }
+
+    public CleaningTask placeOrder(Long clientId, Long packageID, Long propertyID, CleaningTask.Shift shift, LocalDate date) {
+
         // Enforce booking constraints
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime earliestAllowed = now.plusHours(24);
-        LocalDateTime shiftStartDateTime = date.atTime(getShiftStartTime(shift));
-        if (shiftStartDateTime.isBefore(earliestAllowed)) {
-            throw new IllegalArgumentException("Orders must be placed at least 24 hours in advance.");
-        }
-        if (!date.isEqual(LocalDate.now().plusDays(1))) {
-            throw new IllegalArgumentException("Orders can only be placed one day in advance.");
-        }
+        // LocalDateTime now = LocalDateTime.now();
+        // LocalDateTime earliestAllowed = now.plusHours(24);
+        // LocalDateTime shiftStartDateTime = date.atTime(getShiftStartTime(shift));
+        // if (shiftStartDateTime.isBefore(earliestAllowed)) {
+        //     throw new IllegalArgumentException("Orders must be placed at least 24 hours in advance.");
+        // }
+        // if (!date.isEqual(LocalDate.now().plusDays(1))) {
+        //     throw new IllegalArgumentException("Orders can only be placed one day in advance.");
+        // }
 
-        // Fetch entities
-        Client client = clientRepository.findById(clientId)
-            .orElseThrow(() -> new IllegalArgumentException("Client not found"));
-        Property property = propertyRepository.findById(propertyID)
-            .orElseThrow(() -> new IllegalArgumentException("Property not found"));
-        CleaningPackage pkg = cleaningPackageRepository.findById(packageID)
-            .orElseThrow(() -> new IllegalArgumentException("Package not found"));
+        Client client = clientRepository.findById(clientId).orElseThrow(() -> new IllegalArgumentException("Client not found"));
+        Property property = propertyRepository.findById(propertyID).orElseThrow(() -> new IllegalArgumentException("Property not found"));
+        System.out.println("Fetching package with ID: " + packageID); 
+        CleaningPackage pkg = cleaningPackageRepository.findById(packageID).orElseThrow(() -> new IllegalArgumentException("Package not found"));
 
-        // Update property details
-        // property.setPropertyType(propertyType);
-        property.setNumberOfRooms(numberOfRooms);
-        propertyRepository.save(property);
+        Worker worker = assignWorker(property, shift, date);
 
-        // Create new CleaningTask without worker
-        CleaningTask cleaningTask = new CleaningTask(property, null, shift, CleaningTask.Status.Scheduled, date, false);
-
-        if (preferredWorkerId != null) {
-            // Assign preferred worker
-            Worker preferredWorker = workerRepository.findById(preferredWorkerId)
-                .orElseThrow(() -> new IllegalArgumentException("Preferred worker not found"));
-            if (preferredWorker.isAvailableOn(date, shift)) {
-                cleaningTask.setWorker(preferredWorker);
-            } else {
-                throw new IllegalStateException("Preferred worker is not available at the selected time.");
-            }
-        } else {
-            // Use CleaningTaskService to assign the best-matched worker
-            cleaningTaskService.addCleaningTask(cleaningTask);
-            // Worker is assigned within addCleaningTask
-        }
+        CleaningTask cleaningTask = new CleaningTask(property, worker, shift, CleaningTask.Status.Scheduled, date, false);
 
         return cleaningTaskRepository.save(cleaningTask);
     }
@@ -115,18 +102,18 @@ public class ClientService {
         return feedback;
     }
 
-    public Property addProperty(Long clientId,  String address, String postalCode, int packageID, double latitude, double longitude) {
+    public Property addProperty(Long clientId,  String address, Long packageID, double latitude, double longitude) {
         Client client = clientRepository.findById(clientId).orElseThrow(() -> new IllegalArgumentException("Client not found"));
 
         CleaningPackage pkg = cleaningPackageRepository.findById(packageID).orElseThrow(() -> new IllegalArgumentException("Package not found"));
         
-        Property property = new Property(client, pkg, address, latitude, longitude, postalCode);
+        Property property = new Property(client, pkg, address, latitude, longitude);
 
         return propertyRepository.save(property);
     }
 
     
-    public boolean modifyProperty(Long clientId, int propertyID, String newAddress, String newPostalCode) {
+    public boolean modifyProperty(Long clientId, Long propertyID, String newAddress) {
         Property property = propertyRepository.findById(propertyID).orElseThrow(() -> new IllegalArgumentException("Property not found"));
 
         // Check if the property belongs to the client
@@ -136,7 +123,7 @@ public class ClientService {
 
         // Update property details
         property.setAddress(newAddress);
-        property.setPostalCode(newPostalCode);
+        // property.setPostalCode(newPostalCode);
 
         propertyRepository.save(property);
         return true;
@@ -151,7 +138,7 @@ public class ClientService {
         }
     }
 
-    public CleaningPackage selectPackage(Long clientId, int propertyID, int packageID) {
+    public CleaningPackage selectPackage(Long clientId, Long propertyID, Long packageID) {
         Client client = clientRepository.findById(clientId).orElseThrow(() -> new IllegalArgumentException("Client not found"));
         Property property = propertyRepository.findById(propertyID).orElseThrow(() -> new IllegalArgumentException("Property not found"));
         CleaningPackage selectedPackage = cleaningPackageRepository.findById(packageID).orElseThrow(() -> new IllegalArgumentException("Package not found"));

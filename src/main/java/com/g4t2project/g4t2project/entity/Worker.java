@@ -14,7 +14,7 @@ public class Worker {
     private Long workerId;
 
     @ManyToOne
-    @JoinColumn(name = "admin_id")
+    @JoinColumn(name = "adminId")
     @JsonBackReference(value = "adminId")
     private Admin admin;
     

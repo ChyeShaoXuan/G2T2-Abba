@@ -2,14 +2,13 @@ package com.g4t2project.g4t2project.entity;
 import jakarta.persistence.*;
 import java.util.*;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
 public class CleaningPackage {
     @Id
-    @JsonBackReference
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int packageId;
+    private Long packageId;
 
     @Enumerated(EnumType.STRING)
     private PackageType packageType;
@@ -36,7 +35,8 @@ public class CleaningPackage {
     }
     
 
-    @OneToMany(mappedBy = "pkg")
+    @OneToMany(mappedBy = "pkg", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<Property> properties = new ArrayList<Property>();
 
     
@@ -63,11 +63,11 @@ public class CleaningPackage {
         this.manualBookingRequired = manualBookingRequired;
     }
 
-    public int getPackageId() {
+    public Long getPackageId() {
         return packageId;
     }
 
-    public void setPackageId(int packageId) {
+    public void setPackageId(Long packageId) {
         this.packageId = packageId;
     }
 

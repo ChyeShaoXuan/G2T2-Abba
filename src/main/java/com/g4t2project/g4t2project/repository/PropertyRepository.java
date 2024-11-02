@@ -7,7 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.g4t2project.g4t2project.entity.*;
 
-public interface PropertyRepository extends JpaRepository<Property, Integer> {
+public interface PropertyRepository extends JpaRepository<Property, Long> {
 
   @Modifying
   @Transactional

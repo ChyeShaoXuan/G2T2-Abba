@@ -3,6 +3,7 @@ import jakarta.persistence.*;
 import java.util.*;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 
 @Entity
@@ -17,6 +18,7 @@ public class Client {
 
     @ManyToOne // Establishing Many-to-One relationship
     @JoinColumn(name = "workerId") // Foreign key in Client table
+    @JsonManagedReference
     private Worker preferredWorker;
     
     @OneToMany(mappedBy = "client",cascade = CascadeType.ALL, orphanRemoval = true)
@@ -26,10 +28,11 @@ public class Client {
 
     @ManyToOne
     @JoinColumn(name = "packageId")
+    @JsonManagedReference
     private CleaningPackage preferredPackage;
 
     @ManyToOne
-    @JoinColumn(name = "admin_id")
+    @JoinColumn(name = "adminId")
     private Admin admin;
 
     protected Client() {}
