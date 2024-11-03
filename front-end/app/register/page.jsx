@@ -58,6 +58,13 @@ const Register = () => {
     }
   };
 
+  const handleLoginClick = () => {
+    setIsBlank(false);
+    setErrorMessage('');
+    setIsSubmitted(false);
+    router.push('/login');
+  };
+
   return (
     <form onSubmit={register}>
       <div className={styles['input-container']}>
@@ -140,7 +147,7 @@ const Register = () => {
         )}
 
         <div className={styles['button-container']}>
-          <button className={`btn ${styles['btn-outline']}`} onClick={() => router.push('/login')}>
+          <button className={`btn ${styles['btn-outline']}`} type="button" onClick={handleLoginClick}>
             Login
           </button>
           <button className={`btn ${styles['btn-outline']}`} type="submit">
