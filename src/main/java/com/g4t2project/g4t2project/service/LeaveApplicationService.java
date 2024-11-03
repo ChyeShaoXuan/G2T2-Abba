@@ -14,6 +14,7 @@ import java.nio.file.Paths;
 
 @Service
 public class LeaveApplicationService {
+    
     @Autowired
     private LeaveApplicationRepository leaveApplicationRepository;
 
@@ -27,8 +28,10 @@ public class LeaveApplicationService {
     }
 
     public void uploadMcDocument(int leaveId, MultipartFile mcDocument) {
-        LeaveApplication leaveApplication = leaveApplicationRepository.findById(leaveId).orElseThrow();
-        String fileName = leaveId + "_" + mcDocument.getOriginalFilename();  // Appending leaveId for uniqueness
+        LeaveApplication leaveApplication = leaveApplicationRepository.findById(leaveId)
+            .orElseThrow(() -> new RuntimeException("Leave Application not found for ID: " + leaveId));
+        
+        String fileName = leaveId + "_" + mcDocument.getOriginalFilename();
         Path filePath = Paths.get(MC_UPLOAD_DIR + fileName);
     
         try {
@@ -41,10 +44,17 @@ public class LeaveApplicationService {
     }
 
     public void approveLeave(int leaveId) {
-        LeaveApplication leaveApplication = leaveApplicationRepository.findById(leaveId).orElseThrow();
+        LeaveApplication leaveApplication = leaveApplicationRepository.findById(leaveId)
+            .orElseThrow(() -> new RuntimeException("Leave Application not found for ID: " + leaveId));
+        
         leaveApplication.setStatus(LeaveApplication.Status.Approved);
         leaveApplicationRepository.save(leaveApplication);
     }
-    
+
+    public LeaveApplication getLeaveApplicationById(int leaveId) {
+        return leaveApplicationRepository.findById(leaveId)
+                .orElseThrow(() -> new RuntimeException("Leave Application not found for ID: " + leaveId));
+    }
 }
+
 
