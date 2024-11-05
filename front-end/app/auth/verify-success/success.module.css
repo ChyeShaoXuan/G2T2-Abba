@@ -1,0 +1,21 @@
+.btn-outline {
+    border: 2px solid #000000;
+    color: #000000;
+    background-color: transparent;
+    padding: 10px 20px;
+    border-radius: 5px;
+    transition: background-color 0.3s, color 0.3s;
+    margin: 15px;
+}
+
+.btn-outline:hover {
+    background-color: #000000;
+    color: white;
+}
+
+.button-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+}

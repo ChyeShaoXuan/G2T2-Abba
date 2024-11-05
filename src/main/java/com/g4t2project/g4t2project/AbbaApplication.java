@@ -12,21 +12,40 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableScheduling
 public class AbbaApplication {
 
-	@RequestMapping("/")
-	String home() {
-		return "Hello World";
-	}
-	public static void main(String[] args) {
-		
-		Dotenv dotenv = Dotenv.load();
-        System.setProperty("APPLICATION_NAME", dotenv.get("APPLICATION_NAME"));
-        System.setProperty("DATASOURCE_URL", dotenv.get("DATASOURCE_URL"));
-        System.setProperty("DATASOURCE_USERNAME", dotenv.get("DATASOURCE_USERNAME"));
-        System.setProperty("DATASOURCE_PASSWORD", dotenv.get("DATASOURCE_PASSWORD"));
-        
+    @RequestMapping("/")
+    String home() {
+        return "Hello World";
+    }
 
-		SpringApplication.run(AbbaApplication.class, args);
-	}
-	
+    public static void main(String[] args) {
+        // Load environment variables and set as system properties
+        Dotenv dotenv = Dotenv.configure().load();
 
+        setSystemProperty("APPLICATION_NAME", dotenv.get("APPLICATION_NAME"));
+        setSystemProperty("DATASOURCE_URL", dotenv.get("DATASOURCE_URL"));
+        setSystemProperty("DATASOURCE_USERNAME", dotenv.get("DATASOURCE_USERNAME"));
+        setSystemProperty("DATASOURCE_PASSWORD", dotenv.get("DATASOURCE_PASSWORD"), true); // Allow empty value
+        setSystemProperty("SMTP_HOST", dotenv.get("SMTP_HOST"));
+        setSystemProperty("SMTP_PORT", dotenv.get("SMTP_PORT"));
+        setSystemProperty("SMTP_USERNAME", dotenv.get("SMTP_USERNAME"));
+        setSystemProperty("SMTP_PASSWORD", dotenv.get("SMTP_PASSWORD"));
+        setSystemProperty("APP_BASE_URL", dotenv.get("APP_BASE_URL"));
+
+        // Print to confirm the properties are set
+        System.out.println("Loaded APPLICATION_NAME: " + System.getProperty("APPLICATION_NAME"));
+
+        SpringApplication.run(AbbaApplication.class, args);
+    }
+
+    private static void setSystemProperty(String key, String value) {
+        setSystemProperty(key, value, false);
+    }
+
+    private static void setSystemProperty(String key, String value, boolean allowEmpty) {
+        if (value != null && (allowEmpty || !value.isEmpty())) {
+            System.setProperty(key, value);
+        } else {
+            throw new IllegalArgumentException("Environment variable " + key + " is not set.");
+        }
+    }
 }
