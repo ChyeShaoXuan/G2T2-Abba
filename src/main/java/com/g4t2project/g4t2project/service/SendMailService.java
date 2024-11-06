@@ -32,6 +32,9 @@ public class SendMailService {
     @Value("${courier.template.id.pendingMc}")
     private String pendingMcTemplateId;
 
+    @Value("${courier.template.id.lateleave}")
+    private String lateLeaveTemplateId;
+
     public void sendEnhancedMail(String recipientEmail, String title, String community, String name, String verificationLink) {
         try {
             Courier courier = Courier.builder()
@@ -121,6 +124,36 @@ public class SendMailService {
             LOGGER.error("Error while sending the enhanced mail", e);
             e.printStackTrace();
             throw new RuntimeException("Error while sending the enhanced mail: " + e.getMessage());
+        }
+    }
+    public void sendLateLeaveEmail(String recipientEmail, String title, String community, String name, LocalDate task_date) {
+        try {
+            Courier courier = Courier.builder()
+                .authorizationToken(courierAuthToken)
+                .build();
+
+            Map<String, Object> data = new HashMap<>();
+            data.put("title", title);
+            data.put("community", community);
+            data.put("name", name);
+            data.put("task_date", task_date);
+
+            SendMessageRequest request = SendMessageRequest.builder()
+                .message(Message.of(TemplateMessage.builder()
+                    .template(lateLeaveTemplateId)  // Use the late leave template
+                    .to(MessageRecipient.of(Recipient.of(UserRecipient.builder()
+                        .email(recipientEmail)
+                        .build())))
+                        .data(data)
+                    .build()))
+                .build();
+
+            courier.send(request);
+            LOGGER.info("Late leave mail sent successfully to {}", recipientEmail);
+        } catch (Exception e) {
+            LOGGER.error("Error while sending the late leave mail", e);
+            e.printStackTrace();
+            throw new RuntimeException("Error while sending the late leave mail: " + e.getMessage());
         }
     }
 }
