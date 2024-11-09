@@ -10,8 +10,11 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle } from 'lucide-react';
-// import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+
+import { useNavigate } from 'react-router-dom';
+import Link from 'next/link'
+
 
 const workerAuthSchema = z.object({
   workerId: z.string().min(1, "Worker ID is required"),
@@ -21,6 +24,8 @@ const workerAuthSchema = z.object({
 export default function StaffAuth() {
   const [error, setError] = useState<string | null>(null)
   const [isAuthenticated, setIsAuthenticated] = useState(false)
+
+  // const navigate = useNavigate();
 
   const form = useForm<z.infer<typeof workerAuthSchema>>({
     resolver: zodResolver(workerAuthSchema),
@@ -43,7 +48,7 @@ export default function StaffAuth() {
       if (response.data.success) {
         setIsAuthenticated(true);
         setError(null);
-        // navigate('/dashboard'); // Redirect to the desired route
+        // navigate('/workerDashboard'); // Redirect to the desired route
       } else {
         setError("Invalid employee ID or password");
       }
@@ -56,8 +61,12 @@ export default function StaffAuth() {
     return (
       <div className="relative w-full max-w-md mx-auto">
         <div className="text-white text-lg font-bold">Worker Dashboard
-          <Button className="text-white hover:text-gray-400 mt-5">Jobs Display</Button>
-          <Button className="text-white hover:text-gray-400 mt-5">Leave Application</Button>
+          <Link href="/staff/JobsDisplay">
+            <Button className="text-white hover:text-gray-400 mt-5">Jobs Display</Button>
+          </Link>
+          <Link href="/staff/LeaveApplication">
+            <Button className="text-white hover:text-gray-400 mt-5">Leave Application</Button>
+          </Link>
         </div>
 
         <div>
