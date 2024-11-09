@@ -1,8 +1,6 @@
 package com.g4t2project.g4t2project.service;
 
 import java.time.Duration;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -199,92 +197,104 @@ public class AdminService {
         return clientDTOs;
     }
 
-    public CleaningTask assignTaskToWorker(int taskId, Long workerId, LocalDate taskDate, CleaningTask.Shift shift) {
-        CleaningTask task = cleaningTaskRepository.findById(taskId)
-                .orElseThrow(() -> new RuntimeException("Task not found"));
-        Worker worker = workerRepository.findById(workerId)
-                .orElseThrow(() -> new RuntimeException("Worker not found"));
 
-        // Define shift times
-        LocalTime morningStart = LocalTime.of(8, 0);
-        LocalTime morningEnd = LocalTime.of(12, 0);
-        LocalTime afternoonStart = LocalTime.of(13, 0);
-        LocalTime afternoonEnd = LocalTime.of(17, 0);
-        LocalTime eveningStart = LocalTime.of(18, 0);
-        LocalTime eveningEnd = LocalTime.of(22, 0);
+    public CleaningTask assignTaskToWorker(int taskId, Long workerId) {
+       
+        CleaningTask task = cleaningTaskRepository.findById(taskId).orElseThrow(() -> new RuntimeException("Task not found"));
+        Worker worker = workerRepository.findById(workerId).orElseThrow(() -> new RuntimeException("Worker not found"));
 
-        // Map shift to start and end times
-        LocalTime shiftStart;
-        LocalTime shiftEnd;
-
-        switch (shift) {
-            case Morning:
-                shiftStart = morningStart;
-                shiftEnd = morningEnd;
-                break;
-            case Afternoon:
-                shiftStart = afternoonStart;
-                shiftEnd = afternoonEnd;
-                break;
-            case Evening:
-                shiftStart = eveningStart;
-                shiftEnd = eveningEnd;
-                break;
-            default:
-                throw new RuntimeException("Invalid shift provided.");
-        }
-
-        // Ensure task is assigned 2.5 hours before the shift start
-        LocalDateTime assignmentTime = LocalDateTime.now();
-        LocalDateTime taskStartDateTime = LocalDateTime.of(taskDate, shiftStart);
-        if (Duration.between(assignmentTime, taskStartDateTime).toHours() < 2.5) {
-            throw new RuntimeException("Task must be assigned at least 2.5 hours before the shift start time.");
-        }
-
-        // Check if worker has reached their weekly hour limit (44 hours)
-        int currentWeeklyHours = worker.getHoursWorkedThisWeek();
-        int shiftDuration = (int) Duration.between(shiftStart, shiftEnd).toHours();
-        if (currentWeeklyHours + shiftDuration > 44) {
-            throw new RuntimeException("Assigning this task will exceed the worker's 44-hour weekly limit.");
-        }
-
-        // Set the task shift and update worker details
-        task.setShift(shift);
         task.setWorker(worker);
         task.setStatus(CleaningTask.Status.Assigned);
-        task.setDate(taskDate);
-
-        // Update worker’s weekly hours and save task
-        worker.setHoursWorkedThisWeek(currentWeeklyHours + shiftDuration);
-        workerRepository.save(worker);
 
         return cleaningTaskRepository.save(task);
     }
+    
+    // public CleaningTask assignTaskToWorker(int taskId, Long workerId, LocalDate taskDate, CleaningTask.Shift shift) {
+    //     CleaningTask task = cleaningTaskRepository.findById(taskId)
+    //             .orElseThrow(() -> new RuntimeException("Task not found"));
+    //     Worker worker = workerRepository.findById(workerId)
+    //             .orElseThrow(() -> new RuntimeException("Worker not found"));
 
-    // Helper method to check if the task duration fits within a single shift
-    private boolean isTaskWithinShift(LocalTime taskStartTime, int duration) {
-        LocalTime morningShiftEnd = LocalTime.of(12, 0);
-        LocalTime afternoonShiftStart = LocalTime.of(13, 0);
-        LocalTime afternoonShiftEnd = LocalTime.of(17, 0);
-        LocalTime nightShiftStart = LocalTime.of(18, 0);
-        LocalTime nightShiftEnd = LocalTime.of(22, 0);
+    //     // Define shift times
+    //     LocalTime morningStart = LocalTime.of(8, 0);
+    //     LocalTime morningEnd = LocalTime.of(12, 0);
+    //     LocalTime afternoonStart = LocalTime.of(13, 0);
+    //     LocalTime afternoonEnd = LocalTime.of(17, 0);
+    //     LocalTime eveningStart = LocalTime.of(18, 0);
+    //     LocalTime eveningEnd = LocalTime.of(22, 0);
 
-        LocalTime taskEndTime = taskStartTime.plusHours(duration);
+    //     // Map shift to start and end times
+    //     LocalTime shiftStart;
+    //     LocalTime shiftEnd;
 
-        // Check morning shift
-        if (taskStartTime.isAfter(LocalTime.of(8, 0)) && taskEndTime.isBefore(morningShiftEnd)) {
-            return true;
-        }
-        // Check afternoon shift
-        if (taskStartTime.isAfter(afternoonShiftStart) && taskEndTime.isBefore(afternoonShiftEnd)) {
-            return true;
-        }
-        // Check night shift
-        if (taskStartTime.isAfter(nightShiftStart) && taskEndTime.isBefore(nightShiftEnd)) {
-            return true;
-        }
-        return false;
-    }
+    //     switch (shift) {
+    //         case Morning:
+    //             shiftStart = morningStart;
+    //             shiftEnd = morningEnd;
+    //             break;
+    //         case Afternoon:
+    //             shiftStart = afternoonStart;
+    //             shiftEnd = afternoonEnd;
+    //             break;
+    //         case Evening:
+    //             shiftStart = eveningStart;
+    //             shiftEnd = eveningEnd;
+    //             break;
+    //         default:
+    //             throw new RuntimeException("Invalid shift provided.");
+    //     }
+
+    //     // Ensure task is assigned 2.5 hours before the shift start
+    //     LocalDateTime assignmentTime = LocalDateTime.now();
+    //     LocalDateTime taskStartDateTime = LocalDateTime.of(taskDate, shiftStart);
+    //     if (Duration.between(assignmentTime, taskStartDateTime).toHours() < 2.5) {
+    //         throw new RuntimeException("Task must be assigned at least 2.5 hours before the shift start time.");
+    //     }
+
+    //     // Check if worker has reached their weekly hour limit (44 hours)
+    //     int currentWeeklyHours = worker.getHoursWorkedThisWeek();
+    //     int shiftDuration = (int) Duration.between(shiftStart, shiftEnd).toHours();
+    //     if (currentWeeklyHours + shiftDuration > 44) {
+    //         throw new RuntimeException("Assigning this task will exceed the worker's 44-hour weekly limit.");
+    //     }
+
+    //     // Set the task shift and update worker details
+    //     task.setShift(shift);
+    //     task.setWorker(worker);
+    //     task.setStatus(CleaningTask.Status.Assigned);
+    //     task.setDate(taskDate);
+
+    //     // Update worker’s weekly hours and save task
+    //     worker.setHoursWorkedThisWeek(currentWeeklyHours + shiftDuration);
+    //     workerRepository.save(worker);
+
+    //     return cleaningTaskRepository.save(task);
+    // }
+
+    // // Helper method to check if the task duration fits within a single shift
+    // private boolean isTaskWithinShift(LocalTime taskStartTime, int duration) {
+    //     LocalTime morningShiftEnd = LocalTime.of(12, 0);
+    //     LocalTime afternoonShiftStart = LocalTime.of(13, 0);
+    //     LocalTime afternoonShiftEnd = LocalTime.of(17, 0);
+    //     LocalTime nightShiftStart = LocalTime.of(18, 0);
+    //     LocalTime nightShiftEnd = LocalTime.of(22, 0);
+
+    //     LocalTime taskEndTime = taskStartTime.plusHours(duration);
+
+    //     // Check morning shift
+    //     if (taskStartTime.isAfter(LocalTime.of(8, 0)) && taskEndTime.isBefore(morningShiftEnd)) {
+    //         return true;
+    //     }
+    //     // Check afternoon shift
+    //     if (taskStartTime.isAfter(afternoonShiftStart) && taskEndTime.isBefore(afternoonShiftEnd)) {
+    //         return true;
+    //     }
+    //     // Check night shift
+    //     if (taskStartTime.isAfter(nightShiftStart) && taskEndTime.isBefore(nightShiftEnd)) {
+    //         return true;
+    //     }
+    //     return false;
+    // }
 
     @Transactional
     public Client updateClient(Long clientId, ClientDTO clientDTO) {

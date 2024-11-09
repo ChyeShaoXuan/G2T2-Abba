@@ -1,6 +1,6 @@
 import Link from 'next/link'
 
-const workerNavbar = () => {
+const Navbar = () => {
   return (
     <nav className="bg-gray-800 p-4">
       <div className="container mx-auto flex justify-between items-center">
@@ -14,4 +14,4 @@ const workerNavbar = () => {
   )
 }
 
-export default workerNavbar
+export default Navbar
