@@ -1,10 +1,18 @@
 package com.g4t2project.g4t2project.entity;
-import jakarta.persistence.*;
-
 import java.time.LocalDate;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 @Entity
 public class Worker {
     @Id
@@ -30,6 +38,7 @@ public class Worker {
     @OneToMany(mappedBy = "worker", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<LeaveStats> leaveStats;
 
+    
     private String name;
     private String phoneNumber;
     private String shortBio;
@@ -37,6 +46,9 @@ public class Worker {
     private String tele_Id;
     private int curPropertyId = 0;
     private boolean available;
+
+    @Column(name = "worker_hours_in_week")
+    private int workerHoursInWeek;
 
     protected Worker() {}
 
@@ -49,6 +61,7 @@ public class Worker {
         this.tele_Id = tele_Id;
         this.curPropertyId = curPropertyId;
         this.available = true;
+        this.workerHoursInWeek = 0;
     }
 
     public Long getWorkerId() {
@@ -139,6 +152,14 @@ public class Worker {
         }
         // If no conflicting tasks or leaves, the worker is available
         return true;
+    }
+
+    public int getWorkerHoursInWeek() {
+        return workerHoursInWeek;
+    }
+
+    public void setWorkerHoursInWeek(int workerHoursInWeek) {
+        this.workerHoursInWeek = workerHoursInWeek;
     }
 
 }
