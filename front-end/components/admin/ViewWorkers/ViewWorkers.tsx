@@ -239,11 +239,11 @@ export default function ViewWorkers() {
               <TableCell>{worker.adminId}</TableCell>
               <TableCell>
                 {editingWorkerId === worker.workerId ? (
-                  <Button onClick={() => editingWorker && updateWorker(editingWorker)}>Save</Button>
+                  <Button className="bg-blue-700 hover:bg-blue-900 ml-2" onClick={() => editingWorker && updateWorker(editingWorker)}>Save</Button>
                 ) : (
-                  <Button onClick={() => handleEditClick(worker)}>Edit</Button>
+                  <Button className="bg-blue-700 hover:bg-blue-900 ml-2" onClick={() => handleEditClick(worker)}>Edit</Button>
                 )}
-                <Button onClick={() => deleteWorker(worker)}>Remove</Button>
+                <Button className="bg-blue-700 hover:bg-blue-900 ml-2" onClick={() => deleteWorker(worker)}>Remove</Button>
               </TableCell>
             </TableRow>
           ))}
@@ -317,7 +317,7 @@ export default function ViewWorkers() {
             onChange={handleCheckboxChange}
           />
         </div>
-        <Button onClick={addWorker}>Add Worker</Button>
+        <Button className="bg-blue-700 hover:bg-blue-900" onClick={addWorker}>Add Worker</Button>
       </div>
     </div>
   )
