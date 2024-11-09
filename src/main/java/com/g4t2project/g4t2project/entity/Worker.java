@@ -19,7 +19,7 @@ public class Worker {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     
     @Column(name = "WorkerId")
-    private Long workerId;
+    private Integer workerId;
 
     @ManyToOne
     @JoinColumn(name = "admin_id")
@@ -64,7 +64,7 @@ public class Worker {
         this.worker_hours_in_week = worker_hours_in_week;
     }
 
-    public Long getWorkerId() {
+    public Integer getWorkerId() {
         return workerId;
     }
 

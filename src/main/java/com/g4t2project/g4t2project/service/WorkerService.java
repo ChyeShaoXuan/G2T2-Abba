@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import com.g4t2project.g4t2project.entity.CleaningTask;
@@ -77,17 +76,5 @@ public class WorkerService {
         return workerRepository.findAllWorkerIds();
     }
 
-    //reset workerhoursweekly and add weekly hours to worker_hours_stats table: totalHours
-    @Scheduled(cron = "0 0 0 * * MON") // Runs at midnight every Monday
-    public void resetWorkerHoursWeekly() {
-        List<Worker> workers = workerRepository.findAll();
-        for (Worker worker : workers) {
-            //if add first, then reset
-
-            // Reset hours for the new week
-            worker.setWorkerHoursInWeek(0);
-        }
-        workerRepository.saveAll(workers);  // Save updated worker hours
-    }
 
 }
