@@ -1,6 +1,9 @@
+'use client'
+
 import * as React from "react"
 import { Slot } from "@radix-ui/react-slot"
 import { cva, type VariantProps } from "class-variance-authority"
+import { motion, HTMLMotionProps } from "framer-motion"
 
 import { cn } from "@/lib/utils"
 
@@ -34,19 +37,34 @@ const buttonVariants = cva(
   }
 )
 
-export interface ButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
-    VariantProps<typeof buttonVariants> {
-  asChild?: boolean
-}
+export type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> &
+  VariantProps<typeof buttonVariants> &
+  Omit<HTMLMotionProps<"button">, keyof React.ButtonHTMLAttributes<HTMLButtonElement>> & {
+    asChild?: boolean
+  }
+
+const MotionComp = motion(Slot)
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant, size, asChild = false, ...props }, ref) => {
     const Comp = asChild ? Slot : "button"
+    const MotionComp = motion(Comp as any)
+
+    const popOutVariants = {
+      initial: { scale: 1 },
+      hover: { scale: 1.05 },
+      tap: { scale: 0.95 },
+    }
+
     return (
-      <Comp
+      <MotionComp
         className={cn(buttonVariants({ variant, size, className }))}
         ref={ref}
+        variants={popOutVariants}
+        initial="initial"
+        whileHover="hover"
+        whileTap="tap"
+        transition={{ type: "spring", stiffness: 500, damping: 30 }}
         {...props}
       />
     )

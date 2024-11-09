@@ -7,6 +7,7 @@ import { useState, useEffect } from 'react'
 import { Button } from "@/components/ui/button"
 import axios from 'axios'
 import Papa from 'papaparse'
+import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, LineChart, Line, ResponsiveContainer } from 'recharts'
 
 interface Worker {
   workerId: number
@@ -35,6 +36,22 @@ interface StatsDTO {
   elCount: number
 }
 
+interface WorkerHoursCSV {
+  WorkerName: string
+  MonthYear: string
+  TotalHoursWorked: number
+  OvertimeHours: number
+}
+
+interface AnnualWorkerHoursCSV {
+  WorkerName: string
+  Year: string
+  TotalHoursWorked: number
+  OvertimeHours: number
+}
+
+const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042']
+
 export default function JobStatisticsDashboard() {
   const [selectedMonth, setSelectedMonth] = useState<string>('')
   const [monthlyStats, setMonthlyStats] = useState<StatsDTO[]>([])
@@ -42,6 +59,11 @@ export default function JobStatisticsDashboard() {
   const [workerHours, setWorkerHours] = useState<WorkerHours[]>([])
   const [selectedWorkerId, setSelectedWorkerId] = useState<number | null>(null)
   const [viewMode, setViewMode] = useState<'monthly' | 'annual'>('monthly')
+  const [isClient, setIsClient] = useState(false)
+
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -113,39 +135,46 @@ export default function JobStatisticsDashboard() {
   }
 
   const exportWorkerHoursToCSV = () => {
-    let csvData = []
-
     if (viewMode === 'monthly') {
-      csvData = workerHours.map(wh => ({
+      const csvData: WorkerHoursCSV[] = workerHours.map(wh => ({
         WorkerName: wh.worker.name,
         MonthYear: wh.monthYear,
         TotalHoursWorked: wh.totalHoursWorked,
         OvertimeHours: wh.overtimeHours
       }))
+      const csv = Papa.unparse(csvData)
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
+      const link = document.createElement('a')
+      const url = URL.createObjectURL(blob)
+      link.setAttribute('href', url)
+      link.setAttribute('download', 'worker_hours_monthly.csv')
+      link.style.visibility = 'hidden'
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
     } else if (viewMode === 'annual' && selectedWorkerId !== null) {
       const annualHours = getAnnualHours(selectedWorkerId)
       const annualOvertimeHours = workerHours
         .filter(wh => wh.worker.workerId === selectedWorkerId)
         .reduce((total, wh) => total + wh.overtimeHours, 0)
 
-      csvData = [{
+      const csvData: AnnualWorkerHoursCSV[] = [{
         WorkerName: getWorkerNameById(selectedWorkerId),
         Year: 'Annual',
         TotalHoursWorked: annualHours,
         OvertimeHours: annualOvertimeHours
       }]
+      const csv = Papa.unparse(csvData)
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
+      const link = document.createElement('a')
+      const url = URL.createObjectURL(blob)
+      link.setAttribute('href', url)
+      link.setAttribute('download', 'worker_hours_annual.csv')
+      link.style.visibility = 'hidden'
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
     }
-
-    const csv = Papa.unparse(csvData)
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
-    const link = document.createElement('a')
-    const url = URL.createObjectURL(blob)
-    link.setAttribute('href', url)
-    link.setAttribute('download', viewMode === 'monthly' ? 'worker_hours_monthly.csv' : 'worker_hours_annual.csv')
-    link.style.visibility = 'hidden'
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
   }
 
   const getWorkerNameById = (workerId: number) => {
@@ -158,6 +187,9 @@ export default function JobStatisticsDashboard() {
       .filter(wh => wh.worker.workerId === workerId)
       .reduce((total, wh) => total + wh.totalHoursWorked, 0)
   }
+
+  const selectedMonthStats = monthlyStats.find(stat => stat.monthYear === selectedMonth)
+  const filteredWorkerHours = workerHours.filter(wh => wh.worker.workerId === selectedWorkerId)
 
   return (
     <div className="container mx-auto p-4">
@@ -179,22 +211,94 @@ export default function JobStatisticsDashboard() {
                 ))}
               </SelectContent>
             </Select>
-            <div className="mt-4">
-              {monthlyStats.find(stat => stat.monthYear === selectedMonth) && (
-                <ul>
-                  <li>Jobs: {monthlyStats.find(stat => stat.monthYear === selectedMonth)?.totalCleaningTasks}</li>
-                  <li>Clients: {monthlyStats.find(stat => stat.monthYear === selectedMonth)?.totalClients}</li>
-                  <li>Total Hours: {monthlyStats.find(stat => stat.monthYear === selectedMonth)?.totalHours}</li>
-                  <li>Total Properties: {monthlyStats.find(stat => stat.monthYear === selectedMonth)?.totalProperties}</li>
-                  <li>Total Workers: {monthlyStats.find(stat => stat.monthYear === selectedMonth)?.totalWorkers}</li>
-                  <li>Total Packages: {monthlyStats.find(stat => stat.monthYear === selectedMonth)?.totalPackages}</li>
-                  <li>Annual Leave Count: {monthlyStats.find(stat => stat.monthYear === selectedMonth)?.alCount}</li>
-                  <li>Medical Leave Count: {monthlyStats.find(stat => stat.monthYear === selectedMonth)?.mcCount}</li>
-                  <li>Holiday Leave Count: {monthlyStats.find(stat => stat.monthYear === selectedMonth)?.hlCount}</li>
-                  <li>Emergency Leave Count: {monthlyStats.find(stat => stat.monthYear === selectedMonth)?.elCount}</li>
-                </ul>
+            <div className="mt-4 mr-2">
+              {isClient && (
+                <ResponsiveContainer width="100%" height={300}>
+                  <BarChart data={[selectedMonthStats]} layout="vertical">
+                    <defs>
+                      <linearGradient id="colorTotalHours" x1="0" y1="0" x2="1" y2="1">
+                        <stop offset="5%" stopColor="#8884d8" stopOpacity={0.8}/>
+                        <stop offset="95%" stopColor="#8884d8" stopOpacity={0}/>
+                      </linearGradient>
+                      <linearGradient id="colorTotalCleaningTasks" x1="0" y1="0" x2="1" y2="1">
+                        <stop offset="5%" stopColor="#82ca9d" stopOpacity={0.8}/>
+                        <stop offset="95%" stopColor="#82ca9d" stopOpacity={0}/>
+                      </linearGradient>
+                    </defs>
+                    <XAxis type="number" label={{ value: 'Count', position: 'insideBottomRight', offset: -5 }} />
+                    <YAxis type="category" dataKey="monthYear" label={{ angle: -90, position: 'insideLeft' }} />
+                    <Tooltip />
+                    <Legend />
+                    <Bar dataKey="totalHours" name="Total Hours" fill="url(#colorTotalHours)" barSize={30} />
+                    <Bar dataKey="totalCleaningTasks" name="Total Cleaning Tasks" fill="url(#colorTotalCleaningTasks)" barSize={30} />
+                  </BarChart>
+                </ResponsiveContainer>
               )}
             </div>
+            <div className="mt-2 mr-2">
+              {isClient && (
+                <ResponsiveContainer width="100%" height={300}>
+                  <BarChart data={[selectedMonthStats]} layout="vertical">
+                    <defs>
+                      <linearGradient id="colorTotalProperties" x1="0" y1="0" x2="1" y2="1">
+                        <stop offset="5%" stopColor="#8884d8" stopOpacity={0.8}/>
+                        <stop offset="95%" stopColor="#8884d8" stopOpacity={0}/>
+                      </linearGradient>
+                      <linearGradient id="colorTotalPackages" x1="0" y1="0" x2="1" y2="1">
+                        <stop offset="5%" stopColor="#82ca9d" stopOpacity={0.8}/>
+                        <stop offset="95%" stopColor="#82ca9d" stopOpacity={0}/>
+                      </linearGradient>
+                      <linearGradient id="colorTotalClients" x1="0" y1="0" x2="1" y2="1">
+                        <stop offset="5%" stopColor="#FFBB28" stopOpacity={0.8}/>
+                        <stop offset="95%" stopColor="#FFBB28" stopOpacity={0}/>
+                      </linearGradient>
+                    </defs>
+                    <XAxis type="number" label={{ value: 'Count', position: 'insideBottomRight', offset: -5 }} />
+                    <YAxis type="category" dataKey="monthYear" label={{  angle: -90, position: 'insideLeft' }} />
+                    <Tooltip />
+                    <Legend />
+                    <Bar dataKey="totalProperties" name="Total Properties" fill="url(#colorTotalProperties)" barSize={30} />
+                    <Bar dataKey="totalPackages" name="Total Packages" fill="url(#colorTotalPackages)" barSize={30} />
+                    <Bar dataKey="totalClients" name="Total Clients" fill="url(#colorTotalClients)" barSize={30} />
+                  </BarChart>
+                </ResponsiveContainer>
+              )}
+            </div>
+            <div className="mt-2 mr-2">
+              {isClient && (
+                <ResponsiveContainer width="100%" height={300}>
+                  <BarChart data={[selectedMonthStats]} layout="vertical">
+                    <defs>
+                      <linearGradient id="colorALCount" x1="0" y1="0" x2="1" y2="1">
+                        <stop offset="5%" stopColor="#8884d8" stopOpacity={0.8}/>
+                        <stop offset="95%" stopColor="#8884d8" stopOpacity={0}/>
+                      </linearGradient>
+                      <linearGradient id="colorMCCount" x1="0" y1="0" x2="1" y2="1">
+                        <stop offset="5%" stopColor="#82ca9d" stopOpacity={0.8}/>
+                        <stop offset="95%" stopColor="#82ca9d" stopOpacity={0}/>
+                      </linearGradient>
+                      <linearGradient id="colorHLCount" x1="0" y1="0" x2="1" y2="1">
+                        <stop offset="5%" stopColor="#FFBB28" stopOpacity={0.8}/>
+                        <stop offset="95%" stopColor="#FFBB28" stopOpacity={0}/>
+                      </linearGradient>
+                      <linearGradient id="colorELCount" x1="0" y1="0" x2="1" y2="1">
+                        <stop offset="5%" stopColor="#FF8042" stopOpacity={0.8}/>
+                        <stop offset="95%" stopColor="#FF8042" stopOpacity={0}/>
+                      </linearGradient>
+                    </defs>
+                    <XAxis type="number" label={{ value: 'Count', position: 'insideBottomRight', offset: -5 }} />
+                    <YAxis type="category" dataKey="monthYear" label={{angle: -90, position: 'insideLeft' }} />
+                    <Tooltip />
+                    <Legend />
+                    <Bar dataKey="alCount" name="Annual Leave Count" fill="url(#colorALCount)" barSize={30} />
+                    <Bar dataKey="mcCount" name="Medical Leave Count" fill="url(#colorMCCount)" barSize={30} />
+                    <Bar dataKey="hlCount" name="Holiday Leave Count" fill="url(#colorHLCount)" barSize={30} />
+                    <Bar dataKey="elCount" name="Emergency Leave Count" fill="url(#colorELCount)" barSize={30} />
+                  </BarChart>
+                </ResponsiveContainer>
+              )}
+            </div>
+            <Button className="ml-4 bg-green-600" onClick={exportMonthlyStatsToCSV}>Export Monthly Stats to CSV</Button>
           </CardContent>
         </Card>
 
@@ -226,7 +330,7 @@ export default function JobStatisticsDashboard() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {viewMode === 'monthly' && workerHours.filter(wh => wh.worker.workerId === selectedWorkerId).map(wh => (
+                {viewMode === 'monthly' && filteredWorkerHours.map(wh => (
                   <TableRow key={wh.workerHoursId}>
                     <TableCell>{wh.monthYear}</TableCell>
                     <TableCell>{wh.totalHoursWorked}</TableCell>
@@ -237,17 +341,30 @@ export default function JobStatisticsDashboard() {
                   <TableRow>
                     <TableCell>Annual</TableCell>
                     <TableCell>{getAnnualHours(selectedWorkerId)}</TableCell>
-                    <TableCell>{workerHours.filter(wh => wh.worker.workerId === selectedWorkerId).reduce((total, wh) => total + wh.overtimeHours, 0)}</TableCell>
+                    <TableCell>{filteredWorkerHours.reduce((total, wh) => total + wh.overtimeHours, 0)}</TableCell>
                   </TableRow>
                 )}
               </TableBody>
             </Table>
+            <div className="mt-4">
+              {isClient && (
+                <ResponsiveContainer width="100%" height={400}>
+                  <LineChart data={filteredWorkerHours}>
+                    <XAxis dataKey="monthYear" />
+                    <YAxis />
+                    <Tooltip />
+                    <Legend />
+                    <Line type="monotone" dataKey="totalHoursWorked" name="Total Hours Worked" stroke="#8884d8" />
+                    <Line type="monotone" dataKey="overtimeHours" name="Overtime Hours" stroke="#82ca9d" />
+                  </LineChart>
+                </ResponsiveContainer>
+              )}
+            </div>
+            <Button className="mt-4 ml-4 bg-green-600" onClick={exportWorkerHoursToCSV}>Export Worker Hours to CSV</Button>
           </CardContent>
         </Card>
       </div>
 
-      <Button className="ml-4 bg-green-600" onClick={exportMonthlyStatsToCSV}>Export Monthly Stats to CSV</Button>
-      <Button className="ml-4 bg-green-600" onClick={exportWorkerHoursToCSV}>Export Worker Hours to CSV</Button>
     </div>
   )
 }

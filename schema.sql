@@ -101,3 +101,14 @@ CREATE TABLE IF NOT EXISTS workerhours (
     totalHoursWorked INT,
     overtimeHours INT
 );
+
+CREATE TABLE IF NOT EXISTS user (
+    userId INT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL, 
+    email VARCHAR(100) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    phoneNumber VARCHAR(50) NOT NULL,
+    role ENUM('Admin', 'Worker', 'Client') NOT NULL,
+    twoFactorToken VARCHAR(255),
+    isVerified BOOLEAN
+)
