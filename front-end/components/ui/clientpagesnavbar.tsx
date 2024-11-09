@@ -1,22 +1,21 @@
 "use client";
 
 import React from 'react';
-import Link from 'next/link';
-import './ClientsPageNavigationBar.css';
 
-const NavigationBar = () => {
-    return (
-        <nav className="navigation">
-            <ul>
-                <li>
-                    <Link href="/client/Dashboard">Dashboard</Link>
-                </li>
-                <li>
-                    <Link href="/client/Booking">Booking</Link>
-                </li>
-            </ul>
-        </nav>
-    );
-};
+import Link from 'next/link'
 
-export default NavigationBar;
+const Navbar = () => {
+  return (
+    <nav className="bg-gray-800 p-4">
+      <div className="container mx-auto flex justify-between items-center">
+        <div className="text-white text-lg font-bold">ABBA Client Console</div>
+        <div className="flex space-x-4">
+          <Link href="/client/Dashboard" className="text-white hover:text-gray-400">Dashboard</Link>
+          <Link href="/client/Booking" className="text-white hover:text-gray-400">Booking</Link>
+        </div>
+      </div>
+    </nav>
+  )
+}
+
+export default Navbar
