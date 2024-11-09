@@ -10,7 +10,6 @@ import jakarta.persistence.CascadeType;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
 public class Admin {

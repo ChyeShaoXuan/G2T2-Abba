@@ -6,7 +6,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.g4t2project.g4t2project.entity.*;
-import com.g4t2project.g4t2project.entity.CleaningPackage.*;
 
 import java.util.Optional;
 
