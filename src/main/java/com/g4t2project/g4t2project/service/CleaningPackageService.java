@@ -1,7 +1,5 @@
 package com.g4t2project.g4t2project.service;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import com.g4t2project.g4t2project.DTO.*;
 import com.g4t2project.g4t2project.repository.*;
 import com.g4t2project.g4t2project.entity.*;
@@ -10,7 +8,6 @@ import com.g4t2project.g4t2project.entity.CleaningPackage.PropertyType;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class CleaningPackageService {

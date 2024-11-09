@@ -1,10 +1,9 @@
 import axios from 'axios'
 
 export interface PlaceOrderRequestDTO {
-    packageID: number;
-    propertyID: number;
+    packageType: string;
     propertyType: string;
-    numberOfRooms: number;
+    numberOfRooms: number | undefined;
     shift: string;
     date: string;
     preferredWorkerId?: number;

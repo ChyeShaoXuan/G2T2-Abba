@@ -9,10 +9,9 @@ interface ClientBookingProps {
 
 const ClientBooking: React.FC<ClientBookingProps> = ({ clientId }) => {
     const [formData, setFormData] = useState<PlaceOrderRequestDTO>({
-        packageID: 0,
-        propertyID: 0,
+        packageType: '',
         propertyType: '',
-        numberOfRooms: 0,
+        numberOfRooms: undefined,
         shift: '',
         date: '',
         preferredWorkerId: undefined,
@@ -25,7 +24,7 @@ const ClientBooking: React.FC<ClientBookingProps> = ({ clientId }) => {
         const { name, value } = e.target;
         setFormData({
             ...formData,
-            [name]: name === 'numberOfRooms' || name === 'packageID' || name === 'propertyID' ? parseInt(value) : value,
+            [name]: name === 'numberOfRooms' ? parseInt(value) : value,
         });
     };
 
@@ -47,23 +46,36 @@ const ClientBooking: React.FC<ClientBookingProps> = ({ clientId }) => {
 
     return (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '20px' }}>
-            <h2 style={{ marginBottom: '20px' }}>Place Cleaning Order</h2>
+            <h1 style={{ marginBottom: '20px' }}>Place Cleaning Order</h1>
             <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '10px', width: '300px' }}>
-                <label style={{ display: 'flex', flexDirection: 'column' }}>
-                    Package ID:
-                    <input type="number" name="packageID" value={formData.packageID} onChange={handleChange} required />
-                </label>
-                <label style={{ display: 'flex', flexDirection: 'column' }}>
-                    Property ID:
-                    <input type="number" name="propertyID" value={formData.propertyID} onChange={handleChange} required />
+                {/* <label style={{ display: 'flex', flexDirection: 'column' }}>
+                    Package Type:
+                    <input type="text" name="packageType" value={formData.packageType || ''} onChange={handleChange} required />
                 </label>
                 <label style={{ display: 'flex', flexDirection: 'column' }}>
                     Property Type:
                     <input type="text" name="propertyType" value={formData.propertyType} onChange={handleChange} required />
+                </label> */}
+                <label style={{ display: 'flex', flexDirection: 'column' }}>
+                    Package Type:
+                    <select name="packageType" value={formData.packageType} onChange={handleChange} required>
+                        <option value="Weekly">Weekly</option>
+                        <option value="BiWeekly">BiWeekly</option>
+                    </select>
                 </label>
+
+                <label style={{ display: 'flex', flexDirection: 'column' }}>
+                    Property Type:
+                <select name="propertyType" value={formData.propertyType} onChange={handleChange} required>
+                    <option value="Hdb">HDB</option>
+                    <option value="Condominium">Condominium</option>
+                    <option value="Landed">Landed</option>
+                </select>
+                </label>
+
                 <label style={{ display: 'flex', flexDirection: 'column' }}>
                     Number of Rooms:
-                    <input type="number" name="numberOfRooms" value={formData.numberOfRooms} onChange={handleChange} required />
+                    <input type="number" name="numberOfRooms" value={formData.numberOfRooms || ''} onChange={handleChange} required />
                 </label>
                 <label style={{ display: 'flex', flexDirection: 'column' }}>
                     Shift:

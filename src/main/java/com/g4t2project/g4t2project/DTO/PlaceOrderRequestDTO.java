@@ -3,26 +3,26 @@ package com.g4t2project.g4t2project.DTO;
 import com.g4t2project.g4t2project.entity.CleaningTask;
 
 public class PlaceOrderRequestDTO {
-    private Long packageID;
-    private Long propertyID;
+    private String packageType;
+    // private Long propertyID;
     private String propertyType;
     private Integer numberOfRooms;
     private CleaningTask.Shift shift;
     private String date;
     private Long preferredWorkerId;
 
-    public Long getPackageID() {
-        return packageID;
+    public String getPackageType() {
+        return packageType;
     }
-    public void setPackageID(Long packageID) {
-        this.packageID = packageID;
+    public void setPackageType(String packageType) {
+        this.packageType = packageType;
     }
-    public Long getPropertyID() {
-        return propertyID;
-    }
-    public void setPropertyID(Long propertyID) {
-        this.propertyID = propertyID;
-    }
+    // public Long getPropertyID() {
+    //     return propertyID;
+    // }
+    // public void setPropertyID(Long propertyID) {
+    //     this.propertyID = propertyID;
+    // }
     public String getPropertyType() {
         return propertyType;
     }
