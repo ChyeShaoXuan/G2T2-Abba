@@ -1,10 +1,27 @@
-import OverwriteTasks from "@/components/admin/OverwriteTasks/OverwriteTasks";
-import Navbar from "@/components/ui/adminpagesnavbar";
+'use client'
+
+import { useState, useEffect } from 'react'
+import OverwriteTasks from "@/components/admin/OverwriteTasks/OverwriteTasks"
+import Navbar from "@/components/ui/adminpagesnavbar"
+import Loading from "@/components/ui/loading"
+
 export default function OverwriteTasksPage() {
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    // Simulate a loading delay
+    const timer = setTimeout(() => {
+      setLoading(false)
+    }, 2000)
+
+    return () => clearTimeout(timer)
+  }, [])
+
   return (
-   <div>
-    <Navbar/>
-    <OverwriteTasks/>
-   </div>
-  );
+    <div>
+      {loading && <Loading />}
+      <Navbar />
+      <OverwriteTasks />
+    </div>
+  )
 }

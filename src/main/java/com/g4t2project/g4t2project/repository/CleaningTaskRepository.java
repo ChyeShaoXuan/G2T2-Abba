@@ -13,6 +13,7 @@ import com.g4t2project.g4t2project.entity.Worker;
 import java.time.LocalDate;
 import java.util.Optional;
 
+
 @Repository
 public interface CleaningTaskRepository extends JpaRepository<CleaningTask, Integer> {
     @Query("SELECT c FROM CleaningTask c WHERE c.worker = :worker AND c.date = :date")
@@ -20,6 +21,10 @@ public interface CleaningTaskRepository extends JpaRepository<CleaningTask, Inte
 
     @Query("SELECT c FROM CleaningTask c WHERE c.property.client.clientId = :clientId")
     List<CleaningTask> findTasksByClient(@Param("clientId") Integer clientId);
+
+    @Query("SELECT t FROM CleaningTask t WHERE t.worker = :worker")
+    Optional<CleaningTask> findTaskByWorker(@Param("worker") Worker worker);
+
 
     @Modifying
     @Transactional
