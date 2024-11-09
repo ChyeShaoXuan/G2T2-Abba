@@ -287,7 +287,7 @@ export default function JobStatisticsDashboard() {
                       </linearGradient>
                     </defs>
                     <XAxis type="number" label={{ value: 'Count', position: 'insideBottomRight', offset: -5 }} />
-                    <YAxis type="category" dataKey="monthYear" label={{ value: 'Month', angle: -90, position: 'insideLeft' }} />
+                    <YAxis type="category" dataKey="monthYear" label={{angle: -90, position: 'insideLeft' }} />
                     <Tooltip />
                     <Legend />
                     <Bar dataKey="alCount" name="Annual Leave Count" fill="url(#colorALCount)" barSize={30} />
