@@ -48,11 +48,11 @@ public class Worker {
     private boolean available;
 
     @Column(name = "worker_hours_in_week")
-    private int workerHoursInWeek;
+    private int worker_hours_in_week;
 
     protected Worker() {}
 
-    public Worker(Admin admin, String name, String phoneNumber, String shortBio, boolean deployed, String tele_Id, int curPropertyId) {
+    public Worker(Admin admin, String name, String phoneNumber, String shortBio, boolean deployed, String tele_Id, int curPropertyId, int worker_hours_in_week) {
         this.admin = admin;
         this.name = name;
         this.phoneNumber = phoneNumber;
@@ -61,7 +61,7 @@ public class Worker {
         this.tele_Id = tele_Id;
         this.curPropertyId = curPropertyId;
         this.available = true;
-        this.workerHoursInWeek = 0;
+        this.worker_hours_in_week = worker_hours_in_week;
     }
 
     public Long getWorkerId() {
@@ -155,11 +155,11 @@ public class Worker {
     }
 
     public int getWorkerHoursInWeek() {
-        return workerHoursInWeek;
+        return worker_hours_in_week;
     }
 
-    public void setWorkerHoursInWeek(int workerHoursInWeek) {
-        this.workerHoursInWeek = workerHoursInWeek;
+    public void setWorkerHoursInWeek(int worker_hours_in_week) {
+        this.worker_hours_in_week = worker_hours_in_week;
     }
 
 }
