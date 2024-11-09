@@ -1,8 +1,15 @@
 package com.g4t2project.g4t2project.controllers;
 
 import com.g4t2project.g4t2project.entity.LeaveApplication;
+import com.g4t2project.g4t2project.entity.CleaningTask;
+import com.g4t2project.g4t2project.entity.Client;
 import com.g4t2project.g4t2project.service.LeaveApplicationService;
 import com.g4t2project.g4t2project.service.NotificationService;
+
+import java.time.Duration;
+import java.time.LocalDateTime;
+
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,12 +31,26 @@ public class LeaveController {
     public ResponseEntity<String> applyForLeave(@RequestBody LeaveApplication leaveApplication) {
         try {
             leaveApplicationService.applyForLeave(leaveApplication);
-            notificationService.notifyAdminForPendingMC(leaveApplication);  // Notify admin of the new leave application
+            
+            // Determine if the leave application is submitted too late for reassignment
+            Duration timeUntilLeave = Duration.between(LocalDateTime.now(), leaveApplication.getStartDate());
+            boolean isLateNotice = timeUntilLeave.compareTo(Duration.ofHours(3)) < 0;
+            
+            if (isLateNotice) {
+                // Notify the client that rescheduling may not be possible
+                CleaningTask task = leaveApplicationService.getTaskForWorker(leaveApplication.getWorker());
+                notificationService.notifyClientForLateLeave(task.getProperty().getClient(), task);
+            } else {
+                // Otherwise, notify the admin of a pending MC requirement
+                notificationService.notifyAdminForPendingMC(leaveApplication);
+            }
+            
             return ResponseEntity.ok("Leave application submitted successfully");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to submit leave application: " + e.getMessage());
         }
     }
+
 
     @PostMapping("/upload-mc")
     public ResponseEntity<String> uploadMcDocument(@RequestParam("leaveId") int leaveId, @RequestParam("mcDocument") MultipartFile mcDocument) {
@@ -46,14 +67,17 @@ public class LeaveController {
         try {
             leaveApplicationService.approveLeave(leaveId);
             
+            // Retrieve the leave application to notify the client if necessary
             LeaveApplication leaveApplication = leaveApplicationService.getLeaveApplicationById(leaveId);
-            // notificationService.notifyClientForReschedule(leaveApplication.getClient(), leaveApplication.getTask());  // Notify client if applicable
-            
+            CleaningTask task = leaveApplicationService.getTaskForWorker(leaveApplication.getWorker());
+            Client client = task.getProperty().getClient();
+
+            // Notify client of the rescheduling if applicable
+            notificationService.notifyClientForReschedule(client, task);
+
             return ResponseEntity.ok("Leave approved successfully");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to approve leave: " + e.getMessage());
         }
     }
 }
-
-

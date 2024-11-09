@@ -104,7 +104,7 @@ public class LeaveApplicationService {
     }
     
 
-    private CleaningTask getTaskForWorker(Worker worker) {
+    public CleaningTask getTaskForWorker(Worker worker) {
         Optional<CleaningTask> taskOpt = cleaningTaskRepository.findTaskByWorker(worker);
         return taskOpt.orElseThrow(() -> new RuntimeException("Cleaning task not found for worker ID: " + worker.getWorkerId()));
     }
