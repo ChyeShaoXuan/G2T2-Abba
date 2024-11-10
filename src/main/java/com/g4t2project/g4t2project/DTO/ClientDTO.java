@@ -9,6 +9,9 @@ public class ClientDTO {
     private Integer workerId;
     private String phoneNumber;
 
+    public ClientDTO() {
+    }
+    
     // Constructors
     public ClientDTO(Long clientId, String email, String name, String phoneNumber, Long adminId, Long packageId, Integer workerId) {   
         this.clientId = clientId;
