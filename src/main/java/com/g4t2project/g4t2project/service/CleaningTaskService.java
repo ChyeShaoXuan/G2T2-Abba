@@ -1,28 +1,31 @@
 package com.g4t2project.g4t2project.service;
 
-import com.g4t2project.g4t2project.DTO.OverwriteCleaningTaskDTO;
-import com.g4t2project.g4t2project.entity.CleaningTask;
-import com.g4t2project.g4t2project.entity.LeaveApplication;
-import com.g4t2project.g4t2project.entity.Worker;
-import com.g4t2project.g4t2project.exception.NoAvailableWorkerException;
-import com.g4t2project.g4t2project.entity.Property;
-
-import com.g4t2project.g4t2project.repository.CleaningTaskRepository;
-import com.g4t2project.g4t2project.repository.WorkerRepository;
-import com.g4t2project.g4t2project.repository.LeaveApplicationRepository;
-import com.g4t2project.g4t2project.repository.PropertyRepository;
-import com.g4t2project.g4t2project.repository.FeedbackRepository;
-import com.g4t2project.g4t2project.service.NotificationService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
+import java.time.Duration;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.g4t2project.g4t2project.DTO.OverwriteCleaningTaskDTO;
+import com.g4t2project.g4t2project.entity.CleaningTask;
+import com.g4t2project.g4t2project.entity.LeaveApplication;
+import com.g4t2project.g4t2project.entity.Property;
+import com.g4t2project.g4t2project.entity.Worker;
+import com.g4t2project.g4t2project.exception.NoAvailableWorkerException;
+import com.g4t2project.g4t2project.repository.CleaningTaskRepository;
+import com.g4t2project.g4t2project.repository.FeedbackRepository;
+import com.g4t2project.g4t2project.repository.LeaveApplicationRepository;
+import com.g4t2project.g4t2project.repository.PropertyRepository;
+import com.g4t2project.g4t2project.repository.WorkerRepository;
+
 @Service
 public class CleaningTaskService {
+
     @Autowired
     private FeedbackRepository feedbackRepository;
     @Autowired
@@ -34,7 +37,7 @@ public class CleaningTaskService {
     @Autowired
     private NotificationService notificationService;
     @Autowired
-    private PropertyRepository propertyRepository; 
+    private PropertyRepository propertyRepository;
 
     public void handleWorkerLeave(LeaveApplication leaveApplication) {
         Worker worker = leaveApplication.getWorker();
@@ -73,42 +76,40 @@ public class CleaningTaskService {
             cleaningTaskRepository.save(cleaningTask); // Save the task
         } else {
             // Handle the case when no worker is available
-            throw new NoAvailableWorkerException
-            ("No worker available for the task on " + cleaningTask.getDate() + " during " + cleaningTask.getShift() 
-            + " shift.");
+            throw new NoAvailableWorkerException("No worker available for the task on " + cleaningTask.getDate() + " during " + cleaningTask.getShift()
+                    + " shift.");
         }
     }
 
-
     private Optional<Worker> findClosestWorker(Property taskProperty, LocalDate taskDate, CleaningTask.Shift taskShift) {
         // Fetch only deployed workers
-        List<Worker> deployedWorkers = workerRepository.findAllDeployed(0); 
+        List<Worker> deployedWorkers = workerRepository.findAllDeployed(0);
         Worker closestWorker = null;
         double minDistance = Double.MAX_VALUE;
-        
+
         double taskLat = taskProperty.getLatitude();
         double taskLon = taskProperty.getLongitude();
         System.out.println("Task lat: " + taskLat + " Task lon: " + taskLon);
         System.out.println("_________________________________________________________");
-        
+
         // First, try to find a deployed worker who is closest and available
         for (Worker worker : deployedWorkers) {
             if (worker.isAvailableOn(taskDate, taskShift)) {  // Ensure the worker is available on the task date and shift
                 int curWorkerPropertyId = worker.getCurPropertyId();
-                Optional<Property> currentPropertyOpt = propertyRepository.findById((long)curWorkerPropertyId);
-        
+                Optional<Property> currentPropertyOpt = propertyRepository.findById((long) curWorkerPropertyId);
+
                 if (currentPropertyOpt.isPresent()) {
                     Property currentProperty = currentPropertyOpt.get();
                     double workerLat = currentProperty.getLatitude();
                     double workerLon = currentProperty.getLongitude();
-        
+
                     double distance = calculateDistance(workerLat, workerLon, taskLat, taskLon);
-        
+
                     if (distance < minDistance) {
                         minDistance = distance;
                         closestWorker = worker;
                     }
-                } 
+                }
             }
         }
 
@@ -118,23 +119,21 @@ public class CleaningTaskService {
         System.out.println("_________________________________________________________");
         System.out.println("_________________________________________________________");
         double hqToTaskDistance = calculateDistance(hqLat, hqLon, taskLat, taskLon); // Distance from HQ to task
-    
+
         // If no deployed worker was found, assign a worker from HQ
-        if (closestWorker == null || minDistance > hqToTaskDistance) { 
+        if (closestWorker == null || minDistance > hqToTaskDistance) {
             List<Worker> hqWorkers = workerRepository.findAllNotDeployed(0); // Fetch workers assigned to HQ
             if (!hqWorkers.isEmpty()) {
                 closestWorker = hqWorkers.get(0); // Assign the first worker from HQ since they are available
             }
         }
 
-    
         return Optional.ofNullable(closestWorker);
     }
-    
 
     public double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
         // using harvesine formula to calculate distance between two points
-        final int R = 6371; 
+        final int R = 6371;
         double latDistance = Math.toRadians(lat2 - lat1);
         double lonDistance = Math.toRadians(lon2 - lon1);
         double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2)
@@ -147,11 +146,11 @@ public class CleaningTaskService {
     public Property getPropertyById(Long propertyId) {
         return propertyRepository.findById(propertyId).orElse(null);
     }
-    
+
     public List<CleaningTask> getCleaningTasksByClient(Integer clientId) {
         return cleaningTaskRepository.findTasksByClient(clientId);
     }
-    
+
     public List<OverwriteCleaningTaskDTO> getAllCleaningTasks() {
         List<CleaningTask> tasks = cleaningTaskRepository.findAll();
         return tasks.stream().map(this::convertToDTO).collect(Collectors.toList());
@@ -200,8 +199,63 @@ public class CleaningTaskService {
         return cleaningTaskRepository.save(existingTask);
     }
 
+    public CleaningTask assignTaskToWorkerWithConstraints(int taskId, Long workerId, LocalDate taskDate, CleaningTask.Shift shift) {
+        CleaningTask task = cleaningTaskRepository.findById(taskId)
+                .orElseThrow(() -> new RuntimeException("Task not found"));
+        Worker worker = workerRepository.findById(workerId)
+                .orElseThrow(() -> new RuntimeException("Worker not found"));
+
+        // Define shift times
+        LocalTime morningStart = LocalTime.of(8, 0);
+        LocalTime morningEnd = LocalTime.of(12, 0);
+        LocalTime afternoonStart = LocalTime.of(13, 0);
+        LocalTime afternoonEnd = LocalTime.of(17, 0);
+        LocalTime eveningStart = LocalTime.of(18, 0);
+        LocalTime eveningEnd = LocalTime.of(22, 0);
+
+        // Map shift to start and end times
+        LocalTime shiftStart;
+        LocalTime shiftEnd;
+
+        switch (shift) {
+            case Morning -> {
+                shiftStart = morningStart;
+                shiftEnd = morningEnd;
+            }
+            case Afternoon -> {
+                shiftStart = afternoonStart;
+                shiftEnd = afternoonEnd;
+            }
+            case Evening -> {
+                shiftStart = eveningStart;
+                shiftEnd = eveningEnd;
+            }
+            default -> throw new RuntimeException("Invalid shift provided.");
+        }
+
+        // Check if assigning the task would exceed the worker's 44-hour weekly limit
+        int currentWeeklyHours = worker.getWorkerHoursInWeek(); 
+        int shiftDurationHours = (int) Duration.between(shiftStart, shiftEnd).toHours();
+        if (currentWeeklyHours + shiftDurationHours > 44) {
+            throw new RuntimeException("Assigning this task will exceed the worker's 44-hour weekly limit.");
+        }
+
+        // Adjust task assignment time to 2.5 hours before the shift start
+        LocalDateTime taskAssignmentTime = LocalDateTime.of(taskDate, shiftStart).minusHours(2).minusMinutes(30);
+
+        // assigning
+        task.setWorker(worker);
+        task.setStatus(CleaningTask.Status.Assigned);
+        task.setShift(shift);
+        task.setDate(taskDate);
+
+        // task.setAssignedTime(taskAssignmentTime);
+
+        // worker.setWorkerHoursInWeek(currentWeeklyHours + shiftDurationHours); //only after 'finished'
+        // workerRepository.save(worker);
+
+        return cleaningTaskRepository.save(task);
+    }
+
+
 }
-
-
-
-
