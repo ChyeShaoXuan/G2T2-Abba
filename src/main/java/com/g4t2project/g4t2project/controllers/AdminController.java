@@ -115,6 +115,30 @@ public class AdminController {
         return ResponseEntity.ok(workerHours);
     }
 
+    @GetMapping("/unique_admin_ids")
+    public ResponseEntity<List<Long>> getAllUniqueAdminIds() {
+        List<Long> adminIds = adminService.getAllUniqueAdminIds();
+        return ResponseEntity.ok(adminIds);
+    }
+
+    @GetMapping("/unique_property_ids")
+    public ResponseEntity<List<Long>> getAllUniquePropertyIds() {
+        List<Long> propertyIds = adminService.getAllUniquePropertyIds();
+        return ResponseEntity.ok(propertyIds);
+    }
+
+    @GetMapping("/unique_worker_ids")
+    public ResponseEntity<List<Integer>> getAllUniqueWorkerIds() {
+        List<Integer> workerIds = adminService.getAllUniqueWorkerIds();
+        return ResponseEntity.ok(workerIds);
+    }
+
+    @GetMapping("/unique_package_ids")
+    public ResponseEntity<List<Long>> getAllUniquePackageIds() {
+        List<Long> packageIds = adminService.getAllUniquePackageIds();
+        return ResponseEntity.ok(packageIds);
+    }
+
     }
 
     

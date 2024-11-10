@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,7 @@ import com.g4t2project.g4t2project.entity.LeaveApplication;
 import com.g4t2project.g4t2project.entity.LeaveStats;
 import com.g4t2project.g4t2project.entity.Worker;
 import com.g4t2project.g4t2project.entity.WorkerHours;
+import com.g4t2project.g4t2project.entity.Property;
 import com.g4t2project.g4t2project.repository.AdminRepository;
 import com.g4t2project.g4t2project.repository.CleaningPackageRepository;
 import com.g4t2project.g4t2project.repository.CleaningTaskRepository;
@@ -364,5 +366,35 @@ public class AdminService {
     public List<WorkerHours> getWorkerHoursByWorkerId(Long workerId) {
         return workerHoursRepository.findByWorker_WorkerId(workerId);
     }
+    
+    
+    public List<Long> getAllUniqueAdminIds() {
+        return adminRepository.findAll().stream()
+                .map(Admin::getAdminId)
+                .distinct()
+                .collect(Collectors.toList());
+    }
+
+    public List<Long> getAllUniquePropertyIds() {
+        return propertyRepository.findAll().stream()
+                .map(Property::getPropertyId)
+                .distinct()
+                .collect(Collectors.toList());
+    }
+
+    public List<Long> getAllUniquePackageIds() {
+        return cleaningPackageRepository.findAll().stream()
+                .map(CleaningPackage::getPackageId)
+                .distinct()
+                .collect(Collectors.toList());
+    }
+
+    public List<Integer> getAllUniqueWorkerIds() {
+        return workerRepository.findAll().stream()
+                .map(Worker::getWorkerId)
+                .distinct()
+                .collect(Collectors.toList());
+    }
+    
 
 }

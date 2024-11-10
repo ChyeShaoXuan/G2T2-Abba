@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import axios from 'axios'
 import { Button } from "@/components/ui/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
 interface Client {
   clientId: number,
@@ -13,11 +14,10 @@ interface Client {
   adminId: number,
   packageId: number,
   workerId: number
-
 }
 
 export default function ViewClients() {
-  const [Clients, setClients] = useState<Client[]>([])
+  const [clients, setClients] = useState<Client[]>([])
   const [newClient, setNewClient] = useState<Omit<Client, 'clientId'>>({
     name: '',
     phoneNumber: '',
@@ -27,43 +27,78 @@ export default function ViewClients() {
     workerId: 0
   })
   const [editingClient, setEditingClient] = useState<Client | null>(null)
+  const [adminIds, setAdminIds] = useState<number[]>([])
+  const [workerIds, setWorkerIds] = useState<number[]>([])
+  const [packageIds, setPackageIds] = useState<number[]>([])
 
   useEffect(() => {
-    // Fetch Clients from the backend
+    // Fetch clients from the backend
     const fetchClients = async () => {
       try {
         const clientsResponse = await axios.get(`http://localhost:8080/admin/clients`)
-        
         setClients(clientsResponse.data)
       } catch (error) {
         console.error('Error fetching clients:', error)
       }
     }
 
+    // Fetch unique admin IDs
+    const fetchAdminIds = async () => {
+      try {
+        const adminIdsResponse = await axios.get(`http://localhost:8080/admin/unique_admin_ids`)
+        setAdminIds(adminIdsResponse.data)
+      } catch (error) {
+        console.error('Error fetching admin IDs:', error)
+      }
+    }
+
+    // Fetch unique worker IDs
+    const fetchWorkerIds = async () => {
+      try {
+        const workerIdsResponse = await axios.get(`http://localhost:8080/admin/unique_worker_ids`)
+        setWorkerIds(workerIdsResponse.data)
+      } catch (error) {
+        console.error('Error fetching worker IDs:', error)
+      }
+    }
+
+    // Fetch unique package IDs
+    const fetchPackageIds = async () => {
+      try {
+        const packageIdsResponse = await axios.get(`http://localhost:8080/admin/unique_package_ids`)
+        setPackageIds(packageIdsResponse.data)
+      } catch (error) {
+        console.error('Error fetching package IDs:', error)
+      }
+    }
+
     fetchClients()
+    fetchAdminIds()
+    fetchWorkerIds()
+    fetchPackageIds()
   }, [])
 
   const deleteClient = async (client: Client) => {
     try {
       if (client.adminId === undefined || client.adminId === null) {
-        console.error('Error: supervisorId is undefined or null')
+        console.error('Error: adminId is undefined or null')
         return
       }
       await axios.delete(`http://localhost:8080/admin/${client.adminId}/clients/${client.clientId}`)
       setClients(prevClients => prevClients.filter(w => w.clientId !== client.clientId))
     } catch (error) {
-      console.error('Error deleting Client:', error)
+      console.error('Error deleting client:', error)
     }
   }
 
-  const updateClient = async (Client: Client) => {
+  const updateClient = async (client: Client) => {
     try {
-      const response = await axios.put(`http://localhost:8080/admin/clients/${Client.clientId}`, Client)
-      setClients(prevClients => prevClients.map(w => (w.clientId === Client.clientId ? response.data : w)))
+      const response = await axios.put(`http://localhost:8080/admin/clients/${client.clientId}`, client)
+      setClients(prevClients => prevClients.map(w => (w.clientId === client.clientId ? response.data : w)))
       setEditingClient(null)
       window.location.reload()
     } catch (error) {
-      console.error('Error updating Client:', error)
+      console.error('Error updating client:', error)
     }
   }
 
@@ -93,12 +128,11 @@ export default function ViewClients() {
     setEditingClient(client)
   }
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target
     if (editingClient) {
-      const { name, value } = e.target
       setEditingClient({ ...editingClient, [name]: value })
     } else {
-      const { name, value } = e.target
       setNewClient({ ...newClient, [name]: value })
     }
   }
@@ -119,7 +153,7 @@ export default function ViewClients() {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {Clients.map(client => (
+          {clients.map(client => (
             <TableRow key={client.clientId}>
               <TableCell>
                 {editingClient && editingClient.clientId === client.clientId ? (
@@ -162,39 +196,51 @@ export default function ViewClients() {
               </TableCell>
               <TableCell>
                 {editingClient && editingClient.clientId === client.clientId ? (
-                  <input
-                    type="number"
+                  <select
                     name="adminId"
                     value={editingClient.adminId}
                     onChange={handleInputChange}
                     className="border p-2"
-                  />
+                  >
+                    <option value="">Select Admin ID</option>
+                    {adminIds.map(id => (
+                      <option key={id} value={id}>{id}</option>
+                    ))}
+                  </select>
                 ) : (
                   client.adminId
                 )}
               </TableCell>
               <TableCell>
                 {editingClient && editingClient.clientId === client.clientId ? (
-                  <input
-                    type="number"
+                  <select
                     name="packageId"
                     value={editingClient.packageId}
                     onChange={handleInputChange}
                     className="border p-2"
-                  />
+                  >
+                    <option value="">Select Package ID</option>
+                    {packageIds.map(id => (
+                      <option key={id} value={id}>{id}</option>
+                    ))}
+                  </select>
                 ) : (
                   client.packageId
                 )}
               </TableCell>
               <TableCell>
                 {editingClient && editingClient.clientId === client.clientId ? (
-                  <input
-                    type="number"
+                  <select
                     name="workerId"
                     value={editingClient.workerId}
                     onChange={handleInputChange}
                     className="border p-2"
-                  />
+                  >
+                    <option value="">Select Worker ID</option>
+                    {workerIds.map(id => (
+                      <option key={id} value={id}>{id}</option>
+                    ))}
+                  </select>
                 ) : (
                   client.workerId
                 )}
@@ -211,57 +257,100 @@ export default function ViewClients() {
           ))}
         </TableBody>
       </Table>
-      <div className="mt-4">
-        <h2 className="text-xl font-bold mb-2">Add New Client</h2>
-        <input
-          type="text"
-          placeholder="Name"
-          name="name"
-          value={newClient.name}
-          onChange={handleInputChange}
-          className="border p-2 mb-2"
-        />
-        <input
-          type="text"
-          placeholder="Phone Number"
-          name="phoneNumber"
-          value={newClient.phoneNumber}
-          onChange={handleInputChange}
-          className="border p-2 mb-2"
-        />
-        <input
-          type="text"
-          placeholder="Email"
-          name="email"
-          value={newClient.email}
-          onChange={handleInputChange}
-          className="border p-2 mb-2"
-        />
-        <input
-          type="number"
-          placeholder="Admin ID"
-          name="adminId"
-          value={newClient.adminId}
-          onChange={handleInputChange}
-          className="border p-2 mb-2"
-        />
-        <input
-          type="number"
-          placeholder="Preferred Package(ID)"
-          name="packageId"
-          value={newClient.packageId}
-          onChange={handleInputChange}
-          className="border p-2 mb-2"
-        />
-        <input
-          type="number"
-          placeholder="Preferred Worker(ID)"
-          name="workerId"
-          value={newClient.workerId}
-          onChange={handleInputChange}
-          className="border p-2 mb-2"
-        />
-        <Button className="ml-4 bg-blue-700 hover:bg-blue-900" onClick={addClient}>Add Client</Button>
+      <div className="mt-8">
+        <Card className="w-full max-w-2xl mx-auto">
+          <CardHeader>
+            <CardTitle className="text-2xl font-bold">Add New Client</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <form className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-2">
+                <label htmlFor="name" className="text-sm font-medium">Name</label>
+                <input
+                  id="name"
+                  type="text"
+                  name="name"
+                  value={newClient.name}
+                  onChange={handleInputChange}
+                  placeholder="Full Name"
+                  className="w-full p-2 border rounded"
+                />
+              </div>
+              <div className="space-y-2">
+                <label htmlFor="phoneNumber" className="text-sm font-medium">Phone Number</label>
+                <input
+                  id="phoneNumber"
+                  type="text"
+                  name="phoneNumber"
+                  value={newClient.phoneNumber}
+                  onChange={handleInputChange}
+                  placeholder="Phone Number"
+                  className="w-full p-2 border rounded"
+                />
+              </div>
+              <div className="space-y-2">
+                <label htmlFor="email" className="text-sm font-medium">Email</label>
+                <input
+                  id="email"
+                  type="email"
+                  name="email"
+                  value={newClient.email}
+                  onChange={handleInputChange}
+                  placeholder="Email"
+                  className="w-full p-2 border rounded"
+                />
+              </div>
+              <div className="space-y-2">
+                <label htmlFor="adminId" className="text-sm font-medium">Admin ID</label>
+                <select
+                  id="adminId"
+                  name="adminId"
+                  value={newClient.adminId}
+                  onChange={handleInputChange}
+                  className="w-full p-2 border rounded"
+                >
+                  <option value="">Select Admin ID</option>
+                  {adminIds.map(id => (
+                    <option key={id} value={id}>{id}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="space-y-2">
+                <label htmlFor="packageId" className="text-sm font-medium">Package ID</label>
+                <select
+                  id="packageId"
+                  name="packageId"
+                  value={newClient.packageId}
+                  onChange={handleInputChange}
+                  className="w-full p-2 border rounded"
+                >
+                  <option value="">Select Package ID</option>
+                  {packageIds.map(id => (
+                    <option key={id} value={id}>{id}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="space-y-2">
+                <label htmlFor="workerId" className="text-sm font-medium">Worker ID</label>
+                <select
+                  id="workerId"
+                  name="workerId"
+                  value={newClient.workerId}
+                  onChange={handleInputChange}
+                  className="w-full p-2 border rounded"
+                >
+                  <option value="">Select Worker ID</option>
+                  {workerIds.map(id => (
+                    <option key={id} value={id}>{id}</option>
+                  ))}
+                </select>
+              </div>
+              <Button className="sm:col-span-2 bg-blue-700 hover:bg-blue-900" onClick={addClient}>
+                Add Client
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
       </div>
     </div>
   )

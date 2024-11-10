@@ -4,6 +4,11 @@ import { useState, useEffect } from 'react'
 import axios from 'axios'
 import { Button } from "@/components/ui/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 interface Worker {
   workerId: number
@@ -26,33 +31,48 @@ export default function ViewWorkers() {
     deployed: false,
     tele_Id: '',
     curPropertyId: 0,
-    available: false,
+    available: true,
     adminId: 0
   })
-  const [editingWorkerId, setEditingWorkerId] = useState<number | null>(null)
   const [editingWorker, setEditingWorker] = useState<Worker | null>(null)
+  const [adminIds, setAdminIds] = useState<number[]>([])
+  const [propertyIds, setPropertyIds] = useState<number[]>([])
 
   useEffect(() => {
-    // Fetch workers from the backend
     const fetchWorkers = async () => {
       try {
         const workersResponse = await axios.get(`http://localhost:8080/admin/workers`)
         setWorkers(workersResponse.data)
-        console.log(workersResponse.data)
       } catch (error) {
         console.error('Error fetching workers:', error)
       }
     }
 
+    const fetchAdminIds = async () => {
+      try {
+        const adminIdsResponse = await axios.get(`http://localhost:8080/admin/unique_admin_ids`)
+        setAdminIds(adminIdsResponse.data)
+      } catch (error) {
+        console.error('Error fetching admin IDs:', error)
+      }
+    }
+
+    const fetchPropertyIds = async () => {
+      try {
+        const propertyIdsResponse = await axios.get(`http://localhost:8080/admin/unique_property_ids`)
+        setPropertyIds(propertyIdsResponse.data)
+      } catch (error) {
+        console.error('Error fetching property IDs:', error)
+      }
+    }
+
     fetchWorkers()
+    fetchAdminIds()
+    fetchPropertyIds()
   }, [])
 
   const deleteWorker = async (worker: Worker) => {
     try {
-      if (worker.adminId === undefined || worker.adminId === null) {
-        console.error('Error: adminId is undefined or null')
-        return
-      }
       await axios.delete(`http://localhost:8080/admin/${worker.adminId}/workers/${worker.workerId}`)
       setWorkers(prevWorkers => prevWorkers.filter(w => w.workerId !== worker.workerId))
     } catch (error) {
@@ -64,7 +84,6 @@ export default function ViewWorkers() {
     try {
       const response = await axios.put(`http://localhost:8080/admin/workers/${worker.workerId}`, worker)
       setWorkers(prevWorkers => prevWorkers.map(w => (w.workerId === worker.workerId ? response.data : w)))
-      setEditingWorkerId(null)
       setEditingWorker(null)
     } catch (error) {
       console.error('Error updating worker:', error)
@@ -73,19 +92,7 @@ export default function ViewWorkers() {
 
   const addWorker = async () => {
     try {
-      if (newWorker.adminId === 0) {
-        console.error('Error: adminId is not set')
-        return
-      }
-      const response = await axios.post(
-        `http://localhost:8080/admin/${newWorker.adminId}/workers`,
-        newWorker,
-        {
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        }
-      )
+      const response = await axios.post(`http://localhost:8080/admin/${newWorker.adminId}/workers`, newWorker)
       setWorkers(prevWorkers => [...prevWorkers, response.data])
       setNewWorker({
         name: '',
@@ -94,7 +101,7 @@ export default function ViewWorkers() {
         deployed: false,
         tele_Id: '',
         curPropertyId: 0,
-        available: false,
+        available: true,
         adminId: 0
       })
     } catch (error) {
@@ -103,28 +110,24 @@ export default function ViewWorkers() {
   }
 
   const handleEditClick = (worker: Worker) => {
-    setEditingWorkerId(worker.workerId)
     setEditingWorker(worker)
   }
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value, type, checked } = e.target;
+    const newValue = type === 'checkbox' ? checked : value;
     if (editingWorker) {
-      const { name, value } = e.target
-      setEditingWorker({ ...editingWorker, [name]: value })
+      setEditingWorker({ ...editingWorker, [name]: newValue });
     } else {
-      const { name, value } = e.target
-      setNewWorker({ ...newWorker, [name]: value })
+      setNewWorker({ ...newWorker, [name]: newValue });
     }
-  }
+  };
 
-  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (editingWorker) {
-      const { name, checked } = e.target
-      setEditingWorker({ ...editingWorker, [name]: checked })
-    } else {
-      const { name, checked } = e.target
-      setNewWorker({ ...newWorker, [name]: checked })
-    }
+  const handleSelectChange = (name: string, value: string | number) => {
+    setNewWorker(prev => ({
+      ...prev,
+      [name]: value,
+    }))
   }
 
   return (
@@ -140,7 +143,7 @@ export default function ViewWorkers() {
             <TableHead>Telegram ID</TableHead>
             <TableHead>Current Property ID</TableHead>
             <TableHead>Available</TableHead>
-            <TableHead>Supervisor ID</TableHead>
+            <TableHead>Admin ID</TableHead>
             <TableHead>Actions</TableHead>
           </TableRow>
         </TableHeader>
@@ -148,11 +151,11 @@ export default function ViewWorkers() {
           {workers.map(worker => (
             <TableRow key={worker.workerId}>
               <TableCell>
-                {editingWorkerId === worker.workerId ? (
+                {editingWorker && editingWorker.workerId === worker.workerId ? (
                   <input
                     type="text"
                     name="name"
-                    value={editingWorker?.name || ''}
+                    value={editingWorker.name}
                     onChange={handleInputChange}
                     className="border p-2"
                   />
@@ -161,11 +164,11 @@ export default function ViewWorkers() {
                 )}
               </TableCell>
               <TableCell>
-                {editingWorkerId === worker.workerId ? (
+                {editingWorker && editingWorker.workerId === worker.workerId ? (
                   <input
                     type="text"
                     name="phoneNumber"
-                    value={editingWorker?.phoneNumber || ''}
+                    value={editingWorker.phoneNumber}
                     onChange={handleInputChange}
                     className="border p-2"
                   />
@@ -174,11 +177,11 @@ export default function ViewWorkers() {
                 )}
               </TableCell>
               <TableCell>
-                {editingWorkerId === worker.workerId ? (
+                {editingWorker && editingWorker.workerId === worker.workerId ? (
                   <input
                     type="text"
                     name="shortBio"
-                    value={editingWorker?.shortBio || ''}
+                    value={editingWorker.shortBio}
                     onChange={handleInputChange}
                     className="border p-2"
                   />
@@ -187,23 +190,24 @@ export default function ViewWorkers() {
                 )}
               </TableCell>
               <TableCell>
-                {editingWorkerId === worker.workerId ? (
+                {editingWorker && editingWorker.workerId === worker.workerId ? (
                   <input
                     type="checkbox"
                     name="deployed"
-                    checked={editingWorker?.deployed || false}
-                    onChange={handleCheckboxChange}
+                    checked={editingWorker.deployed}
+                    onChange={handleInputChange}
+                    className="border p-2"
                   />
                 ) : (
                   worker.deployed ? 'Yes' : 'No'
                 )}
               </TableCell>
               <TableCell>
-                {editingWorkerId === worker.workerId ? (
+                {editingWorker && editingWorker.workerId === worker.workerId ? (
                   <input
                     type="text"
                     name="tele_Id"
-                    value={editingWorker?.tele_Id || ''}
+                    value={editingWorker.tele_Id}
                     onChange={handleInputChange}
                     className="border p-2"
                   />
@@ -212,36 +216,57 @@ export default function ViewWorkers() {
                 )}
               </TableCell>
               <TableCell>
-                {editingWorkerId === worker.workerId ? (
-                  <input
-                    type="number"
+                {editingWorker && editingWorker.workerId === worker.workerId ? (
+                  <select
                     name="curPropertyId"
-                    value={editingWorker?.curPropertyId || 0}
+                    value={editingWorker.curPropertyId}
                     onChange={handleInputChange}
                     className="border p-2"
-                  />
+                  >
+                    <option value="">Select Property ID</option>
+                    {propertyIds.map(id => (
+                      <option key={id} value={id}>{id}</option>
+                    ))}
+                  </select>
                 ) : (
                   worker.curPropertyId
                 )}
               </TableCell>
               <TableCell>
-                {editingWorkerId === worker.workerId ? (
+                {editingWorker && editingWorker.workerId === worker.workerId ? (
                   <input
                     type="checkbox"
                     name="available"
-                    checked={editingWorker?.available || false}
-                    onChange={handleCheckboxChange}
+                    checked={editingWorker.available}
+                    onChange={handleInputChange}
+                    className="border p-2"
                   />
                 ) : (
                   worker.available ? 'Yes' : 'No'
                 )}
               </TableCell>
-              <TableCell>{worker.adminId}</TableCell>
               <TableCell>
-                {editingWorkerId === worker.workerId ? (
-                  <Button className="bg-blue-700 hover:bg-blue-900 ml-2" onClick={() => editingWorker && updateWorker(editingWorker)}>Save</Button>
+                {editingWorker && editingWorker.workerId === worker.workerId ? (
+                  <select
+                    name="adminId"
+                    value={editingWorker.adminId}
+                    onChange={handleInputChange}
+                    className="border p-2"
+                  >
+                    <option value="">Select Admin ID</option>
+                    {adminIds.map(id => (
+                      <option key={id} value={id}>{id}</option>
+                    ))}
+                  </select>
                 ) : (
-                  <Button className="bg-blue-700 hover:bg-blue-900 ml-2" onClick={() => handleEditClick(worker)}>Edit</Button>
+                  worker.adminId
+                )}
+              </TableCell>
+              <TableCell>
+                {editingWorker && editingWorker.workerId === worker.workerId ? (
+                  <Button className="bg-blue-700 hover:bg-blue-900 mr-3" onClick={() => updateWorker(editingWorker)}>Save</Button>
+                ) : (
+                  <Button className="bg-blue-700 hover:bg-blue-900 mr-3" onClick={() => handleEditClick(worker)}>Edit</Button>
                 )}
                 <Button className="bg-blue-700 hover:bg-blue-900 ml-2" onClick={() => deleteWorker(worker)}>Remove</Button>
               </TableCell>
@@ -249,76 +274,120 @@ export default function ViewWorkers() {
           ))}
         </TableBody>
       </Table>
-      <div className="mt-4">
-        <h2 className="text-xl font-bold mb-2">Add New Worker</h2>
-        <input
-          type="text"
-          placeholder="Name"
-          name="name"
-          value={newWorker.name}
-          onChange={handleInputChange}
-          className="border p-2 mb-2"
-        />
-        <input
-          type="text"
-          placeholder="Phone Number"
-          name="phoneNumber"
-          value={newWorker.phoneNumber}
-          onChange={handleInputChange}
-          className="border p-2 mb-2"
-        />
-        <input
-          type="text"
-          placeholder="Short Bio"
-          name="shortBio"
-          value={newWorker.shortBio}
-          onChange={handleInputChange}
-          className="border p-2 mb-2"
-        />
-        <input
-          type="text"
-          placeholder="Telegram ID"
-          name="tele_Id"
-          value={newWorker.tele_Id}
-          onChange={handleInputChange}
-          className="border p-2 mb-2"
-        />
-        <input
-          type="number"
-          placeholder="Current Property ID"
-          name="curPropertyId"
-          value={newWorker.curPropertyId}
-          onChange={handleInputChange}
-          className="border p-2 mb-2"
-        />
-        <input
-          type="number"
-          placeholder="Supervisor ID"
-          name="adminId"
-          value={newWorker.adminId}
-          onChange={handleInputChange}
-          className="border p-2 mb-2"
-        />
-        <div className="flex items-center mb-2">
-          <label className="mr-2">Deployed</label>
+      <div className="mt-8">
+  <Card className="w-full max-w-2xl mx-auto">
+    <CardHeader>
+      <CardTitle className="text-2xl font-bold">Add New Worker</CardTitle>
+    </CardHeader>
+    <CardContent>
+      <form className="grid gap-4 sm:grid-cols-2">
+        <div className="space-y-2">
+          <label htmlFor="name" className="text-sm font-medium">Name</label>
+          <input
+            id="name"
+            type="text"
+            name="name"
+            value={newWorker.name}
+            onChange={handleInputChange}
+            placeholder="Full Name"
+            className="w-full p-2 border rounded"
+          />
+        </div>
+        <div className="space-y-2">
+          <label htmlFor="phoneNumber" className="text-sm font-medium">Phone Number</label>
+          <input
+            id="phoneNumber"
+            type="text"
+            name="phoneNumber"
+            value={newWorker.phoneNumber}
+            onChange={handleInputChange}
+            placeholder="Phone Number"
+            className="w-full p-2 border rounded"
+          />
+        </div>
+        <div className="space-y-2 sm:col-span-2">
+          <label htmlFor="shortBio" className="text-sm font-medium">Short Bio</label>
+          <input
+            id="shortBio"
+            type="text"
+            name="shortBio"
+            value={newWorker.shortBio}
+            onChange={handleInputChange}
+            placeholder="Short Bio"
+            className="w-full p-2 border rounded"
+          />
+        </div>
+        <div className="space-y-2">
+          <label htmlFor="tele_Id" className="text-sm font-medium">Telegram ID</label>
+          <input
+            id="tele_Id"
+            type="text"
+            name="tele_Id"
+            value={newWorker.tele_Id}
+            onChange={handleInputChange}
+            placeholder="Telegram ID"
+            className="w-full p-2 border rounded"
+          />
+        </div>
+        <div className="space-y-2">
+          <label htmlFor="curPropertyId" className="text-sm font-medium">Property ID</label>
+          <select
+            id="curPropertyId"
+            name="curPropertyId"
+            value={newWorker.curPropertyId}
+            onChange={handleInputChange}
+            className="w-full p-2 border rounded"
+          >
+            <option value="">Select Property ID</option>
+            {propertyIds.map(id => (
+              <option key={id} value={id}>{id}</option>
+            ))}
+          </select>
+        </div>
+        <div className="space-y-2">
+          <label htmlFor="adminId" className="text-sm font-medium">Admin ID</label>
+          <select
+            id="adminId"
+            name="adminId"
+            value={newWorker.adminId}
+            onChange={handleInputChange}
+            className="w-full p-2 border rounded"
+          >
+            <option value="">Select Admin ID</option>
+            {adminIds.map(id => (
+              <option key={id} value={id}>{id}</option>
+            ))}
+          </select>
+        </div>
+        <div className="flex items-center space-x-2">
           <input
             type="checkbox"
+            id="deployed"
             name="deployed"
             checked={newWorker.deployed}
-            onChange={handleCheckboxChange}
+            onChange={handleInputChange}
+            className="border rounded"
           />
+          <label htmlFor="deployed" className="text-sm font-medium">Deployed</label>
         </div>
-        <div className="flex items-center mb-2">
-          <label className="mr-2">Available</label>
+        <div className="flex items-center space-x-2">
           <input
             type="checkbox"
+            id="available"
             name="available"
             checked={newWorker.available}
-            onChange={handleCheckboxChange}
+            onChange={handleInputChange}
+            className="border rounded"
           />
+          <label htmlFor="available" className="text-sm font-medium">Available</label>
         </div>
-        <Button className="bg-blue-700 hover:bg-blue-900" onClick={addWorker}>Add Worker</Button>
-      </div>
+        <Button className="sm:col-span-2 bg-blue-700 hover:bg-blue-900" onClick={addWorker}>
+          Add Worker
+        </Button>
+      </form>
+    </CardContent>
+  </Card>
+</div>
     </div>
   )
 }
