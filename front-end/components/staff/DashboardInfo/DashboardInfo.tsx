@@ -69,7 +69,7 @@ export default function DashboardInfo() {
               <TableCell>{worker.curPropertyId}</TableCell>
               <TableCell>{worker.available ? 'Yes' : 'No'}</TableCell>
               <TableCell>{worker.adminId}</TableCell>
-              <TableCell>{worker.workerHoursInWeek}</TableCell>
+              <TableCell>{worker.worker_hours_in_week}</TableCell>
             </TableRow>
           ))}
         </TableBody>

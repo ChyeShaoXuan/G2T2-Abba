@@ -13,11 +13,11 @@ INSERT INTO worker (WorkerId, adminId, name, phoneNumber, shortBio, deployed, te
 (4, 1, 'Susan Lee', '+6587654321', 'Background in carpet shampooing', false, '@susanlee', 0, False, 30);
 
 
-INSERT INTO cleaningpackage (packageId, packageType, price, hours, hourly_rate, property_details, pax, manualBookingRequired) VALUES
-(1, 'Weekly', 200, 5, 40, '2-bedroom apartment', 2, false),
-(2, 'BiWeekly', 350, 10, 35, '3-bedroom house with garden', 4, false),
-(3, 'Weekly', 150, 3, 50, 'Studio apartment', 1, false),
-(4, 'BiWeekly', 500, 15, 33, '4-bedroom family home', 6, True);
+INSERT INTO cleaningpackage (packageId, packageType, price, hours, hourly_rate, property_details, pax, manualBookingRequired, propertyType) VALUES
+(1, 'Weekly', 200, 5, 40, '2-bedroom apartment', 2, false, 'Hdb'),
+(2, 'BiWeekly', 350, 10, 35, '3-bedroom house with garden', 4, false, 'Condominium'),
+(3, 'Weekly', 150, 3, 50, 'Studio apartment', 1, false, 'Landed'),
+(4, 'BiWeekly', 500, 15, 33, '4-bedroom family home', 6, True, 'Hdb');
 
 INSERT INTO client (clientId, name, phoneNumber, email, adminId, packageId, workerId) VALUES
 (1, 'John Doe', '123-456-7890', 'johndoe@example.com', 1,1,1),
