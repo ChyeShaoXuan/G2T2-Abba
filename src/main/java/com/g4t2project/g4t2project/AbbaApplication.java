@@ -30,6 +30,7 @@ public class AbbaApplication {
         setSystemProperty("SMTP_USERNAME", dotenv.get("SMTP_USERNAME"));
         setSystemProperty("SMTP_PASSWORD", dotenv.get("SMTP_PASSWORD"));
         setSystemProperty("APP_BASE_URL", dotenv.get("APP_BASE_URL"));
+        setSystemProperty("GOOGLE_MAPS_API_KEY", dotenv.get("GOOGLE_MAPS_API_KEY"));
 
         // Print to confirm the properties are set
         System.out.println("Loaded APPLICATION_NAME: " + System.getProperty("APPLICATION_NAME"));
