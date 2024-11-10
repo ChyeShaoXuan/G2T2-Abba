@@ -22,7 +22,7 @@ public class WorkerHoursScheduler {
     private WorkerRepository workerRepository;
 
 
-    // @Scheduled(cron = "0 14 4 * * *") // for testing!!!
+    // @Scheduled(cron = "0 14 21 * * *") // for testing!!!
     
     // Reset worker hours weekly and add weekly hours to worker_hours_stats table: totalHours
     @Scheduled(cron = "0 0 0 * * MON") // Runs at midnight every Monday
