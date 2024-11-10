@@ -26,6 +26,8 @@ public class CleaningTaskController {
 
     @PostMapping
     public ResponseEntity<String> createCleaningTask(@RequestBody cleaningTaskDTO taskDTO, @RequestParam Long clientId) {
+        System.out.println("Creating cleaning Task");
+        System.out.println("-------------------------");
         // Step 1: Validate the property ownership
         Property property = cleaningTaskService.getPropertyById((long)taskDTO.getPropertyId());
         if (property == null || !property.getClient().getClientId().equals(clientId)) {

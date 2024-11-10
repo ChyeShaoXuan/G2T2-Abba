@@ -15,6 +15,7 @@ import com.g4t2project.g4t2project.repository.FeedbackRepository;
 import com.g4t2project.g4t2project.service.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import com.g4t2project.g4t2project.util.DistanceCalculator;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -35,7 +36,10 @@ public class CleaningTaskService {
     private NotificationService notificationService;
     @Autowired
     private PropertyRepository propertyRepository; 
+    @Autowired
+    private DistanceCalculator distanceCalculator;
 
+    
     public void handleWorkerLeave(LeaveApplication leaveApplication) {
         Worker worker = leaveApplication.getWorker();
         List<CleaningTask> tasks = cleaningTaskRepository.findTasksByWorkerAndDate(worker, leaveApplication.getStartDate());
@@ -101,13 +105,20 @@ public class CleaningTaskService {
                     Property currentProperty = currentPropertyOpt.get();
                     double workerLat = currentProperty.getLatitude();
                     double workerLon = currentProperty.getLongitude();
-        
-                    double distance = calculateDistance(workerLat, workerLon, taskLat, taskLon);
-        
-                    if (distance < minDistance) {
-                        minDistance = distance;
-                        closestWorker = worker;
+
+                    try {
+                        double distance = distanceCalculator.calculateDistance(workerLat, workerLon, taskLat, taskLon);  // Use the DistanceCalculator
+
+                        if (distance < minDistance) {
+                            minDistance = distance;
+                            closestWorker = worker;
+                        }
+                    } catch (Exception e) {
+                        // Handle any error from DistanceCalculator
+                        e.printStackTrace();
                     }
+        
+                   
                 } 
             }
         }
@@ -117,14 +128,19 @@ public class CleaningTaskService {
         System.out.println("HQ lat: " + hqLat + " HQ lon: " + hqLon);
         System.out.println("_________________________________________________________");
         System.out.println("_________________________________________________________");
-        double hqToTaskDistance = calculateDistance(hqLat, hqLon, taskLat, taskLon); // Distance from HQ to task
-    
-        // If no deployed worker was found, assign a worker from HQ
-        if (closestWorker == null || minDistance > hqToTaskDistance) { 
-            List<Worker> hqWorkers = workerRepository.findAllNotDeployed(0); // Fetch workers assigned to HQ
-            if (!hqWorkers.isEmpty()) {
-                closestWorker = hqWorkers.get(0); // Assign the first worker from HQ since they are available
+       
+        try {
+            double hqToTaskDistance = distanceCalculator.calculateDistance(hqLat, hqLon, taskLat, taskLon);  // Distance from HQ to task
+
+            if (closestWorker == null || minDistance > hqToTaskDistance) {
+                List<Worker> hqWorkers = workerRepository.findAllNotDeployed(0);  // Fetch workers assigned to HQ
+                if (!hqWorkers.isEmpty()) {
+                    closestWorker = hqWorkers.get(0);  // Assign the first worker from HQ
+                }
             }
+        } catch (Exception e) {
+            // Handle any error from DistanceCalculator
+            e.printStackTrace();
         }
 
     
@@ -132,17 +148,17 @@ public class CleaningTaskService {
     }
     
 
-    public double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
-        // using harvesine formula to calculate distance between two points
-        final int R = 6371; 
-        double latDistance = Math.toRadians(lat2 - lat1);
-        double lonDistance = Math.toRadians(lon2 - lon1);
-        double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2)
-                + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
-                * Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
-        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        return R * c; // Distance in km
-    }
+    // public double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
+    //     // using harvesine formula to calculate distance between two points
+    //     final int R = 6371; 
+    //     double latDistance = Math.toRadians(lat2 - lat1);
+    //     double lonDistance = Math.toRadians(lon2 - lon1);
+    //     double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2)
+    //             + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
+    //             * Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
+    //     double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    //     return R * c; // Distance in km
+    // }
 
     public Property getPropertyById(Long propertyId) {
         return propertyRepository.findById(propertyId).orElse(null);
@@ -201,7 +217,6 @@ public class CleaningTaskService {
     }
 
 }
-
 
 
 
