@@ -6,14 +6,14 @@ INSERT INTO admin (adminId, name, isRoot) VALUES
 (3, 'Michael Brown', false),
 (4, 'Alice Johnson', false);
 
-INSERT INTO worker (WorkerId, admin_id, name, phoneNumber, shortBio, deployed, tele_Id, curPropertyId, available, worker_hours_in_week) VALUES
+INSERT INTO worker (WorkerId, adminId, name, phoneNumber, shortBio, deployed, tele_Id, curPropertyId, available, worker_hours_in_week) VALUES
 (1, 1, 'John Smith', '+6512345678', 'Experienced cleaner, pet-friendly', true, '@johnsmith', 101, True, 20),
 (2, 1, 'Mary Tan', '+6598765432', 'Specializes in disinfection treatment', false, '@marytan', 0, True, 44),
 (3, 1, 'Ahmed Ali', '+6581234567', 'No pets due to allergies', true, '@ahmedali', 103, False, 40),
 (4, 1, 'Susan Lee', '+6587654321', 'Background in carpet shampooing', false, '@susanlee', 0, False, 30);
 
 
-INSERT INTO cleaning_package (packageId, packageType, price, hours, hourly_rate, property_details, pax, manualBookingRequired) VALUES
+INSERT INTO cleaningpackage (packageId, packageType, price, hours, hourly_rate, property_details, pax, manualBookingRequired) VALUES
 (1, 'Weekly', 200, 5, 40, '2-bedroom apartment', 2, false),
 (2, 'BiWeekly', 350, 10, 35, '3-bedroom house with garden', 4, false),
 (3, 'Weekly', 150, 3, 50, 'Studio apartment', 1, false),

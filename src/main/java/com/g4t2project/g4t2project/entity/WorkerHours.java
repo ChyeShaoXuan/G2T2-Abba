@@ -13,7 +13,7 @@ public class WorkerHours {
     private int workerHoursId;
 
     @ManyToOne
-    @JoinColumn(name = "workerId", referencedColumnName = "workerId")
+    @JoinColumn(name = "WorkerId", referencedColumnName = "WorkerId")
     private Worker worker;
 
     private String monthYear; // Store in format "YYYY-MM"
