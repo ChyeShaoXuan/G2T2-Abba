@@ -6,11 +6,11 @@ public class ClientDTO {
     private String name;
     private Long adminId; 
     private Long packageId;
-    private Long workerId;
+    private Integer workerId;
     private String phoneNumber;
 
     // Constructors
-    public ClientDTO(Long clientId, String email, String name, String phoneNumber, Long adminId, Long packageId, Long workerId) {   
+    public ClientDTO(Long clientId, String email, String name, String phoneNumber, Long adminId, Long packageId, Integer workerId) {   
         this.clientId = clientId;
         this.email = email;
         this.name = name;
@@ -75,11 +75,11 @@ public class ClientDTO {
         this.packageId = packageId;
     }
 
-    public Long getWorkerId() {
+    public Integer getWorkerId() {
         return workerId;
     }
 
-    public void setWorkerId(Long workerId) {
+    public void setWorkerId(Integer workerId) {
         this.workerId = workerId;
     }
 }

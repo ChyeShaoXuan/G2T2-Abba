@@ -166,7 +166,7 @@ public class CleaningTaskService {
         dto.setStatus(task.getStatus().name());
         dto.setFeedbackId(task.getFeedback() != null ? task.getFeedback().getFeedbackId() : null);
         dto.setPropertyId(task.getProperty().getPropertyId());
-        dto.setWorkerId(task.getWorker() != null ? task.getWorker().getWorkerId() : null);
+        dto.setWorkerId(task.getWorker() != null ? (long) task.getWorker().getWorkerId() : null);
         return dto;
     }
 

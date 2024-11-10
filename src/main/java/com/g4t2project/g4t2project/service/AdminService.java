@@ -147,7 +147,7 @@ public class AdminService {
         Client client = new Client(
                 admin,
                 clientDTO.getPackageId() != 0 ? cleaningPackageRepository.findById(clientDTO.getPackageId()).orElse(null) : null,
-                clientDTO.getWorkerId() != null ? workerRepository.findById(clientDTO.getWorkerId()).orElse(null) : null,
+                clientDTO.getWorkerId() != null ? workerRepository.findById(clientDTO.getWorkerId().longValue()).orElse(null) : null,
                 clientDTO.getName(),
                 clientDTO.getPhoneNumber(),
                 clientDTO.getEmail()
@@ -188,7 +188,7 @@ public class AdminService {
                     client.getName(),
                     client.getPhoneNumber(),
                     client.getAdmin() != null ? client.getAdmin().getAdminId() : null,
-                    client.getPreferredPackage() != null ? client.getPreferredPackage().getPackageId() : 0,
+                    client.getPreferredPackage() != null ? client.getPreferredPackage().getPackageId() : null,
                     client.getPreferredWorker() != null ? client.getPreferredWorker().getWorkerId() : null
             );
             clientDTOs.add(dto);
@@ -312,7 +312,7 @@ public class AdminService {
         }
 
         if (clientDTO.getWorkerId() != null) {
-            Worker worker = workerRepository.findById(clientDTO.getWorkerId())
+            Worker worker = workerRepository.findById(clientDTO.getWorkerId().longValue())
                     .orElseThrow(() -> new RuntimeException("Worker not found"));
             existingClient.setPreferredWorker(worker);
         }
