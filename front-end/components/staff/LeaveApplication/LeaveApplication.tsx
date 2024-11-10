@@ -70,25 +70,37 @@ export default function LeaveApplicationForm() {
     formData.append('endDate', format(values.endDate, 'yyyy-MM-dd'));
     formData.append('reason', values.reason);
     
-    // Append the file if it exists
-    if (values.leaveType === "mc" && file) {
-      formData.append('mcDocument', file);
-    }
-
     try {
-      // Send the leave application to the backend
+      // Step 1: Submit leave application
       const response = await fetch('http://localhost:8080/leave/apply', {
         method: 'POST',
         body: formData,
       });
-
-      if (response.ok) {
-        setSubmitStatus('success');
-        form.reset();  // Reset the form
-        setFile(null); // Clear the file state
-      } else {
-        throw new Error('Failed to submit leave application');
+  
+      if (!response.ok) throw new Error('Failed to submit leave application');
+  
+      // Capture the leaveId from the response if provided
+      const result = await response.json();
+      const leaveId = result.leaveId;
+      
+      // Step 2: Upload MC document if leave type is "mc"
+      if (values.leaveType === "mc" && file && leaveId) {
+        const mcData = new FormData();
+        mcData.append('leaveId', leaveId); // Use leaveId from the previous step
+        mcData.append('mcDocument', file);
+  
+        const mcResponse = await fetch('http://localhost:8080/leave/upload-mc', {
+          method: 'POST',
+          body: mcData,
+        });
+  
+        if (!mcResponse.ok) throw new Error('Failed to upload MC document');
       }
+  
+      setSubmitStatus('success');
+      form.reset();
+      setFile(null); // Clear the file state
+  
     } catch (error) {
       console.error(error);
       setSubmitStatus('error');
