@@ -1,22 +1,23 @@
 package com.g4t2project.g4t2project.DTO;
 
 public class cleaningTaskDTO {
-    private int propertyId;
+    private Long propertyId;
     private String shift;
     private String date;
-    private boolean Acknowledged = false;
+    private boolean acknowledged;
     
-    public cleaningTaskDTO(int propertyId, String shift, String date) {
+    public cleaningTaskDTO(Long propertyId, String shift, String date, boolean acknowledged) {
         this.propertyId = propertyId;
         this.shift = shift;
         this.date = date;
+        this.acknowledged = acknowledged;
     }   
 
-    public int getPropertyId() {    
+    public Long getPropertyId() {    
         return propertyId;
     }
 
-    public void setPropertyId(int propertyId) {
+    public void setPropertyId(Long propertyId) {
         this.propertyId = propertyId;
     }
 
@@ -37,11 +38,11 @@ public class cleaningTaskDTO {
     }
 
     public boolean isAcknowledged() {
-        return Acknowledged;
+        return acknowledged;
     }
 
     public void setAcknowledged(boolean acknowledged) {
-        Acknowledged = acknowledged;
+        this.acknowledged = acknowledged;
     }
 
 

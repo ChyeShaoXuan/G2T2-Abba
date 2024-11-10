@@ -7,10 +7,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.g4t2project.g4t2project.entity.*;
 
-public interface PropertyRepository extends JpaRepository<Property, Integer> {
+import java.util.Optional;
 
+public interface PropertyRepository extends JpaRepository<Property, Long> {
   @Modifying
   @Transactional
-@Query("DELETE FROM Property p WHERE p.client.clientId = :clientId")
+  @Query("DELETE FROM Property p WHERE p.client.clientId = :clientId")
     void deleteByClientId(Long clientId);
+  Optional<Property> findByClientAndNumberOfRooms(Client client, int numberOfRooms);
+
 }

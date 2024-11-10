@@ -13,25 +13,24 @@ INSERT INTO worker (WorkerId, admin_id, name, phoneNumber, shortBio, deployed, t
 (4, 1, 'Susan Lee', '+6587654321', 'Background in carpet shampooing', false, '@susanlee', 0, False, 30);
 
 
-INSERT INTO cleaningpackage (packageId, packageType, price, hours, hourly_rate, property_details) VALUES
-(1, 'Weekly', 200, 5, 40, '2-bedroom apartment'),
-(2, 'BiWeekly', 350, 10, 35, '3-bedroom house with garden'),
-(3, 'Weekly', 150, 3, 50, 'Studio apartment'),
-(4, 'BiWeekly', 500, 15, 33, '4-bedroom family home');
+INSERT INTO cleaning_package (packageId, packageType, price, hours, hourly_rate, property_details, pax, manualBookingRequired) VALUES
+(1, 'Weekly', 200, 5, 40, '2-bedroom apartment', 2, false),
+(2, 'BiWeekly', 350, 10, 35, '3-bedroom house with garden', 4, false),
+(3, 'Weekly', 150, 3, 50, 'Studio apartment', 1, false),
+(4, 'BiWeekly', 500, 15, 33, '4-bedroom family home', 6, True);
 
-
-INSERT INTO client (clientId, name, phoneNumber, email, admin_id, packageId, workerId) VALUES
+INSERT INTO client (clientId, name, phoneNumber, email, adminId, packageId, workerId) VALUES
 (1, 'John Doe', '123-456-7890', 'johndoe@example.com', 1,1,1),
 (2, 'Jane Smith', '987-654-3210', 'janesmith@example.com', 2,1,1),
 (3, 'Bob Johnson', '555-0123', 'bobjohnson@example.com', 1,1,1),
 (4, 'Alice Williams', '444-5678', 'alicewilliams@example.com', 3,1,1);
 
 
-INSERT INTO Property (propertyId, clientId, packageId, address, latitude, longitude) VALUES
-(101, 1, 1, '123 Street', 1.12345, 103.12345),
-(102, 2, 2, '456 Avenue', 1.23456, 103.23456),
-(103, 3, 3, '789 Road', 1.34567, 103.34567),
-(104, 4, 4, '101 Boulevard', 1.45678, 103.45678);
+INSERT INTO Property (propertyId, clientId, packageId, address, latitude, longitude, numberOfRooms) VALUES
+(101, 1, 1, '123 Street', 1.12345, 103.12345,2),
+(102, 2, 2, '456 Avenue', 1.23456, 103.23456,3),
+(103, 3, 3, '789 Road', 1.34567, 103.34567,4),
+(104, 4, 4, '101 Boulevard', 1.45678, 103.45678,5);
 
 
 INSERT INTO cleaningtask (taskId, propertyId, workerId, feedbackId, shift, status, date, Acknowledged) VALUES

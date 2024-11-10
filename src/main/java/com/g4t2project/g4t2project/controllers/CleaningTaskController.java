@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.util.List;
 import com.g4t2project.g4t2project.DTO.OverwriteCleaningTaskDTO;
-import com.g4t2project.g4t2project.DTO.OverwriteCleaningTaskDTO;
 import com.g4t2project.g4t2project.DTO.cleaningTaskDTO;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -28,7 +27,7 @@ public class CleaningTaskController {
     @PostMapping
     public ResponseEntity<String> createCleaningTask(@RequestBody cleaningTaskDTO taskDTO, @RequestParam Long clientId) {
         // Step 1: Validate the property ownership
-        Property property = cleaningTaskService.getPropertyById(taskDTO.getPropertyId());
+        Property property = cleaningTaskService.getPropertyById((long)taskDTO.getPropertyId());
         if (property == null || !property.getClient().getClientId().equals(clientId)) {
             return new ResponseEntity<>("You are not authorized to create a task for this property", HttpStatus.FORBIDDEN);
         }

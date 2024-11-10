@@ -22,7 +22,7 @@ public class SecurityConfig {
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .csrf().disable()
             .authorizeHttpRequests((requests) -> requests
-                .requestMatchers("/authentication/**", "/login", "/api/**", "/admin/**","/cleaningTasks/**").permitAll()
+                .requestMatchers("/authentication/**", "/login", "/api/**", "/admin/**","/cleaningTasks/**", "/clients/**","/placeOrder/**").permitAll()
                 .anyRequest().authenticated()
             )
             .formLogin((form) -> form

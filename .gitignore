@@ -36,3 +36,9 @@ build/
 node_modules
 front-end/node_modules
 .env
+
+node_modules/
+
+.next/
+
+next-env.d.ts

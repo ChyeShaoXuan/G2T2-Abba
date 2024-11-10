@@ -4,13 +4,13 @@ public class ClientDTO {
     private Long clientId;
     private String email;
     private String name;
-    private Long adminId; // Assuming admin_id is a Long
-    private int packageId; // Assuming packageId is a Long
-    private Long workerId; // Assuming workerId is a Long
+    private Long adminId; 
+    private Long packageId;
+    private Long workerId;
     private String phoneNumber;
 
     // Constructors
-    public ClientDTO(Long clientId, String email, String name, String phoneNumber, Long adminId, int packageId, Long workerId) {
+    public ClientDTO(Long clientId, String email, String name, String phoneNumber, Long adminId, Long packageId, Long workerId) {   
         this.clientId = clientId;
         this.email = email;
         this.name = name;
@@ -18,6 +18,13 @@ public class ClientDTO {
         this.adminId = adminId;
         this.packageId = packageId;
         this.workerId = workerId;
+    }
+
+    public ClientDTO(Long clientId, String email, String name, String phoneNumber) {
+        this.clientId = clientId;
+        this.email = email;
+        this.name = name;
+        this.phoneNumber = phoneNumber;
     }
 
     // Getters and Setters
@@ -60,11 +67,11 @@ public class ClientDTO {
         this.adminId = adminId;
     }
 
-    public int getPackageId() {
+    public Long getPackageId() {
         return packageId;
     }
 
-    public void setPackageId(int packageId) {
+    public void setPackageId(Long packageId) {
         this.packageId = packageId;
     }
 

@@ -1,13 +1,16 @@
 "use client";
 
-import React, { useState } from 'react';
-
+import React from 'react';
+import NavigationBar from "@/components/ui/clientpagesnavbar"
 
 const ClientDashboard = () => {
     return (
         <div>
-            <h1>Client Dashboard</h1>
-            <p>Welcome to the Client Dashboard. Here you can view your orders, track shipments, and manage your account.</p>
+            <NavigationBar />
+            <div style={{ marginTop: '50px' }}>
+                <h1>Client Dashboard</h1>
+                <p>Welcome to the Client Dashboard. Here you can view your orders, track shipments, and manage your account.</p>
+            </div>
         </div>
     );
 };

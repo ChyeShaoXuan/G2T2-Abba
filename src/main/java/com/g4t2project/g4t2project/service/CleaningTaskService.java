@@ -95,7 +95,7 @@ public class CleaningTaskService {
         for (Worker worker : deployedWorkers) {
             if (worker.isAvailableOn(taskDate, taskShift)) {  // Ensure the worker is available on the task date and shift
                 int curWorkerPropertyId = worker.getCurPropertyId();
-                Optional<Property> currentPropertyOpt = propertyRepository.findById(curWorkerPropertyId);
+                Optional<Property> currentPropertyOpt = propertyRepository.findById((long)curWorkerPropertyId);
         
                 if (currentPropertyOpt.isPresent()) {
                     Property currentProperty = currentPropertyOpt.get();
@@ -112,8 +112,8 @@ public class CleaningTaskService {
             }
         }
 
-        double hqLat = propertyRepository.findById(100).get().getLatitude(); // Fetch HQ latitude
-        double hqLon = propertyRepository.findById(100).get().getLongitude(); // Fetch HQ latitude;
+        double hqLat = propertyRepository.findById(100L).get().getLatitude(); // Fetch HQ latitude
+        double hqLon = propertyRepository.findById(100L).get().getLongitude(); // Fetch HQ latitude;
         System.out.println("HQ lat: " + hqLat + " HQ lon: " + hqLon);
         System.out.println("_________________________________________________________");
         System.out.println("_________________________________________________________");
@@ -144,7 +144,7 @@ public class CleaningTaskService {
         return R * c; // Distance in km
     }
 
-    public Property getPropertyById(int propertyId) {
+    public Property getPropertyById(Long propertyId) {
         return propertyRepository.findById(propertyId).orElse(null);
     }
     

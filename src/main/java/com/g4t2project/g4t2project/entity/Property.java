@@ -2,12 +2,11 @@ package com.g4t2project.g4t2project.entity;
 import jakarta.persistence.*;
 import java.util.*;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 @Entity
 public class Property {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int propertyId;
+    private Long propertyId;
 
     @ManyToOne
     @JoinColumn(name = "clientId")
@@ -20,24 +19,38 @@ public class Property {
     @OneToMany(mappedBy = "property", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CleaningTask> cleaningTasks = new ArrayList<CleaningTask>();
 
+    private int numberOfRooms;
     private String address;
     private double latitude;
     private double longitude;
-    private String postalCode;
+    // private String postalCode;
 
     protected Property() {}
 
-    public Property(Client client, CleaningPackage pkg, String address, double latitude, double longitude, String postalCode) {
+    public Property(Client client, CleaningPackage pkg, String address, double latitude, double longitude) {
         this.client = client;
         this.pkg = pkg;
         this.address = address;
         this.latitude = latitude;
         this.longitude = longitude;
-        this.postalCode = postalCode;
+        // this.postalCode = postalCode;
     }
 
-    public int getPropertyId() {
+    public Long getPropertyId() {
         return propertyId;
+    }
+
+    
+    public void setPropertyId(Long propertyId) {
+        this.propertyId = propertyId;
+    }
+
+    public void setClient(Client client) {
+        this.client = client;
+    }
+
+    public void setCleaningTasks(List<CleaningTask> cleaningTasks) {
+        this.cleaningTasks = cleaningTasks;
     }
 
     public Client getClient() {
@@ -79,13 +92,13 @@ public class Property {
         cleaningTasks.remove(cleaningTask);
     }
 
-    public String getPostalCode() {
-        return postalCode;
-    }
+    // public String getPostalCode() {
+    //     return postalCode;
+    // }
 
-    public void setPostalCode(String postalCode) {
-        this.postalCode = postalCode;
-    }
+    // public void setPostalCode(String postalCode) {
+    //     this.postalCode = postalCode;
+    // }
 
     public CleaningPackage getPkg() {
         return pkg;
@@ -95,4 +108,14 @@ public class Property {
         this.pkg = pkg;
     }
 
+    public int getNumberOfRooms() {
+        return numberOfRooms;
+    }
+
+    public void setNumberOfRooms(int numberOfRooms) {
+        this.numberOfRooms = numberOfRooms;
+    }
+    
+
 }
+

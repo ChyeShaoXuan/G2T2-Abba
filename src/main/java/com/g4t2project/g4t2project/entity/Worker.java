@@ -22,7 +22,7 @@ public class Worker {
     private Integer workerId;
 
     @ManyToOne
-    @JoinColumn(name = "admin_id")
+    @JoinColumn(name = "adminId")
     @JsonBackReference(value = "adminId")
     private Admin admin;
     
