@@ -108,7 +108,8 @@ public class CleaningTaskController {
         Property taskProperty = propertyRepository.findById(request.getPropertyId())
             .orElseThrow(() -> new IllegalArgumentException("Property not found"));
     
-        Optional<Worker> closestWorker = cleaningTaskService.findClosestWorker(taskProperty, request.getDate(), request.getShift());
+        CleaningTask.Shift shift = CleaningTask.Shift.valueOf(request.getShift());
+        Optional<Worker> closestWorker = cleaningTaskService.findClosestWorker(taskProperty, request.getDate(), shift);
     
         return closestWorker
             .map(ResponseEntity::ok)
