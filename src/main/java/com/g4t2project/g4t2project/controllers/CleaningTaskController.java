@@ -29,34 +29,51 @@ public class CleaningTaskController {
         System.out.println("Creating cleaning Task");
         System.out.println("-------------------------");
         // Step 1: Validate the property ownership
-        Property property = cleaningTaskService.getPropertyById((long)taskDTO.getPropertyId());
+        System.out.println(taskDTO.getPropertyId());
+        System.out.println("---------------------------");
+        Property property = cleaningTaskService.getPropertyById(taskDTO.getPropertyId());
+        System.out.println("Finding property");
+        System.out.println(property);
+        System.out.println("---------------------------");
+
         if (property == null || !property.getClient().getClientId().equals(clientId)) {
             return new ResponseEntity<>("You are not authorized to create a task for this property", HttpStatus.FORBIDDEN);
         }
-        System.out.println("Property found: " + property);
 
-        // Step 2: Convert DTO to entity
-        CleaningTask cleaningTask = new CleaningTask();
-        cleaningTask.setProperty(property);
-        cleaningTask.setShift(CleaningTask.Shift.valueOf(taskDTO.getShift()));
+        System.out.println("Property found: " + property);
+        // format cleanintaskDTO date
         // Define the expected date format
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yy");
-
+        LocalDate parsed_date;
         try {
             // Parse the date from the DTO
-            cleaningTask.setDate(LocalDate.parse(taskDTO.getDate(), formatter));
+            parsed_date = LocalDate.parse(taskDTO.getDate(), formatter);
         } catch (DateTimeParseException e) {
             // Handle the exception, e.g., log it and throw a custom exception or set a default value
             throw new IllegalArgumentException("Invalid date format: " + taskDTO.getDate(), e);
-        }
-        cleaningTask.setStatus(CleaningTask.Status.Pending);
+        } 
 
-        // Step 3: add the cleaning task
+        // Step 2: Check for duplicate cleaning tasks with the same date, shift, and property
+        boolean duplicateExists = cleaningTaskService.existsByDateAndShiftAndProperty(parsed_date, CleaningTask.Shift.valueOf(taskDTO.getShift()), property);
+        if (duplicateExists) {
+            return new ResponseEntity<>("A cleaning task with the same shift and date already exists for this property", HttpStatus.CONFLICT);
+        }
+
+         // Step 3: Convert DTO to entity
+         CleaningTask cleaningTask = new CleaningTask();
+         cleaningTask.setProperty(property);
+         cleaningTask.setShift(CleaningTask.Shift.valueOf(taskDTO.getShift()));
+         cleaningTask.setStatus(CleaningTask.Status.Pending);
+         cleaningTask.setDate(parsed_date);
+ 
+        // Step 4: add the cleaning task
         try {
             cleaningTaskService.addCleaningTask(cleaningTask); // Use the new method
         } catch (NoAvailableWorkerException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-        } catch (RuntimeException e) {
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }catch (RuntimeException e) {
             return new ResponseEntity<>("An error occurred while creating the cleaning task: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
 

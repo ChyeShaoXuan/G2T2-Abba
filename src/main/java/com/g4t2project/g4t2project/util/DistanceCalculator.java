@@ -20,6 +20,7 @@ public class DistanceCalculator {
     }
 
     public double calculateDistance(double lat1, double lon1, double lat2, double lon2) throws Exception {
+        System.out.println("Calculating distance function called!!!!");
         // Initialize the GeoApiContext with the API key
         GeoApiContext context = new GeoApiContext.Builder()
                 .apiKey(googleMapsConfig.getApiKey())
@@ -34,6 +35,7 @@ public class DistanceCalculator {
 
         // Check if a valid route is found and return the distance in kilometers
         if (result.routes.length > 0) {
+            System.out.println("Time taken to travel by public transport: " + result.routes[0].legs[0].duration.inSeconds / 60.0);
             return result.routes[0].legs[0].distance.inMeters / 1000.0;  // Convert meters to kilometers
         } else {
             throw new Exception("No route found between the points.");

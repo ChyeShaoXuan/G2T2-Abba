@@ -27,10 +27,12 @@ INSERT INTO client (clientId, name, phoneNumber, email, adminId, packageId, work
 
 
 INSERT INTO Property (propertyId, clientId, packageId, address, latitude, longitude, numberOfRooms) VALUES
-(101, 1, 1, '123 Street', 1.12345, 103.12345,2),
-(102, 2, 2, '456 Avenue', 1.23456, 103.23456,3),
-(103, 3, 3, '789 Road', 1.34567, 103.34567,4),
-(104, 4, 4, '101 Boulevard', 1.45678, 103.45678,5);
+(101, 1, 1, 'Pasir Ris Sports Centre, 120 Pasir Ris Central, Singapore 519640', 1.3741178512573242, 103.9515151977539,2),
+(102, 2, 2, 'Boon Keng Ville, Block 17 Upper Boon Keng Rd, Boon Keng Ville, Singapore 380017', 1.3149851560592651, 103.87104797363281,3),
+(103, 3, 1, 'Woodlands Civic Centre, Block 900 South Woodlands Dr, Woodlands Civic Centre, Singapore 730900', 1.4352025985717773, 103.78697204589844,4),
+(104, 4, 2, '6 Holland Cl, Singapore', 1.3076527118682861, 103.79556274414062,5);
+(105, 5, 1, '81 Victoria St, Singapore 188065', 1.2963, 103.8502,5);
+
 
 
 INSERT INTO cleaningtask (taskId, propertyId, workerId, feedbackId, shift, status, date, Acknowledged) VALUES

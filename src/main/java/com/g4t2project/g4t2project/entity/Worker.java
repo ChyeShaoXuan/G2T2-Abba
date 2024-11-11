@@ -44,15 +44,15 @@ public class Worker {
     private String shortBio;
     private boolean deployed;
     private String tele_Id;
-    private int curPropertyId = 0;
+    private long curPropertyId = 100;
     private boolean available;
 
     @Column(name = "worker_hours_in_week")
-    private int worker_hours_in_week;
+    private Integer worker_hours_in_week;
 
     protected Worker() {}
 
-    public Worker(Admin admin, String name, String phoneNumber, String shortBio, boolean deployed, String tele_Id, int curPropertyId, int worker_hours_in_week) {
+    public Worker(Admin admin, String name, String phoneNumber, String shortBio, boolean deployed, String tele_Id, long curPropertyId, int worker_hours_in_week) {
         this.admin = admin;
         this.name = name;
         this.phoneNumber = phoneNumber;
@@ -102,11 +102,11 @@ public class Worker {
         return tele_Id;
     }
 
-    public int getCurPropertyId() {
+    public long getCurPropertyId() {
         return curPropertyId;
     }
 
-    public void setCurPropertyId(int curPropertyId) {
+    public void setCurPropertyId(long curPropertyId) {
         this.curPropertyId = curPropertyId;
     }
 
@@ -139,11 +139,6 @@ public class Worker {
     }
 
     public boolean isAvailableOn(LocalDate date, CleaningTask.Shift shift) {
-        // Check if the worker is deployed and available in general
-        if (!this.deployed || !this.available) {
-            return false;
-        }
-
         // Check if the worker has any conflicting tasks on the given date and shift
         for (CleaningTask task : cleaningTasks) {
             if (task.getDate().equals(date) && task.getShift() == shift) {
@@ -154,7 +149,7 @@ public class Worker {
         return true;
     }
 
-    public int getWorkerHoursInWeek() {
+    public Integer getWorkerHoursInWeek() {
         return worker_hours_in_week;
     }
 
