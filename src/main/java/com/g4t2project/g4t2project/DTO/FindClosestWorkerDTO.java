@@ -5,10 +5,10 @@ import java.time.LocalDate;
 
 public class FindClosestWorkerDTO {
     private Long propertyId;
-    private String shift;
+    private CleaningTask.Shift shift;
     private LocalDate date;
 
-    public FindClosestWorkerDTO(Long propertyId, String shift, LocalDate date) {
+    public FindClosestWorkerDTO(Long propertyId, CleaningTask.Shift shift, LocalDate date) {
         this.propertyId = propertyId;
         this.shift = shift;
         this.date = date;
@@ -20,10 +20,10 @@ public class FindClosestWorkerDTO {
     public void setPropertyId(Long propertyId) {
         this.propertyId = propertyId;
     }
-    public String getShift() {
+    public CleaningTask.Shift getShift() {
         return shift;
     }
-    public void setShift(String shift) {
+    public void setShift(CleaningTask.Shift shift) {
         this.shift = shift;
     }
     public LocalDate getDate() {

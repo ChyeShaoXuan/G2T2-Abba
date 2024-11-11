@@ -30,8 +30,8 @@ INSERT INTO Property (propertyId, clientId, packageId, address, latitude, longit
 (101, 1, 1, 'Pasir Ris Sports Centre, 120 Pasir Ris Central, Singapore 519640', 1.3741178512573242, 103.9515151977539,2),
 (102, 2, 2, 'Boon Keng Ville, Block 17 Upper Boon Keng Rd, Boon Keng Ville, Singapore 380017', 1.3149851560592651, 103.87104797363281,3),
 (103, 3, 1, 'Woodlands Civic Centre, Block 900 South Woodlands Dr, Woodlands Civic Centre, Singapore 730900', 1.4352025985717773, 103.78697204589844,4),
-(104, 4, 2, '6 Holland Cl, Singapore', 1.3076527118682861, 103.79556274414062,5);
-(105, 5, 1, '81 Victoria St, Singapore 188065', 1.2963, 103.8502,5);
+(104, 4, 2, '6 Holland Cl, Singapore', 1.3076527118682861, 103.79556274414062,5),
+(105, 5, 1, '81 Victoria St, Singapore 188065', 1.2963, 103.8502,5),
 (106, 2, 1, '13 Holland Dr, Singapore', 1.3093297481536865, 103.79297637939453,3);
 
 

@@ -126,14 +126,14 @@ public class CleaningTaskController {
         .orElseThrow(() -> new IllegalArgumentException("Property not found"));
     
         // Convert shift from String to CleaningTask.Shift enum
-        CleaningTask.Shift shift;
-        try {
-            shift = CleaningTask.Shift.valueOf(request.getShift());
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().build();
-        }
+        // CleaningTask.Shift shift;
+        // try {
+        //     shift = CleaningTask.Shift.valueOf(request.getShift());
+        // } catch (IllegalArgumentException e) {
+        //     return ResponseEntity.badRequest().build();
+        // }
         
-        Optional<Worker> closestWorker = cleaningTaskService.findClosestWorker(taskProperty, request.getDate(), shift);
+        Optional<Worker> closestWorker = cleaningTaskService.findClosestWorker(taskProperty, request.getDate(), request.getShift());
     
         return new ResponseEntity<>(closestWorker.orElse(null), HttpStatus.OK);
     }
