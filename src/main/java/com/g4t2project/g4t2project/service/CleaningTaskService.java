@@ -94,9 +94,6 @@ public class CleaningTaskService {
         double taskLon = taskProperty.getLongitude();
         System.out.println("Task lat: " + taskLat + " Task lon: " + taskLon);
 
-        Worker closestWorker = null;
-        double minDistance = Double.MAX_VALUE;
-
         // Fetch all workers
         List<Worker> allWorkers = workerRepository.findAll();
          for(Worker curWorker: allWorkers){
