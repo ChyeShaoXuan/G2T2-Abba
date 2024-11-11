@@ -21,16 +21,6 @@ import com.g4t2project.g4t2project.repository.CleaningTaskRepository;
 import com.g4t2project.g4t2project.repository.FeedbackRepository;
 import com.g4t2project.g4t2project.repository.LeaveApplicationRepository;
 import com.g4t2project.g4t2project.repository.PropertyRepository;
-import com.g4t2project.g4t2project.repository.FeedbackRepository;
-import com.g4t2project.g4t2project.service.NotificationService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import com.g4t2project.g4t2project.util.DistanceCalculator;
-
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 import com.g4t2project.g4t2project.repository.WorkerRepository;
 
 @Service
@@ -47,11 +37,8 @@ public class CleaningTaskService {
     @Autowired
     private NotificationService notificationService;
     @Autowired
-    private PropertyRepository propertyRepository; 
-    @Autowired
-    private DistanceCalculator distanceCalculator;
+    private PropertyRepository propertyRepository;
 
-    
     public void handleWorkerLeave(LeaveApplication leaveApplication) {
         Worker worker = leaveApplication.getWorker();
         List<CleaningTask> tasks = cleaningTaskRepository.findTasksByWorkerAndDate(worker, leaveApplication.getStartDate());
@@ -116,19 +103,22 @@ public class CleaningTaskService {
                     double workerLat = currentProperty.getLatitude();
                     double workerLon = currentProperty.getLongitude();
 
-                    try {
-                        double distance = distanceCalculator.calculateDistance(workerLat, workerLon, taskLat, taskLon);  // Use the DistanceCalculator
+                    double distance = calculateDistance(workerLat, workerLon, taskLat, taskLon);
 
-                        if (distance < minDistance) {
-                            minDistance = distance;
-                            closestWorker = worker;
+                    if (distance < minDistance) {
+
+                        try {
+                            //check if exceed 44h requirement
+                            if (check44h_Requirement(worker.getWorkerId(), taskDate, taskShift)) {
+                                minDistance = distance;
+                                closestWorker = worker;
+                            }
+                        } catch (RuntimeException e) {
+                            // Handle or log constraint violations if needed
+                            System.out.println("Worker " + worker.getWorkerId() + " cannot be assigned: " + e.getMessage());
                         }
-                    } catch (Exception e) {
-                        // Handle any error from DistanceCalculator
-                        e.printStackTrace();
                     }
-                   
-                } 
+                }
             }
         }
 
@@ -137,35 +127,30 @@ public class CleaningTaskService {
         System.out.println("HQ lat: " + hqLat + " HQ lon: " + hqLon);
         System.out.println("_________________________________________________________");
         System.out.println("_________________________________________________________");
-       
-        try {
-            double hqToTaskDistance = distanceCalculator.calculateDistance(hqLat, hqLon, taskLat, taskLon);  // Distance from HQ to task
+        double hqToTaskDistance = calculateDistance(hqLat, hqLon, taskLat, taskLon); // Distance from HQ to task
 
-            if (closestWorker == null || minDistance > hqToTaskDistance) {
-                List<Worker> hqWorkers = workerRepository.findAllNotDeployed(0);  // Fetch workers assigned to HQ
-                if (!hqWorkers.isEmpty()) {
-                    closestWorker = hqWorkers.get(0);  // Assign the first worker from HQ
-                }
+        // If no deployed worker was found, assign a worker from HQ
+        if (closestWorker == null || minDistance > hqToTaskDistance) {
+            List<Worker> hqWorkers = workerRepository.findAllNotDeployed(0); // Fetch workers assigned to HQ
+            if (!hqWorkers.isEmpty()) {
+                closestWorker = hqWorkers.get(0); // Assign the first worker from HQ since they are available
             }
-        } catch (Exception e) {
-            // Handle any error from DistanceCalculator
-            e.printStackTrace();
         }
 
         return Optional.ofNullable(closestWorker);
     }
 
-    // public double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
-    //     // using harvesine formula to calculate distance between two points
-    //     final int R = 6371; 
-    //     double latDistance = Math.toRadians(lat2 - lat1);
-    //     double lonDistance = Math.toRadians(lon2 - lon1);
-    //     double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2)
-    //             + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
-    //             * Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
-    //     double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    //     return R * c; // Distance in km
-    // }
+    public double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
+        // using harvesine formula to calculate distance between two points
+        final int R = 6371;
+        double latDistance = Math.toRadians(lat2 - lat1);
+        double lonDistance = Math.toRadians(lon2 - lon1);
+        double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2)
+                + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
+                * Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return R * c; // Distance in km
+    }
 
     public Property getPropertyById(Long propertyId) {
         return propertyRepository.findById(propertyId).orElse(null);
@@ -223,10 +208,10 @@ public class CleaningTaskService {
         return cleaningTaskRepository.save(existingTask);
     }
 
-    public CleaningTask assignTaskToWorkerWithConstraints(int taskId, Long workerId, LocalDate taskDate, CleaningTask.Shift shift) {
-        CleaningTask task = cleaningTaskRepository.findById(taskId)
-                .orElseThrow(() -> new RuntimeException("Task not found"));
-        Worker worker = workerRepository.findById(workerId)
+    public boolean check44h_Requirement(Integer workerId, LocalDate taskDate, CleaningTask.Shift shift) {
+        // CleaningTask task = cleaningTaskRepository.findById(taskId)
+        //         .orElseThrow(() -> new RuntimeException("Task not found"));
+        Worker worker = workerRepository.findById(workerId.longValue())
                 .orElseThrow(() -> new RuntimeException("Worker not found"));
 
         // Define shift times
@@ -261,24 +246,28 @@ public class CleaningTaskService {
         int currentWeeklyHours = worker.getWorkerHoursInWeek(); 
         int shiftDurationHours = (int) Duration.between(shiftStart, shiftEnd).toHours();
         if (currentWeeklyHours + shiftDurationHours > 44) {
-            throw new RuntimeException("Assigning this task will exceed the worker's 44-hour weekly limit.");
+            return false;
+            // throw new RuntimeException("Assigning this task will exceed the worker's 44-hour weekly limit.");
         }
 
-        // Adjust task assignment time to 2.5 hours before the shift start
-        LocalDateTime taskAssignmentTime = LocalDateTime.of(taskDate, shiftStart).minusHours(2).minusMinutes(30);
+        return true;
 
-        // assigning
-        task.setWorker(worker);
-        task.setStatus(CleaningTask.Status.Assigned);
-        task.setShift(shift);
-        task.setDate(taskDate);
+        // Adjust task assignment time to 2.5 hours before the shift start
+        // LocalDateTime taskAssignmentTime = LocalDateTime.of(taskDate, shiftStart).minusHours(2).minusMinutes(30);
+
+        // // assigning
+        // task.setWorker(worker);
+        // task.setStatus(CleaningTask.Status.Assigned);
+        // task.setShift(shift);
+        // task.setDate(taskDate);
 
         // task.setAssignedTime(taskAssignmentTime);
 
         // worker.setWorkerHoursInWeek(currentWeeklyHours + shiftDurationHours); //only after 'finished'
         // workerRepository.save(worker);
 
-        return cleaningTaskRepository.save(task);
+        // cleaningTaskRepository.save(task);
+
     }
 
 
