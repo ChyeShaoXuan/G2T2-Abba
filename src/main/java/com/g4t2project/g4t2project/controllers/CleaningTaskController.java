@@ -87,7 +87,7 @@ public class CleaningTaskController {
         return new ResponseEntity<>(updatedTaskDTO, HttpStatus.OK);
     }
 
-    // @GetMapping("/closest-worker")
+    // @GetMapping("/closestWorker")
     // public Optional<Worker> findClosestWorker(
     //         @RequestBody Long propertyId,
     //         @RequestBody String shift,
@@ -103,17 +103,22 @@ public class CleaningTaskController {
     //     return closestWorker;
     // }
 
-    @PostMapping("/closest-worker")
+    @PostMapping("/closestWorker")
     public ResponseEntity<Worker> findClosestWorker(@RequestBody FindClosestWorkerDTO request) {
         Property taskProperty = propertyRepository.findById(request.getPropertyId())
-            .orElseThrow(() -> new IllegalArgumentException("Property not found"));
+        .orElseThrow(() -> new IllegalArgumentException("Property not found"));
     
-        CleaningTask.Shift shift = CleaningTask.Shift.valueOf(request.getShift());
+        // Convert shift from String to CleaningTask.Shift enum
+        CleaningTask.Shift shift;
+        try {
+            shift = CleaningTask.Shift.valueOf(request.getShift());
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+        
         Optional<Worker> closestWorker = cleaningTaskService.findClosestWorker(taskProperty, request.getDate(), shift);
     
-        return closestWorker
-            .map(ResponseEntity::ok)
-            .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+        return closestWorker.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }
 }
  

@@ -48,7 +48,7 @@ export async function placeOrder(clientId: number, orderRequest: PlaceOrderReque
 
 export async function getNearestWorker(propertyId: number, shift: string, date: string): Promise<Worker | null> {
     try {
-        const response = await axios.post<Worker>('http://localhost:8080/cleaningTasks/nearest-worker', {
+        const response = await axios.post<Worker>('http://localhost:8080/cleaningTasks/closestWorker', {
             params: { propertyId, shift, date },
         });
         return response.data;
