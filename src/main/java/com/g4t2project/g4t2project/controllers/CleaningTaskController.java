@@ -113,12 +113,12 @@ public class CleaningTaskController {
         try {
             shift = CleaningTask.Shift.valueOf(request.getShift());
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+            return ResponseEntity.badRequest().build();
         }
         
         Optional<Worker> closestWorker = cleaningTaskService.findClosestWorker(taskProperty, request.getDate(), shift);
     
-        return closestWorker.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+        return new ResponseEntity<>(closestWorker.orElse(null), HttpStatus.OK);
     }
 }
  

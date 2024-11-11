@@ -95,16 +95,20 @@ public class CleaningTaskService {
         // First, try to find a deployed worker who is closest and available
         for (Worker worker : deployedWorkers) {
             if (worker.isAvailableOn(taskDate, taskShift)) {  // Ensure the worker is available on the task date and shift
+                System.out.println(taskDate);
+                System.out.println(taskShift);
                 int curWorkerPropertyId = worker.getCurPropertyId();
+                System.out.println(curWorkerPropertyId);
                 Optional<Property> currentPropertyOpt = propertyRepository.findById((long) curWorkerPropertyId);
-
+                System.out.println(currentPropertyOpt);
                 if (currentPropertyOpt.isPresent()) {
                     Property currentProperty = currentPropertyOpt.get();
+                    System.out.println(currentProperty);
                     double workerLat = currentProperty.getLatitude();
                     double workerLon = currentProperty.getLongitude();
-
+                    System.out.println("Worker " + worker.getWorkerId() + " lat: " + workerLat + " lon: " + workerLon);
                     double distance = calculateDistance(workerLat, workerLon, taskLat, taskLon);
-
+                    System.out.println(distance);
                     if (distance < minDistance) {
 
                         try {
