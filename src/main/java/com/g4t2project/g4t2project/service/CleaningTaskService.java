@@ -84,7 +84,7 @@ public class CleaningTaskService {
     }
 
 
-    private Optional<Worker> findClosestWorker(Property taskProperty, LocalDate taskDate, CleaningTask.Shift taskShift) {
+    public Optional<Worker> findClosestWorker(Property taskProperty, LocalDate taskDate, CleaningTask.Shift taskShift) {
         // Fetch only deployed workers
         List<Worker> deployedWorkers = workerRepository.findAllDeployed(0); 
         Worker closestWorker = null;

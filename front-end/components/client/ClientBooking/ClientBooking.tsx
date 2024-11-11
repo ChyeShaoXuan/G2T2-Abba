@@ -47,9 +47,8 @@ const ClientBooking: React.FC<ClientBookingProps> = ({ clientId }) => {
             setTimeout(() => {
                 setLoading(true);
                 setSuccessMessage(false);
-
                 setTimeout(() => {
-                    router.push(`/client/nearest-worker`);
+                    router.push(`/client/NearestWorker`);
                 }, 1000); 
             }, 1000); // Show success message for 1 second
         } catch (err) {

@@ -9,12 +9,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.util.List;
-import com.g4t2project.g4t2project.DTO.OverwriteCleaningTaskDTO;
-import com.g4t2project.g4t2project.DTO.cleaningTaskDTO;
+import com.g4t2project.g4t2project.DTO.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-
+import java.util.Optional;
+import com.g4t2project.g4t2project.repository.*;
+import com.g4t2project.g4t2project.service.*;
 
 @RestController
 @RequestMapping("/cleaningTasks")
@@ -23,6 +24,9 @@ public class CleaningTaskController {
 
     @Autowired
     private CleaningTaskService cleaningTaskService;
+
+    @Autowired
+    private PropertyRepository propertyRepository;
 
     @PostMapping
     public ResponseEntity<String> createCleaningTask(@RequestBody cleaningTaskDTO taskDTO, @RequestParam Long clientId) {
@@ -81,6 +85,34 @@ public class CleaningTaskController {
         CleaningTask updatedTask = cleaningTaskService.updateCleaningTask(taskDTO);
         OverwriteCleaningTaskDTO updatedTaskDTO = cleaningTaskService.convertToDTO(updatedTask);
         return new ResponseEntity<>(updatedTaskDTO, HttpStatus.OK);
+    }
+
+    // @GetMapping("/closest-worker")
+    // public Optional<Worker> findClosestWorker(
+    //         @RequestBody Long propertyId,
+    //         @RequestBody String shift,
+    //         @RequestBody String date
+    // ) {
+    //     LocalDate taskDate = LocalDate.parse(date);
+    //     CleaningTask.Shift taskShift = CleaningTask.Shift.valueOf(shift);
+
+    //     Property taskProperty = propertyRepository.findById(propertyId).orElseThrow(() -> new IllegalArgumentException("Property not found"));
+
+    //     Optional<Worker> closestWorker = cleaningTaskService.findClosestWorker(taskProperty, taskDate, taskShift);
+
+    //     return closestWorker;
+    // }
+
+    @PostMapping("/closest-worker")
+    public ResponseEntity<Worker> findClosestWorker(@RequestBody FindClosestWorkerDTO request) {
+        Property taskProperty = propertyRepository.findById(request.getPropertyId())
+            .orElseThrow(() -> new IllegalArgumentException("Property not found"));
+    
+        Optional<Worker> closestWorker = cleaningTaskService.findClosestWorker(taskProperty, request.getDate(), request.getShift());
+    
+        return closestWorker
+            .map(ResponseEntity::ok)
+            .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }
 }
  

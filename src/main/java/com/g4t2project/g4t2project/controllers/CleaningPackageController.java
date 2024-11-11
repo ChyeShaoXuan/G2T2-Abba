@@ -13,6 +13,8 @@ import com.g4t2project.g4t2project.entity.CleaningPackage.PropertyType;
 
 @RestController
 @RequestMapping("/packages")
+@CrossOrigin(origins = "http://localhost:3000")
+
 public class CleaningPackageController {
 
     @Autowired
