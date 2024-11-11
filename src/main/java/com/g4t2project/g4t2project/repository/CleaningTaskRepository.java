@@ -31,4 +31,7 @@ public interface CleaningTaskRepository extends JpaRepository<CleaningTask, Inte
     @Query("DELETE FROM CleaningTask p WHERE p.worker.workerId = :workerId")
     void deleteTaskByWorkerId(Long workerId);
 
+    @Query("SELECT ct FROM CleaningTask ct WHERE ct.property.propertyId = :propertyId AND ct.date = :date AND ct.shift = :shift")
+    Optional<CleaningTask> findTaskByDateShiftProperty(Long propertyId, LocalDate date, CleaningTask.Shift shift);
+
 }

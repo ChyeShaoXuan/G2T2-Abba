@@ -23,7 +23,6 @@ public class Property {
     private String address;
     private double latitude;
     private double longitude;
-    // private String postalCode;
 
     protected Property() {}
 

@@ -22,6 +22,7 @@ import com.g4t2project.g4t2project.repository.FeedbackRepository;
 import com.g4t2project.g4t2project.repository.LeaveApplicationRepository;
 import com.g4t2project.g4t2project.repository.PropertyRepository;
 import com.g4t2project.g4t2project.repository.WorkerRepository;
+import com.g4t2project.g4t2project.util.DistanceCalculator;
 
 @Service
 public class CleaningTaskService {
@@ -38,6 +39,8 @@ public class CleaningTaskService {
     private NotificationService notificationService;
     @Autowired
     private PropertyRepository propertyRepository;
+    @Autowired
+    private DistanceCalculator distanceCalculator;
 
     public void handleWorkerLeave(LeaveApplication leaveApplication) {
         Worker worker = leaveApplication.getWorker();
@@ -64,13 +67,13 @@ public class CleaningTaskService {
     public void addCleaningTask(CleaningTask cleaningTask) {
         // Retrieve the Property based on the propertyId from the task
         Property property = cleaningTask.getProperty();
-        System.out.println("Property found: " + property);
+
+        System.out.println("Creating new task......");
         // Find the closest worker based on proximity to the property
         Optional<Worker> closestWorkerOpt = findClosestWorker(property, cleaningTask.getDate(), cleaningTask.getShift());
 
         if (closestWorkerOpt.isPresent()) {
             Worker closestWorker = closestWorkerOpt.get();
-            closestWorker.setAvailable(false); // Set the worker as unavailable
             cleaningTask.setWorker(closestWorker); // Assign the worker to the task
             cleaningTask.setStatus(CleaningTask.Status.Assigned); // Set the status
             cleaningTaskRepository.save(cleaningTask); // Save the task
@@ -90,74 +93,78 @@ public class CleaningTaskService {
         double taskLat = taskProperty.getLatitude();
         double taskLon = taskProperty.getLongitude();
         System.out.println("Task lat: " + taskLat + " Task lon: " + taskLon);
-        System.out.println("_________________________________________________________");
 
-        // First, try to find a deployed worker who is closest and available
-        for (Worker worker : deployedWorkers) {
-            if (worker.isAvailableOn(taskDate, taskShift)) {  // Ensure the worker is available on the task date and shift
-                System.out.println(taskDate);
-                System.out.println(taskShift);
-                int curWorkerPropertyId = worker.getCurPropertyId();
-                System.out.println(curWorkerPropertyId);
-                Optional<Property> currentPropertyOpt = propertyRepository.findById((long) curWorkerPropertyId);
-                System.out.println(currentPropertyOpt);
-                if (currentPropertyOpt.isPresent()) {
-                    Property currentProperty = currentPropertyOpt.get();
-                    System.out.println(currentProperty);
-                    double workerLat = currentProperty.getLatitude();
-                    double workerLon = currentProperty.getLongitude();
-                    System.out.println("Worker " + worker.getWorkerId() + " lat: " + workerLat + " lon: " + workerLon);
-                    double distance = calculateDistance(workerLat, workerLon, taskLat, taskLon);
-                    System.out.println(distance);
-                    if (distance < minDistance) {
+        Worker closestWorker = null;
+        double minDistance = Double.MAX_VALUE;
 
-                        try {
-                            //check if exceed 44h requirement
-                            if (check44h_Requirement(worker.getWorkerId(), taskDate, taskShift)) {
-                                minDistance = distance;
-                                closestWorker = worker;
-                            }
-                        } catch (RuntimeException e) {
-                            // Handle or log constraint violations if needed
-                            System.out.println("Worker " + worker.getWorkerId() + " cannot be assigned: " + e.getMessage());
+        // Fetch all workers
+        List<Worker> allWorkers = workerRepository.findAll();
+         for(Worker curWorker: allWorkers){
+            if(curWorker.isAvailableOn(taskDate, taskShift)){
+                Long curWorkerPropId = (long)curWorker.getCurPropertyId();
+                Optional<Property> curWorkerProperty = propertyRepository.findById(curWorkerPropId);
+                // If the property exists, calculate the distance
+                if (curWorkerProperty.isPresent() && check44Hours(curWorker)) {
+                    Property property = curWorkerProperty.get();
+                    double workerLat = property.getLatitude();
+                    double workerLon = property.getLongitude();
+                    System.out.println("curWorkerId: " + curWorker.getWorkerId());
+                    System.out.println("curWorker location: " + property.getAddress());
+                    System.out.println("WorkerLat: " + workerLat + " WorkerLong: " + workerLon + " Task lat: " + taskLat + " Task lon: " + taskLon);
+
+                    try {
+                        // Calculate the distance between the worker and the task
+                        double distance = distanceCalculator.calculateDistance(workerLat, workerLon, taskLat, taskLon);
+        
+                        // Update closest worker if a closer one is found
+                        if (distance < minDistance) {
+                            minDistance = distance;
+                            closestWorker = curWorker;
+                            System.out.println("New closest worker ID: " + curWorker.getWorkerId() + " with distance: " + distance);
                         }
+                    } catch (Exception e) {
+                        System.err.println("Error calculating distance for worker ID: " + curWorker.getWorkerId());
+                        e.printStackTrace();
                     }
+
+
                 }
             }
         }
 
-        double hqLat = propertyRepository.findById(100L).get().getLatitude(); // Fetch HQ latitude
-        double hqLon = propertyRepository.findById(100L).get().getLongitude(); // Fetch HQ latitude;
-        System.out.println("HQ lat: " + hqLat + " HQ lon: " + hqLon);
-        System.out.println("_________________________________________________________");
-        System.out.println("_________________________________________________________");
-        double hqToTaskDistance = calculateDistance(hqLat, hqLon, taskLat, taskLon); // Distance from HQ to task
 
-        // If no deployed worker was found, assign a worker from HQ
-        if (closestWorker == null || minDistance > hqToTaskDistance) {
-            List<Worker> hqWorkers = workerRepository.findAllNotDeployed(0); // Fetch workers assigned to HQ
-            if (!hqWorkers.isEmpty()) {
-                closestWorker = hqWorkers.get(0); // Assign the first worker from HQ since they are available
-            }
+        if (closestWorker != null) {
+            System.out.println("Closest worker found: Worker ID " + closestWorker.getWorkerId() + " at distance " + minDistance);
+        } else {
+            System.out.println("No available worker found for the task.");
         }
-
+        
         return Optional.ofNullable(closestWorker);
     }
-
-    public double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
-        // using harvesine formula to calculate distance between two points
-        final int R = 6371;
-        double latDistance = Math.toRadians(lat2 - lat1);
-        double lonDistance = Math.toRadians(lon2 - lon1);
-        double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2)
-                + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
-                * Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
-        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        return R * c; // Distance in km
+    
+    public Property getPropertyById(Long propertyId) {
+        System.out.println("Getting property by id...");
+        Property property = propertyRepository.findById(propertyId).orElse(null);
+        System.out.println(property);
+        System.out.println("Found property!!");
+        return property;
     }
 
-    public Property getPropertyById(Long propertyId) {
-        return propertyRepository.findById(propertyId).orElse(null);
+    public boolean existsByDateAndShiftAndProperty(LocalDate date, CleaningTask.Shift shift, Property property) {
+        Long propId = (long)property.getPropertyId();
+        return cleaningTaskRepository.findTaskByDateShiftProperty(propId, date, shift).isPresent();
+    }
+
+    public boolean check44Hours(Worker worker) {
+        System.out.println("Checking 44 hours for worker ID: " + worker.getWorkerId());
+        Integer hours = worker.getWorkerHoursInWeek();
+        if (hours == null) {
+            return true;
+        }
+        if(hours + 4 < 44) {
+            return true;
+        }
+        return false;
     }
 
     public List<CleaningTask> getCleaningTasksByClient(Integer clientId) {

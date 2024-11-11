@@ -6,12 +6,14 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.databind.annotation.JsonAppend.Prop;
 import com.g4t2project.g4t2project.entity.CleaningTask;
 import com.g4t2project.g4t2project.entity.LeaveApplication;
 import com.g4t2project.g4t2project.entity.Worker;
 import com.g4t2project.g4t2project.repository.CleaningTaskRepository;
 import com.g4t2project.g4t2project.repository.LeaveApplicationRepository;
 import com.g4t2project.g4t2project.repository.WorkerRepository;
+import com.g4t2project.g4t2project.entity.Property;
 
 @Service
 public class WorkerService {
@@ -74,6 +76,27 @@ public class WorkerService {
 
     public List<Long> getAllWorkerIds() {
         return workerRepository.findAllWorkerIds();
+    }
+
+    // function that updates the status of a task to progress
+    public boolean updateToProgress(int taskId, Long workerId) {
+        Optional<CleaningTask> taskOpt = cleaningTaskRepository.findById(taskId);
+        Optional<Worker> workerOpt = workerRepository.findById(workerId);
+
+        if (taskOpt.isPresent() && workerOpt.isPresent()) {
+            CleaningTask task = taskOpt.get();
+            Worker worker = workerOpt.get();
+            Property property = task.getProperty();
+            Long propId = property.getPropertyId();
+
+            if (task.getWorker().equals(worker) && task.getStatus() == CleaningTask.Status.Accepted) {
+                task.setStatus(CleaningTask.Status.InProgress);
+                cleaningTaskRepository.save(task);
+                worker.setCurPropertyId(propId);
+                return true;
+            }
+        }
+        return false;
     }
 
 
