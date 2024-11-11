@@ -95,7 +95,7 @@ public class CleaningTaskService {
 
         // Fetch all workers
         List<Worker> allWorkers = workerRepository.findAll();
-        for(Worker curWorker: allWorkers){
+         for(Worker curWorker: allWorkers){
             if(curWorker.isAvailableOn(taskDate, taskShift)){
                 Long curWorkerPropId = (long)curWorker.getCurPropertyId();
                 Optional<Property> curWorkerProperty = propertyRepository.findById(curWorkerPropId);
@@ -152,7 +152,11 @@ public class CleaningTaskService {
     }
 
     public boolean check44Hours(Worker worker) {
+        System.out.println("Checking 44 hours for worker ID: " + worker.getWorkerId());
         Integer hours = worker.getWorkerHoursInWeek();
+        if (hours == null) {
+            return true;
+        }
         if(hours + 4 < 44) {
             return true;
         }

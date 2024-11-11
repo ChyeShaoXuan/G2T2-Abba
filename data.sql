@@ -32,6 +32,8 @@ INSERT INTO Property (propertyId, clientId, packageId, address, latitude, longit
 (103, 3, 1, 'Woodlands Civic Centre, Block 900 South Woodlands Dr, Woodlands Civic Centre, Singapore 730900', 1.4352025985717773, 103.78697204589844,4),
 (104, 4, 2, '6 Holland Cl, Singapore', 1.3076527118682861, 103.79556274414062,5);
 (105, 5, 1, '81 Victoria St, Singapore 188065', 1.2963, 103.8502,5);
+(106, 2, 1, '13 Holland Dr, Singapore', 1.3093297481536865, 103.79297637939453,3);
+
 
 
 
