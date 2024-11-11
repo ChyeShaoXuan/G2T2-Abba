@@ -22,6 +22,7 @@ import com.g4t2project.g4t2project.repository.FeedbackRepository;
 import com.g4t2project.g4t2project.repository.LeaveApplicationRepository;
 import com.g4t2project.g4t2project.repository.PropertyRepository;
 import com.g4t2project.g4t2project.repository.WorkerRepository;
+import com.g4t2project.g4t2project.util.DistanceCalculator;
 
 @Service
 public class CleaningTaskService {
@@ -38,6 +39,8 @@ public class CleaningTaskService {
     private NotificationService notificationService;
     @Autowired
     private PropertyRepository propertyRepository;
+    @Autowired
+    private DistanceCalculator distanceCalculator;
 
     public void handleWorkerLeave(LeaveApplication leaveApplication) {
         Worker worker = leaveApplication.getWorker();
