@@ -84,6 +84,15 @@ public class CleaningTaskController {
         return new ResponseEntity<>("Cleaning task created successfully", HttpStatus.CREATED);
     }
 
+    // Function to get all cleaning tasks for a worker
+    @GetMapping("/{workerId}")
+    public ResponseEntity<List<OverwriteCleaningTaskDTO>> getWorkerCleaningTask(@PathVariable Integer workerId) {
+        List<OverwriteCleaningTaskDTO> tasks = cleaningTaskService.getCleaningTasksById(workerId);
+        System.out.println("Workers cleaning tasks: ");
+        System.out.println(tasks);
+        return new ResponseEntity<>(tasks, HttpStatus.OK);
+    }
+
     @GetMapping
     public ResponseEntity<List<CleaningTask>> getCleaningTasks(@RequestParam Integer clientId) {
         List<CleaningTask> tasks = cleaningTaskService.getCleaningTasksByClient(clientId);

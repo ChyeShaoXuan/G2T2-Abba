@@ -26,6 +26,9 @@ public interface CleaningTaskRepository extends JpaRepository<CleaningTask, Inte
     Optional<CleaningTask> findTaskByWorker(@Param("worker") Worker worker);
 
 
+    @Query("SELECT t FROM CleaningTask t WHERE t.worker.workerId = :workerId")
+    List<CleaningTask> findTasksByWorker(@Param("workerId") Integer workerId);
+
     @Modifying
     @Transactional
     @Query("DELETE FROM CleaningTask p WHERE p.worker.workerId = :workerId")

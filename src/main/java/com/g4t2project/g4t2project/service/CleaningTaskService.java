@@ -278,5 +278,13 @@ public class CleaningTaskService {
 
     }
 
-
+    public List<OverwriteCleaningTaskDTO> getCleaningTasksById(Integer workerId) {
+        List<CleaningTask> workerTasks = cleaningTaskRepository.findTasksByWorker(workerId);
+        System.out.println("----------------------------------");
+        System.out.println("Worker's cleaning tasks: ");
+        System.out.println(workerTasks);
+        return workerTasks.stream()
+        .map(this::convertToDTO)
+        .collect(Collectors.toList());
+    }
 }
