@@ -15,9 +15,40 @@ INSERT INTO worker (WorkerId, adminId, name, phoneNumber, shortBio, deployed, te
 
 INSERT INTO cleaningpackage (packageId, packageType, price, hours, hourly_rate, property_details, pax, manualBookingRequired, propertyType) VALUES
 (1, 'Weekly', 200, 5, 40, '2-bedroom apartment', 2, false, 'Hdb'),
-(2, 'BiWeekly', 350, 10, 35, '3-bedroom house with garden', 4, false, 'Condominium'),
+(2, 'BiWeekly', 350, 10, 35, '3-bedroom house with garden', 3, false, 'Condominium'),
 (3, 'Weekly', 150, 3, 50, 'Studio apartment', 1, false, 'Landed'),
-(4, 'BiWeekly', 500, 15, 33, '4-bedroom family home', 6, True, 'Hdb');
+(4, 'BiWeekly', 500, 15, 33, '4-bedroom family home', 6, true, 'Hdb');
+
+-- To replace 0 with null for price and hourly_rate after changing entity
+INSERT INTO cleaningpackage (packageId, packageType, propertyType, price, hours, hourly_rate, pax, manualBookingRequired, property_details) VALUES
+-- Weekly
+-- HDB Packages
+(5, 'Weekly', 'Hdb', 0, 2, 0, 0, true, '2 Bedrooms and Below'),
+(6, 'Weekly', 'Hdb', 276, 3, 23, 1, false, '3-Room'),
+(7, 'Weekly', 'Hdb', 336, 4, 21, 1, false, '4-Room'),
+(8, 'Weekly', 'Hdb', 0, 5, 0, 0, true, '5 Bedrooms or More'),
+
+-- Condominium Packages
+(9, 'Weekly', 'Condominium', 276, 3, 23, 1, false, '2 Bedroom and below'),
+(10, 'Weekly', 'Condominium', 336, 4, 21, 1, false, '3 Bedroom'),
+(11, 'Weekly', 'Condominium', 0, 5, 0, 0, true, '4 Bedrooms or More'),
+
+-- Night Shift Packages for Condominium
+(12, 'Weekly', 'Condominium', 0, 2.5, 19, 1, true, '2-3 Bedroom Night Shift (After 7 pm)'),
+(13, 'Weekly', 'Condominium', 0, 3, 19, 1, true, '2-3 Bedroom Night Shift (After 6 pm)'),
+(14, 'Weekly', 'Condominium', 0, 4, 18, 1, true, '2-3 Bedroom Night Shift (After 6 pm)');
+
+-- Insert Bi-weekly packages into the cleaningpackage table
+INSERT INTO cleaningpackage (packageId, packageType, price, hours, hourly_rate, property_details, pax, manualBookingRequired, propertyType) VALUES
+(15, 'BiWeekly', 138.00, 3, 23, 'Promotion Bi-weekly - 3 hours', 1, false, 'Hdb'),
+(16, 'BiWeekly', 168.00, 4, 21, 'Promotion Bi-weekly - 4 hours', 1, false, 'Hdb'),
+(17, 'BiWeekly', 0, 5, 0, 'Promotion Bi-weekly - 5 hours, contact sales', 1, true, 'Hdb');
+
+-- Insert Landed property information for manual booking
+INSERT INTO cleaningpackage (packageId, packageType, price, hours, hourly_rate, property_details, pax, manualBookingRequired, propertyType) VALUES
+(18, 'BiWeekly', 0, 0, 0, 'Landed property cleaning, contact sales', 0, true, 'Landed');
+
+
 
 INSERT INTO client (clientId, name, phoneNumber, email, adminId, packageId, workerId) VALUES
 (1, 'John Doe', '123-456-7890', 'johndoe@example.com', 1,1,1),
