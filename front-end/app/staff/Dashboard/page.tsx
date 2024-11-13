@@ -10,7 +10,7 @@ const WorkerDashboard = () => {
     return (
         <div>
             <Navbar/>
-            <p class='ml-4'>Welcome to your Dashboard. Here you can view your profile, tasks, and manage your work schedule.</p>
+            <p className='ml-4'>Welcome to your Dashboard. Here you can view your profile, tasks, and manage your work schedule.</p>
             <DashboardInfo/>
             <FinishedJobs/>
         </div>

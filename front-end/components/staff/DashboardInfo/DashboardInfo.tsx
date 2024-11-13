@@ -1,6 +1,3 @@
-// DashboardInfo.tsx
-
-
 'use client'
 
 import { useState, useEffect } from 'react'
@@ -40,7 +37,7 @@ export default function DashboardInfo() {
     }
 
     fetchWorkers()
-  }, [])
+  }, [username])
 
   return (
     <div className="container mx-auto p-4">
