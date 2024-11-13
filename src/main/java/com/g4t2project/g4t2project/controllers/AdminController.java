@@ -143,4 +143,16 @@ public class AdminController {
         Integer workerId = workerService.getWorkerIdByUsername(username);
         return ResponseEntity.ok(workerId);
     }
+
+    @GetMapping("/users")
+    public ResponseEntity<List<UserDTO>> getAllUsers() {
+        List<UserDTO> users = adminService.getAllUsers();
+        return ResponseEntity.ok(users);
+    }
+
+    @PutMapping("/users/{userId}/role")
+    public ResponseEntity<User> updateUserRole(@PathVariable Long userId, @RequestParam String role) {
+        User updatedUser = adminService.updateUserRole(userId, role);
+        return ResponseEntity.ok(updatedUser);
+    }
 }

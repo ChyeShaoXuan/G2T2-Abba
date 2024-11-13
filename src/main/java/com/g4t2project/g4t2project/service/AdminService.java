@@ -2,11 +2,7 @@ package com.g4t2project.g4t2project.service;
 
 import java.time.Duration;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,29 +11,16 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.g4t2project.g4t2project.DTO.ClientDTO;
 import com.g4t2project.g4t2project.DTO.StatsDTO;
-import com.g4t2project.g4t2project.entity.Admin;
-import com.g4t2project.g4t2project.entity.CleaningPackage;
-import com.g4t2project.g4t2project.entity.CleaningTask;
-import com.g4t2project.g4t2project.entity.Client;
-import com.g4t2project.g4t2project.entity.JobStats;
-import com.g4t2project.g4t2project.entity.LeaveApplication;
-import com.g4t2project.g4t2project.entity.LeaveStats;
-import com.g4t2project.g4t2project.entity.Property;
-import com.g4t2project.g4t2project.entity.Worker;
-import com.g4t2project.g4t2project.entity.WorkerHours;
-import com.g4t2project.g4t2project.repository.AdminRepository;
-import com.g4t2project.g4t2project.repository.CleaningPackageRepository;
-import com.g4t2project.g4t2project.repository.CleaningTaskRepository;
-import com.g4t2project.g4t2project.repository.ClientRepository;
-import com.g4t2project.g4t2project.repository.JobStatsRepository;
-import com.g4t2project.g4t2project.repository.LeaveApplicationRepository;
-import com.g4t2project.g4t2project.repository.LeaveStatsRepository;
-import com.g4t2project.g4t2project.repository.PropertyRepository;
-import com.g4t2project.g4t2project.repository.WorkerHoursRepository;
-import com.g4t2project.g4t2project.repository.WorkerRepository;
+import com.g4t2project.g4t2project.DTO.UserDTO;
+import com.g4t2project.g4t2project.entity.*;
+import com.g4t2project.g4t2project.repository.*;
 
 @Service
 public class AdminService {
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private RoleRepository roleRepository;
 
 
     @Autowired
@@ -288,6 +271,44 @@ public class AdminService {
                 .map(Worker::getWorkerId)
                 .distinct()
                 .collect(Collectors.toList());
+    }
+
+    public List<UserDTO> getAllUsers() {
+        List<User> users = userRepository.findAll();
+        return users.stream()
+                .filter(user -> "Admin".equals(user.getRole()) || "Worker".equals(user.getRole()))
+                .map(user -> new UserDTO(
+                        user.getUserId(),
+                        user.getName(),
+                        user.getEmail(),
+                        user.getPhoneNumber(),
+                        user.getRole()
+                ))
+                .collect(Collectors.toList());
+    }
+
+
+    @Transactional
+    public User updateUserRole(Long userId, String roleName) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        user.setRole(roleName);
+
+        // Update user_roles table
+        Set<Role> roles = new HashSet<>();
+        if ("Admin".equals(roleName)) {
+            Role adminRole = roleRepository.findByName("ROLE_ADMIN")
+                    .orElseThrow(() -> new RuntimeException("Role not found"));
+            roles.add(adminRole);
+        } else if ("Worker".equals(roleName)) {
+            Role workerRole = roleRepository.findByName("ROLE_USER")
+                    .orElseThrow(() -> new RuntimeException("Role not found"));
+            roles.add(workerRole);
+        }
+        user.setRoles(roles);
+
+        return userRepository.save(user);
     }
     
 
