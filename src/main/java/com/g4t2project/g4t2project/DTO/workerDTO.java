@@ -17,5 +17,50 @@ public class workerDTO {
         this.password = password;
     }
 
+    private String name;
+    private String phoneNumber;
+    private String shortBio;
+    private boolean available;
+
+    public workerDTO(Long workerId, String name, String phoneNumber, String shortBio, boolean available) {
+        this.workerId = workerId;
+        this.name = name;
+        this.phoneNumber = phoneNumber;
+        this.shortBio = shortBio;
+        this.available = available;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public String getShortBio() {
+        return shortBio;
+    }
+
+    public void setShortBio(String shortBio) {
+        this.shortBio = shortBio;
+    }
+
+    public boolean isAvailable() {
+        return available;
+    }
+
+    public void setAvailable(boolean available) {
+        this.available = available;
+    }
+
 }
 
