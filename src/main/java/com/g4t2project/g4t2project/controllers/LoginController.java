@@ -3,11 +3,18 @@ package com.g4t2project.g4t2project.controllers;
 import com.g4t2project.g4t2project.DTO.LoginRequest;
 import com.g4t2project.g4t2project.DTO.LoginResponse;
 import com.g4t2project.g4t2project.entity.User;
+import com.g4t2project.g4t2project.entity.Role;
 import com.g4t2project.g4t2project.repository.UserRepository;
+import com.g4t2project.g4t2project.service.CustomUserDetailsService;
 import com.g4t2project.g4t2project.util.JwtUtil;
+
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -21,6 +28,9 @@ public class LoginController {
     private BCryptPasswordEncoder passwordEncoder;
 
     @Autowired
+    private CustomUserDetailsService customUserDetailsService;
+
+    @Autowired
     private JwtUtil jwtUtil;
 
     @Autowired
@@ -28,7 +38,7 @@ public class LoginController {
         this.passwordEncoder = passwordEncoder;
     }
 
-    @PostMapping("/login")
+@PostMapping("/login")
 public ResponseEntity<?> loginUser(@RequestBody LoginRequest loginRequest) {
     try {
         String username = loginRequest.getUsername();
@@ -58,12 +68,25 @@ public ResponseEntity<?> loginUser(@RequestBody LoginRequest loginRequest) {
         String token = jwtUtil.generateToken(isExistingUser.getUsername(), isExistingUser.getRole());
 
         // Return success if all checks pass
-        return ResponseEntity.ok().body(new LoginResponse("Login successful", token, isExistingUser.getUsername(), isExistingUser.getRole()));
+        return ResponseEntity.ok().body(new LoginResponse(
+                    "Login successful",
+                    token,
+                    isExistingUser.getName(),
+                    isExistingUser.getRole(),
+                    isExistingUser.getRoles().stream().map(Role::getName).collect(Collectors.toList())
+            ));
 
     } catch (Exception e) {
         e.printStackTrace();
         return ResponseEntity.status(500).body("Internal server error");
     }
+}
+
+@GetMapping("/user")
+public ResponseEntity<User> getUser(@AuthenticationPrincipal UserDetails userDetails) {
+    String username = userDetails.getUsername();
+    User user = customUserDetailsService.loadUserEntityByUsername(username);
+    return ResponseEntity.ok(user);
 }
 
 

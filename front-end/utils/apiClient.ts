@@ -15,6 +15,7 @@ export interface CleaningTaskDTO {
     shift: string;
     date: string;
     acknowledged: boolean;
+    worker: Worker
 }
 
 export interface Worker {
@@ -22,12 +23,12 @@ export interface Worker {
     name: string
     phoneNumber: string
     shortBio: string
-    deployed: boolean
-    tele_Id: string
-    curPropertyId: number
+    // deployed: boolean
+    // tele_Id: string
+    // curPropertyId: number
     available: boolean
-    adminId: number
-    worker_hours_in_week: number
+    // adminId: number
+    // worker_hours_in_week: number
 }
 
 export async function placeOrder(clientId: number, orderRequest: PlaceOrderRequestDTO): Promise<CleaningTaskDTO> {
@@ -46,14 +47,14 @@ export async function placeOrder(clientId: number, orderRequest: PlaceOrderReque
     }
 }
 
-export async function getNearestWorker(propertyId: number, shift: string, date: string): Promise<Worker | null> {
-    try {
-        const response = await axios.post<Worker>('http://localhost:8080/cleaningTasks/closestWorker', {
-            params: { propertyId, shift, date },
-        });
-        return response.data;
-    } catch (error) {
-        console.error("Error fetching nearest worker:", error);
-        return null;
-    }
-}
+// export async function getNearestWorker(propertyId: number, shift: string, date: string): Promise<Worker | null> {
+//     try {
+//         const response = await axios.post<Worker>('http://localhost:8080/cleaningTasks/closestWorker', {
+//             params: { propertyId, shift, date },
+//         });
+//         return response.data;
+//     } catch (error) {
+//         console.error("Error fetching nearest worker:", error);
+//         return null;
+//     }
+// }

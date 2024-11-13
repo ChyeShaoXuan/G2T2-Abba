@@ -25,6 +25,10 @@ public interface CleaningTaskRepository extends JpaRepository<CleaningTask, Inte
     @Query("SELECT t FROM CleaningTask t WHERE t.worker = :worker")
     Optional<CleaningTask> findTaskByWorker(@Param("worker") Worker worker);
 
+    
+
+    @Query("SELECT t FROM CleaningTask t WHERE t.worker.workerId = :workerId")
+    List<CleaningTask> findTasksByWorker(@Param("workerId") Integer workerId);
 
     @Modifying
     @Transactional

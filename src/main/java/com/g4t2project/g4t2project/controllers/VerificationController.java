@@ -37,7 +37,7 @@ public class VerificationController {
         } catch (RuntimeException e) {
             System.out.println("Verification failed: " + e.getMessage());
             String failedUrl = "http://localhost:3000/auth/verify-success?status=failed";
-            String failedHtml = "<html><body><p>Verification failed: " + e.getMessage() + ". Click <a href=\"" + failedUrl + "\">here</a> to try again.</p></body></html>";
+            String failedHtml = "<html><body><p>Verification failed: " + e.getMessage() + ". Click <a href=\"" + failedUrl + "\">here</a> to find out more.</p></body></html>";
             return ResponseEntity.badRequest().body(failedHtml);
         } catch (Exception e) {
             System.out.println("An error occurred: " + e.getMessage());

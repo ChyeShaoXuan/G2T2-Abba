@@ -5,12 +5,14 @@ public class cleaningTaskDTO {
     private String shift;
     private String date;
     private boolean acknowledged;
+    private workerDTO worker;
     
-    public cleaningTaskDTO(Long propertyId, String shift, String date, boolean acknowledged) {
+    public cleaningTaskDTO(Long propertyId, String shift, String date, boolean acknowledged, workerDTO worker) {
         this.propertyId = propertyId;
         this.shift = shift;
         this.date = date;
         this.acknowledged = acknowledged;
+        this.worker = worker;
     }   
 
     public Long getPropertyId() {    
@@ -45,5 +47,11 @@ public class cleaningTaskDTO {
         this.acknowledged = acknowledged;
     }
 
+    public workerDTO getWorker() {
+        return worker;
+    }
 
+    public void setWorker(workerDTO worker) {
+        this.worker = worker;
+    }
 }

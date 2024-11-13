@@ -49,8 +49,11 @@ public class ClientService {
     }
 
     public cleaningTaskDTO convertToCleaningTaskDTO(CleaningTask task) {
+        Worker worker = task.getWorker();
+        workerDTO workerDTO = new workerDTO(Long.valueOf(worker.getWorkerId()), worker.getName(), worker.getPhoneNumber(), worker.getShortBio(), worker.isAvailable());
+        // workerDTO workerDTO = new workerDTO(Long.valueOf(task.getWorker().getWorkerId()), task.getWorker().getName(), task.getWorker().getPhoneNumber());
         Long propertyId = task.getProperty().getPropertyId();
-        return new cleaningTaskDTO(propertyId, task.getShift().name(), task.getDate().toString(), task.isAcknowledged());
+        return new cleaningTaskDTO(propertyId, task.getShift().name(), task.getDate().toString(), task.isAcknowledged(), workerDTO);
     }
 
     public cleaningTaskDTO placeOrder(Long clientId, String packageType, String propertyType, int numberOfRooms, CleaningTask.Shift shift, LocalDate date) {

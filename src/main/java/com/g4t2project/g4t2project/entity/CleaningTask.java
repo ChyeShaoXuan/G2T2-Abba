@@ -8,6 +8,7 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
+import jakarta.persistence.Lob;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -39,6 +40,12 @@ public class CleaningTask {
 
     private LocalDate date;
     private boolean Acknowledged = false;
+
+    @Lob
+    private byte[] arrivalPhoto;
+
+    @Lob
+    private byte[] completionPhoto;
 
     public enum Shift {
         Morning,
@@ -125,6 +132,24 @@ public class CleaningTask {
 
     public void setProperty(Property property) {
         this.property = property;
+    }
+
+    public byte[] getArrivalPhoto() {
+        return arrivalPhoto;
+    }
+
+    public byte[] getCompletionPhoto() {
+        return completionPhoto;
+    }
+
+    public void confirmArrival(byte[] photo) {
+        this.arrivalPhoto = photo;
+        this.status = Status.InProgress;
+    }
+
+    public void confirmCompletion(byte[] photo) {
+        this.completionPhoto = photo;
+        this.status = Status.Completed;
     }
 
     
