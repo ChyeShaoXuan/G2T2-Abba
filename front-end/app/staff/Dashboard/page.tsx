@@ -12,7 +12,6 @@ const WorkerDashboard = () => {
             <Navbar/>
             <p className='ml-4'>Welcome to your Dashboard. Here you can view your profile, tasks, and manage your work schedule.</p>
             <DashboardInfo/>
-            <FinishedJobs/>
         </div>
     );
 };
