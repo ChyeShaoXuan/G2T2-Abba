@@ -3,18 +3,22 @@ package com.g4t2project.g4t2project.controllers;
 import com.g4t2project.g4t2project.entity.LeaveApplication;
 import com.g4t2project.g4t2project.entity.CleaningTask;
 import com.g4t2project.g4t2project.entity.Client;
+import com.g4t2project.g4t2project.entity.LeaveApplication.LeaveType;
 import com.g4t2project.g4t2project.service.LeaveApplicationService;
 import com.g4t2project.g4t2project.service.NotificationService;
 
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.http.MediaType;
 
 @RestController
 @RequestMapping("/leave")
@@ -33,12 +37,16 @@ public class LeaveController {
             leaveApplicationService.applyForLeave(leaveApplication);
             
             // Determine if the leave application is submitted too late for reassignment
-            Duration timeUntilLeave = Duration.between(LocalDateTime.now(), leaveApplication.getStartDate());
+            LocalDateTime startDateTime = leaveApplication.getStartDate().atStartOfDay();
+
+            Duration timeUntilLeave = Duration.between(LocalDateTime.now(), startDateTime);
             boolean isLateNotice = timeUntilLeave.compareTo(Duration.ofHours(3)) < 0;
-            
+            System.out.println("Time until leave: " + timeUntilLeave);
+            System.out.println(isLateNotice);
             if (isLateNotice) {
                 // Notify the client that rescheduling may not be possible
-                CleaningTask task = leaveApplicationService.getTaskForWorker(leaveApplication.getWorker());
+                CleaningTask task = leaveApplicationService.getTopTaskByWorker(leaveApplication.getWorker());
+                System.out.println("Task ID: " + task.getTaskId());
                 notificationService.notifyClientForLateLeave(task.getProperty().getClient(), task);
             } else {
                 // Otherwise, notify the admin of a pending MC requirement
@@ -47,12 +55,12 @@ public class LeaveController {
             
             return ResponseEntity.ok("Leave application submitted successfully");
         } catch (Exception e) {
+            e.printStackTrace(); // For debugging purposes
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to submit leave application: " + e.getMessage());
         }
     }
 
-
-    @PostMapping("/upload-mc")
+    @PostMapping(value = "/upload-mc", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> uploadMcDocument(@RequestParam("leaveId") int leaveId, @RequestParam("mcDocument") MultipartFile mcDocument) {
         try {
             leaveApplicationService.uploadMcDocument(leaveId, mcDocument);

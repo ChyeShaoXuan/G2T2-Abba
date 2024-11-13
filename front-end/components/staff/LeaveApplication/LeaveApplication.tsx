@@ -18,6 +18,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea"
 import { cn } from "@/lib/utils"
 
+import axios from 'axios'
+
 const formSchema = z.object({
   workerName: z.string().min(2, {
     message: "Worker name must be at least 2 characters.",
@@ -25,7 +27,7 @@ const formSchema = z.object({
   workerID: z.string().min(1, {
     message: "Worker ID is required.",
   }),
-  leaveType: z.enum(["annual", "mc", "other"], {
+  leaveType: z.enum(["AL", "HL", "MC", "EL"], {
     required_error: "Please select a leave type.",
   }),
   startDate: z.date({
@@ -61,7 +63,7 @@ export default function LeaveApplicationForm() {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     // Create a FormData object to handle file uploads
     const formData = new FormData();
-    
+
     // Append all the fields from the form
     formData.append('workerName', values.workerName);
     formData.append('workerID', values.workerID);
@@ -69,38 +71,45 @@ export default function LeaveApplicationForm() {
     formData.append('startDate', format(values.startDate, 'yyyy-MM-dd'));
     formData.append('endDate', format(values.endDate, 'yyyy-MM-dd'));
     formData.append('reason', values.reason);
-    
+
+    const leaveApplication = {
+      worker: {
+        workerId: values.workerID,
+      },
+      admin: {
+        adminId: 2, // Hardcoded for now
+      },
+      startDate: values.startDate,
+      endDate: values.endDate, 
+      leaveType: values.leaveType,
+      submissionDateTime: new Date().toISOString(),
+    };
+
     try {
-      // Step 1: Submit leave application
-      const response = await fetch('http://localhost:8080/leave/apply', {
-        method: 'POST',
-        body: formData,
-      });
-  
-      if (!response.ok) throw new Error('Failed to submit leave application');
-  
+      const response = await axios.post('http://localhost:8080/leave/apply', leaveApplication);
+
       // Capture the leaveId from the response if provided
-      const result = await response.json();
+      const result = response.data;
       const leaveId = result.leaveId;
-      
+      console.log(result);
+      console.log(leaveId);
       // Step 2: Upload MC document if leave type is "mc"
-      if (values.leaveType === "mc" && file && leaveId) {
+      if (values.leaveType === "MC" && file && leaveId) {
         const mcData = new FormData();
         mcData.append('leaveId', leaveId); // Use leaveId from the previous step
         mcData.append('mcDocument', file);
-  
-        const mcResponse = await fetch('http://localhost:8080/leave/upload-mc', {
-          method: 'POST',
-          body: mcData,
+
+        await axios.post('http://localhost:8080/leave/upload-mc', mcData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
         });
-  
-        if (!mcResponse.ok) throw new Error('Failed to upload MC document');
       }
-  
+
       setSubmitStatus('success');
       form.reset();
       setFile(null); // Clear the file state
-  
+
     } catch (error) {
       console.error(error);
       setSubmitStatus('error');
@@ -155,8 +164,10 @@ export default function LeaveApplicationForm() {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="annual">Annual Leave</SelectItem>
-                      <SelectItem value="mc">Medical Certificate (MC)</SelectItem>
+                      <SelectItem value="AL">Annual Leave</SelectItem>
+                      <SelectItem value="MC">Medical Certificate (MC)</SelectItem>
+                      <SelectItem value="HL">Hospitalization Leave</SelectItem>
+                      <SelectItem value="EL">Emergency Leave</SelectItem>
                       <SelectItem value="other">Other</SelectItem>
                     </SelectContent>
                   </Select>
@@ -226,11 +237,11 @@ export default function LeaveApplicationForm() {
                 </FormItem>
               )}
             />
-            {watchLeaveType === "mc" && (
+            {watchLeaveType === "MC" && (
               <FormField
                 control={form.control}
                 name="mcFile"
-                render={({ field: { onChange, ...rest } }) => (
+                render={({ field: { onChange, value, ...rest } }) => (
                   <FormItem>
                     <FormLabel>Upload e-MC</FormLabel>
                     <FormControl>

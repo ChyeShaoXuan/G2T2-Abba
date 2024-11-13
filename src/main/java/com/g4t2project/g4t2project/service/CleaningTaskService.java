@@ -3,8 +3,6 @@ package com.g4t2project.g4t2project.service;
 import java.time.Duration;
 import com.g4t2project.g4t2project.DTO.OverwriteCleaningTaskDTO;
 import com.g4t2project.g4t2project.exception.NoAvailableWorkerException;
-import com.g4t2project.g4t2project.entity.Property;
-
 import com.g4t2project.g4t2project.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -296,5 +294,6 @@ public class CleaningTaskService {
         .map(this::convertToDTO)
         .collect(Collectors.toList());
     }
+    
 }
 

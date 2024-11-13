@@ -79,13 +79,6 @@ public class ClientService {
         ).orElseThrow(() -> new IllegalArgumentException("Package not found for type: " + packageType + ", property type: " + propertyType + ", and number of rooms: " + numberOfRooms));
         System.out.println("Package found: " + pkg.getPackageId());
 
-        // Property property = propertyRepository.findByClientAndNumberOfRooms(client, numberOfRooms)
-        // .orElseGet(() -> {
-        //     Property newProperty = new Property(client, pkg, "", 0.0, 0.0);
-        //     newProperty.setNumberOfRooms(numberOfRooms);
-        //     return propertyRepository.save(newProperty);
-        // });
-
         Property property = propertyRepository.findByClientAndCleaningPackage(client, pkg)
         .orElseGet(() -> {
             Property newProperty = new Property(client, pkg, "", 0.0, 0.0);
@@ -97,12 +90,6 @@ public class ClientService {
         if (shift == null) {
             throw new IllegalArgumentException("Shift is required and cannot be empty");
         }
-
-        // Worker worker = assignWorker(property, shift, date);
-
-        // CleaningTask cleaningTask = new CleaningTask(property, worker, shift, CleaningTask.Status.Scheduled, date, false);
-
-        // CleaningTask savedTask = cleaningTaskRepository.save(cleaningTask);
 
         CleaningTask cleaningTask = new CleaningTask();
         cleaningTask.setProperty(property);
@@ -118,12 +105,6 @@ public class ClientService {
 
         return convertToCleaningTaskDTO(cleaningTask);
     }
-
-    // private Worker assignWorker(Property property, CleaningTask.Shift shift, LocalDate date) {
-    //     Optional<Worker> optionalWorker = workerRepository.findFirstByAvailableTrue();
-    //     return optionalWorker.orElseThrow(() -> new IllegalStateException("No available workers"));
-    // }
-
 
     public Feedback rateSession(Long clientId, int taskID, int rating, String comments) {
         CleaningTask task = cleaningTaskRepository.findById(taskID).orElseThrow(() -> new IllegalArgumentException("Cleaning task not found"));
