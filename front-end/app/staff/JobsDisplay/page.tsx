@@ -1,4 +1,4 @@
-import JobReallocationDisplay from "@/components/staff/AvailableJobs/AvailableJobs";
+import FinishedJobs from "@/components/staff/FinishedJobs/FinishedJobs";
 import UpcomingJobs from "@/components/staff/UpcomingJobs/UpcomingJobs";
 
 export default function JobNotifications() {
@@ -10,8 +10,8 @@ export default function JobNotifications() {
         </div>
       </header>
       <main className="container mx-auto py-6">
-        <JobReallocationDisplay />
         <UpcomingJobs/>
+        <FinishedJobs/>
       </main>
     </div>
   )
