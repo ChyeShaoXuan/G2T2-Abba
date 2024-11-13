@@ -22,13 +22,14 @@ interface Worker {
 
 export default function DashboardInfo() {
   const [workers, setWorkers] = useState<Worker[]>([])
+  const username = localStorage.getItem('username')
 
   useEffect(() => {
     // Fetch workers from the backend
     const fetchWorkers = async () => {
       try {
         const workersResponse = await axios.get(`http://localhost:8080/admin/workers`)
-        const worker = workersResponse.data.find((worker: Worker) => worker.workerId === 1)
+        const worker = workersResponse.data.find((worker: Worker) => worker.name === username)
         if (worker) {
           setWorkers([worker]) // Set only the worker with workerId = 1
         }
@@ -69,7 +70,7 @@ export default function DashboardInfo() {
               <TableCell>{worker.curPropertyId}</TableCell>
               <TableCell>{worker.available ? 'Yes' : 'No'}</TableCell>
               <TableCell>{worker.adminId}</TableCell>
-              <TableCell>{worker.workerHoursInWeek}</TableCell>
+              <TableCell>{worker.worker_hours_in_week}</TableCell>
             </TableRow>
           ))}
         </TableBody>

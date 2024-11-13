@@ -41,7 +41,7 @@ export default function ViewWorkers() {
   useEffect(() => {
     const fetchWorkers = async () => {
       try {
-        const workersResponse = await axios.get(`http://localhost:8080/admin/workers`)
+        const workersResponse = await axios.get(`http://localhost:8080/admin/workers_admin`)
         setWorkers(workersResponse.data)
       } catch (error) {
         console.error('Error fetching workers:', error)

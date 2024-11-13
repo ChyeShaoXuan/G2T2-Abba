@@ -2,44 +2,21 @@ package com.g4t2project.g4t2project.service;
 
 import java.time.Duration;
 import com.g4t2project.g4t2project.DTO.OverwriteCleaningTaskDTO;
-import com.g4t2project.g4t2project.entity.CleaningTask;
-import com.g4t2project.g4t2project.entity.LeaveApplication;
-import com.g4t2project.g4t2project.entity.Worker;
 import com.g4t2project.g4t2project.exception.NoAvailableWorkerException;
 import com.g4t2project.g4t2project.entity.Property;
 
-import com.g4t2project.g4t2project.repository.CleaningTaskRepository;
-import com.g4t2project.g4t2project.repository.WorkerRepository;
-import com.g4t2project.g4t2project.repository.LeaveApplicationRepository;
-import com.g4t2project.g4t2project.repository.PropertyRepository;
-import com.g4t2project.g4t2project.repository.FeedbackRepository;
-import com.g4t2project.g4t2project.service.NotificationService;
+import com.g4t2project.g4t2project.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import com.g4t2project.g4t2project.DTO.OverwriteCleaningTaskDTO;
-import com.g4t2project.g4t2project.entity.CleaningTask;
-import com.g4t2project.g4t2project.entity.LeaveApplication;
-import com.g4t2project.g4t2project.entity.Property;
-import com.g4t2project.g4t2project.entity.Worker;
-import com.g4t2project.g4t2project.exception.NoAvailableWorkerException;
-import com.g4t2project.g4t2project.repository.CleaningTaskRepository;
-import com.g4t2project.g4t2project.repository.FeedbackRepository;
-import com.g4t2project.g4t2project.repository.LeaveApplicationRepository;
-import com.g4t2project.g4t2project.repository.PropertyRepository;
-import com.g4t2project.g4t2project.repository.WorkerRepository;
+import com.g4t2project.g4t2project.entity.*;
 import com.g4t2project.g4t2project.util.DistanceCalculator;
 
 
@@ -279,21 +256,6 @@ public class CleaningTaskService {
 
         return true;
 
-        // Adjust task assignment time to 2.5 hours before the shift start
-        // LocalDateTime taskAssignmentTime = LocalDateTime.of(taskDate, shiftStart).minusHours(2).minusMinutes(30);
-
-        // // assigning
-        // task.setWorker(worker);
-        // task.setStatus(CleaningTask.Status.Assigned);
-        // task.setShift(shift);
-        // task.setDate(taskDate);
-
-        // task.setAssignedTime(taskAssignmentTime);
-
-        // worker.setWorkerHoursInWeek(currentWeeklyHours + shiftDurationHours); //only after 'finished'
-        // workerRepository.save(worker);
-
-        // cleaningTaskRepository.save(task);
 
     }
     public void confirmArrival(Integer taskId, MultipartFile photo) throws IOException {

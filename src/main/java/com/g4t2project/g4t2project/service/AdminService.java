@@ -39,25 +39,7 @@ import com.g4t2project.g4t2project.repository.WorkerRepository;
 @Service
 public class AdminService {
 
-//assignTask--------------------------------------------------------------------
-    private static final int WEEKLY_HOURS_LIMIT = 44;
-    private static final LocalTime WORK_START = LocalTime.of(8, 0); //8am
-    private static final LocalTime WORK_END = LocalTime.of(22, 0); //10pm
-    private static final Duration LUNCH_BREAK = Duration.ofHours(1);
-    private static final LocalTime LUNCH_START = LocalTime.of(12, 0); //12pm
-    private static final LocalTime LUNCH_END = LocalTime.of(13, 0);  //1pm
-    private static final LocalTime DINNER_START = LocalTime.of(17, 0); //5pm 
-    private static final LocalTime DINNER_END = LocalTime.of(18, 0); //6pm
 
-    // Define shifts
-    private static final LocalTime MORNING_SHIFT_END = LocalTime.of(12, 0);
-    private static final LocalTime AFTERNOON_SHIFT_END = LocalTime.of(17, 0);
-    private static final LocalTime NIGHT_SHIFT_END = LocalTime.of(22, 0);
-
-    // Map to track assigned hours for each worker
-    private Map<Long, Integer> workerHours = new HashMap<>();
-
-//---------------------------------------------------------------------------------------
     @Autowired
     private PropertyRepository propertyRepository;
 

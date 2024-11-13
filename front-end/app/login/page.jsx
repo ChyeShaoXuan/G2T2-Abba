@@ -51,6 +51,7 @@ const Login = () => {
             if (res.status === 200) {
                 console.log(res.data)
                 console.log('Logged in successfully')
+                localStorage.setItem('username', username);
                 setLoggedIn(true)
                 
 
