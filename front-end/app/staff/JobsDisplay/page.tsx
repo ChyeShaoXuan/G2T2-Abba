@@ -1,14 +1,19 @@
-import JobReallocationDisplay from "@/components/staff/AvailableJobs/AvailableJobs";
+import FinishedJobs from "@/components/staff/FinishedJobs/FinishedJobs";
 import UpcomingJobs from "@/components/staff/UpcomingJobs/UpcomingJobs";
 import Navbar from "@/components/ui/workernavbar";
 
 export default function JobNotifications() {
   return (
-      <main className="container mx-auto">
-        <Navbar/>
-        <JobReallocationDisplay />
+    <div className="min-h-screen bg-background">
+      <header className="bg-primary text-primary-foreground py-4">
+        <div className="container mx-auto">
+          <h1 className="text-2xl font-bold">Job Displays</h1>
+        </div>
+      </header>
+      <main className="container mx-auto py-6">
         <UpcomingJobs/>
+        <FinishedJobs/>
       </main>
-   
+    </div>
   )
 }
