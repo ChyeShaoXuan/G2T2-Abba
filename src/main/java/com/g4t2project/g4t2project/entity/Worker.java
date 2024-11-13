@@ -13,6 +13,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 @Entity
 public class Worker {
     @Id
@@ -50,7 +51,10 @@ public class Worker {
     @Column(name = "worker_hours_in_week")
     private Integer worker_hours_in_week;
 
-    protected Worker() {}
+    @OneToOne
+    private User user;
+
+    public Worker() {}
 
     public Worker(Admin admin, String name, String phoneNumber, String shortBio, boolean deployed, String tele_Id, long curPropertyId, int worker_hours_in_week) {
         this.admin = admin;
@@ -155,6 +159,14 @@ public class Worker {
 
     public void setWorkerHoursInWeek(int worker_hours_in_week) {
         this.worker_hours_in_week = worker_hours_in_week;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
 }

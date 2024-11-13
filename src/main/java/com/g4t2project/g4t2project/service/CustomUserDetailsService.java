@@ -29,4 +29,9 @@ public class CustomUserDetailsService implements UserDetailsService {
                 Collections.singletonList(new SimpleGrantedAuthority(user.getRole()))
         );
     }
+
+    public User loadUserEntityByUsername(String username) throws UsernameNotFoundException {
+        return userRepository.findByName(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+    }
 }

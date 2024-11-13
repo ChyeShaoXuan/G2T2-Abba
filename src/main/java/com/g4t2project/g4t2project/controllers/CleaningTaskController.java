@@ -9,13 +9,18 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.util.List;
-import com.g4t2project.g4t2project.DTO.*;
+import com.g4t2project.g4t2project.DTO.OverwriteCleaningTaskDTO;
+
+import com.g4t2project.g4t2project.DTO.cleaningTaskDTO;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Optional;
 import com.g4t2project.g4t2project.repository.*;
-import com.g4t2project.g4t2project.service.*;
+import com.g4t2project.g4t2project.service.*;import org.springframework.web.multipart.MultipartFile;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+
 
 @RestController
 @RequestMapping("/cleaningTasks")
@@ -111,6 +116,36 @@ public class CleaningTaskController {
         CleaningTask updatedTask = cleaningTaskService.updateCleaningTask(taskDTO);
         OverwriteCleaningTaskDTO updatedTaskDTO = cleaningTaskService.convertToDTO(updatedTask);
         return new ResponseEntity<>(updatedTaskDTO, HttpStatus.OK);
+    }
+
+    @PostMapping("/{taskId}/confirmArrival")
+    public ResponseEntity<String> confirmArrival(@PathVariable Integer taskId, @RequestParam("photo") MultipartFile photo) {
+        try {
+            cleaningTaskService.confirmArrival(taskId, photo);
+            return ResponseEntity.ok("Arrival confirmed successfully");
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Error confirming arrival: " + e.getMessage());
+        }
+    }
+
+    @PostMapping("/{taskId}/confirmCompletion")
+    public ResponseEntity<String> confirmCompletion(@PathVariable Integer taskId, @RequestParam("photo") MultipartFile photo) {
+        try {
+            cleaningTaskService.confirmCompletion(taskId, photo);
+            return ResponseEntity.ok("Completion confirmed successfully");
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Error confirming completion: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/{taskId}/arrivalPhoto")
+    public ResponseEntity<byte[]> getArrivalPhoto(@PathVariable Integer taskId) {
+        CleaningTask task = cleaningTaskService.getCleaningTaskById(taskId);
+        byte[] photo = task.getArrivalPhoto();
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"arrival_photo.jpg\"")
+                .contentType(MediaType.IMAGE_JPEG)
+                .body(photo);
     }
 }
  

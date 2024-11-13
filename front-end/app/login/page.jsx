@@ -22,6 +22,7 @@ const Login = () => {
     
 
     const router = useRouter();
+  
 
     const login = async (e) => {
         e.preventDefault()
@@ -51,10 +52,14 @@ const Login = () => {
                 console.log(res.data)
                 console.log('Logged in successfully')
                 setLoggedIn(true)
+                
 
-                if (res.data.username === 'admin') {
+                
+                localStorage.setItem('jwtToken', res.data.token);
 
-                    router.push('/admin/Dashboard');
+                if (res.data.username === 'root' || res.data.roles.includes('ROLE_ADMIN')) {
+
+                    router.push('/admin/JobStatisticsDashboard');
 
                 }
 

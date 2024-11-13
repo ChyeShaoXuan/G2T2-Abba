@@ -6,6 +6,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.CascadeType;
 import java.util.List;
 
@@ -26,6 +27,13 @@ public class Admin {
 
     @OneToMany(mappedBy = "admin",cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Worker> workers;
+
+    @OneToOne
+    private User user;
+
+    public Admin() {
+        // Public constructor
+    }
 
     public Long getAdminId() {
         return adminId;
@@ -81,6 +89,14 @@ public class Admin {
                 break;
             }
         }
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
    
 }

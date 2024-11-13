@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { format, addMinutes, isBefore } from 'date-fns'
+import axios from 'axios'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -55,13 +56,13 @@ export default function UpcomingJobs() {
   const [isCompletionDialogOpen, setIsCompletionDialogOpen] = useState(false)
   const [arrivalPhoto, setArrivalPhoto] = useState<File | null>(null)
   const [completionPhoto, setCompletionPhoto] = useState<File | null>(null)
+  const [arrivalPhotoUrl, setArrivalPhotoUrl] = useState<string | null>(null)
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setMyJobs(prevJobs => 
+      setMyJobs(prevJobs =>
         prevJobs.map(job => {
           if (job.status === 'upcoming' && !job.arrivalConfirmed && isBefore(job.startTime, new Date())) {
-            // Alert logic would go here (e.g., send notification to supervisor)
             console.log(`Alert: Worker hasn't arrived for job ${job.id}`)
             return { ...job, status: 'in progress' }
           }
@@ -73,35 +74,82 @@ export default function UpcomingJobs() {
     return () => clearInterval(timer)
   }, [])
 
-  const handleArrivalConfirmation = () => {
+  const handleArrivalConfirmation = async () => {
     if (selectedJob && arrivalPhoto) {
-      setMyJobs(prevJobs => 
-        prevJobs.map(job => 
-          job.id === selectedJob.id 
-            ? { ...job, arrivalConfirmed: true, status: 'in progress' } 
-            : job
-        )
-      )
-      setIsArrivalDialogOpen(false)
-      setArrivalPhoto(null)
-      // Here you would typically upload the photo to your backend
-      console.log(`Arrival photo uploaded for job ${selectedJob.id}`)
+      const formData = new FormData()
+      formData.append('photo', arrivalPhoto)
+
+      try {
+        const response = await axios.post(`http://localhost:8080/cleaningTasks/${selectedJob.id}/confirmArrival`, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        })
+
+        if (response.status === 200) {
+          setMyJobs(prevJobs =>
+            prevJobs.map(job =>
+              job.id === selectedJob.id
+                ? { ...job, arrivalConfirmed: true, status: 'in progress' }
+                : job
+            )
+          )
+          setIsArrivalDialogOpen(false)
+          setArrivalPhoto(null)
+          console.log(`Arrival photo uploaded for job ${selectedJob.id}`)
+          fetchArrivalPhoto(selectedJob.id)
+        } else {
+          console.error('Arrival confirmation failed:', response.data)
+        }
+      } catch (error) {
+        console.error('Error confirming arrival:', error)
+      }
     }
   }
 
-  const handleCompletionConfirmation = () => {
-    if (selectedJob && completionPhoto) {
-      setMyJobs(prevJobs => 
-        prevJobs.map(job => 
-          job.id === selectedJob.id 
-            ? { ...job, completionConfirmed: true, status: 'finished' } 
-            : job
-        )
+  const fetchArrivalPhoto = async (taskId: string) => {
+    try {
+      const response = await axios.get(`http://localhost:8080/cleaningTasks/${taskId}/arrivalPhoto`, {
+        responseType: 'arraybuffer'
+      })
+      const base64 = btoa(
+        new Uint8Array(response.data).reduce((data, byte) => data + String.fromCharCode(byte), '')
       )
-      setIsCompletionDialogOpen(false)
-      setCompletionPhoto(null)
-      // Here you would typically upload the photo to your backend
-      console.log(`Completion photo uploaded for job ${selectedJob.id}`)
+      setArrivalPhotoUrl(`data:image/jpeg;base64,${base64}`)
+    } catch (error) {
+      console.error('Error fetching arrival photo:', error)
+    }
+  }
+
+  const handleCompletionConfirmation = async () => {
+    if (selectedJob && completionPhoto) {
+      const formData = new FormData()
+      formData.append('photo', completionPhoto)
+
+      try {
+        const response = await axios.post(`http://localhost:8080/cleaningTasks/${selectedJob.id}/confirmCompletion`, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        })
+
+        if (response.status === 200) {
+          setMyJobs(prevJobs =>
+            prevJobs.map(job =>
+              job.id === selectedJob.id
+                ? { ...job, completionConfirmed: true, status: 'finished' }
+                : job
+            )
+          )
+          setIsCompletionDialogOpen(false)
+          setCompletionPhoto(null)
+          console.log(`Completion photo uploaded for job ${selectedJob.id}`)
+        } else {
+          console.error('Completion confirmation failed:', response.data)
+        }
+      } catch (error) {
+        console.error('Error confirming completion:', error)
+      }
     }
   }
 
@@ -123,6 +171,9 @@ export default function UpcomingJobs() {
               <p className="flex items-center"><Calendar className="mr-2" /> {format(job.date, 'MMMM d, yyyy')}</p>
               <p className="flex items-center"><MapPin className="mr-2" /> {job.address}</p>
               <p className="flex items-center"><Clock className="mr-2" /> {format(job.startTime, 'h:mm a')} ({job.duration} hours)</p>
+              {job.arrivalConfirmed && arrivalPhotoUrl && (
+                <img src={arrivalPhotoUrl} alt="Arrival Photo" className="mt-4" />
+              )}
             </CardContent>
             <CardFooter>
               {job.status === 'upcoming' && !job.arrivalConfirmed && (
