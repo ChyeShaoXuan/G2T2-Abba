@@ -1,6 +1,6 @@
 # G2T2-Abba
 
-- Install Maven
+- Install Maven. Documentation can be found here : https://maven.apache.org/download.cgi
 - Run `mvn clean install`
 - Get WAMP/MAMP up and running. Then create a database called `abbaschedulingsystem` or whatever is your DATASOURCE_URL in `.env`
 - Run `mvn spring-boot:run`
