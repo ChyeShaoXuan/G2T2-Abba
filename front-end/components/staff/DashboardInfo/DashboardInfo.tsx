@@ -144,7 +144,7 @@ export default function DashboardInfo() {
                         <MDBCardText>Worker Hours in Week</MDBCardText>
                       </MDBCol>
                       <MDBCol sm="9">
-                        <MDBCardText className="text-muted">{worker.workerHoursInWeek}</MDBCardText>
+                        <MDBCardText className="text-muted">{worker.worker_hours_in_week}</MDBCardText>
                       </MDBCol>
                     </MDBRow>
                     <hr />
