@@ -8,10 +8,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.g4t2project.g4t2project.DTO.workerDTO;
+import com.g4t2project.g4t2project.DTO.workerDetailsDTO;
 import com.g4t2project.g4t2project.entity.CleaningTask;
 import com.g4t2project.g4t2project.entity.LeaveApplication;
 import com.g4t2project.g4t2project.entity.Property;
 import com.g4t2project.g4t2project.entity.Worker;
+import com.g4t2project.g4t2project.entity.WorkerHours;
 import com.g4t2project.g4t2project.repository.CleaningTaskRepository;
 import com.g4t2project.g4t2project.repository.LeaveApplicationRepository;
 import com.g4t2project.g4t2project.repository.WorkerRepository;
@@ -29,16 +31,16 @@ public class WorkerService {
     private LeaveApplicationRepository leaveApplicationRepository;
 
     // Authentication method for worker login
-    public boolean authenticate(Long username, String password) {  
+    public boolean authenticate(Long username, String password) {
         Worker worker = workerRepository.findById(username).orElse(null);
-        return worker != null && worker.getEmailId().equals(password); 
+        return worker != null && worker.getEmailId().equals(password);
     }
-    
+
     public boolean acceptAssignedTask(int taskId, Long workerId) {
         CleaningTask task = cleaningTaskRepository.findById(taskId)
-                            .orElseThrow(() -> new RuntimeException("Task not found"));
+                .orElseThrow(() -> new RuntimeException("Task not found"));
         Worker worker = workerRepository.findById(workerId)
-                            .orElseThrow(() -> new RuntimeException("Worker not found"));
+                .orElseThrow(() -> new RuntimeException("Worker not found"));
 
         if (task.getWorker().getWorkerId().equals(workerId) && task.getStatus() == CleaningTask.Status.Assigned) {
             task.setStatus(CleaningTask.Status.Accepted); // Automatically accept the task
@@ -75,32 +77,35 @@ public class WorkerService {
         return false;
     }
 
-    // public List<workerDTO> getAllWorkers() {
-    //     List<Worker> workers = workerRepository.findAll();
-    //     return workers.stream()
-    //             .map(worker -> new workerDTO(
-    //                     worker.getWorkerId().longValue(),
-    //                     worker.getName(),
-    //                     worker.getPhoneNumber(),
-    //                     worker.getShortBio(),
-    //                     worker.isAvailable()
-    //             ))
-    //             .collect(Collectors.toList());
-    // }
 
     public List<workerDTO> getAllWorkers() {
         List<Worker> workers = workerRepository.findAll();
         return workers.stream()
                 .map(worker -> new workerDTO(
-                        worker.getWorkerId().longValue(),
-                        worker.getName(),
-                        worker.getPhoneNumber(),
-                        worker.getShortBio(),
-                        worker.isAvailable()
-                ))
+                worker.getWorkerId().longValue(),
+                worker.getName(),
+                worker.getPhoneNumber(),
+                worker.getShortBio(),
+                worker.isAvailable()
+        ))
                 .collect(Collectors.toList());
     }
-    
+
+    public List<workerDetailsDTO> getWorkerDetails() {
+        List<Worker> workers = workerRepository.findAll();
+        return workers.stream()
+                .map(worker -> new workerDetailsDTO(
+                worker.getWorkerId().longValue(),
+                worker.getName(),
+                worker.getPhoneNumber(),
+                worker.getShortBio(),
+                worker.getDeployed(),
+                worker.getCurPropertyId(),
+                worker.getWorkerHoursInWeek()
+        ))
+                .collect(Collectors.toList());
+    }
+
     //Long workerId, String name, String phoneNumber, String shortBio, boolean available
     // function that updates the status of a task to progress
     public boolean updateToProgress(int taskId, Long workerId) {
@@ -122,7 +127,7 @@ public class WorkerService {
         }
         return false;
     }
-    
+
     public Integer getWorkerIdByUsername(String username) {
         List<Worker> workers = workerRepository.findByName(username);
         if (workers.isEmpty()) {
@@ -137,15 +142,32 @@ public class WorkerService {
         Optional<Worker> optionalWorker = workerRepository.findById(workerId);
 
         // Throw RuntimeException if worker is not found
-        Worker worker = optionalWorker.orElseThrow(() -> 
-            new RuntimeException("Worker not found with ID: " + workerId)
+        Worker worker = optionalWorker.orElseThrow(()
+                -> new RuntimeException("Worker not found with ID: " + workerId)
         );
 
         // Return the adminId from the worker
         return worker.getAdminId();
     }
 
+    public boolean updateWorkerHours(Long workerId) {
+        // Check if the worker exists
+        Optional<Worker> workerOptional = workerRepository.findById(workerId);
+        if (!workerOptional.isPresent()) {
+            return false; 
+        }
+        
+        System.out.println(workerId);
+        Worker worker = workerOptional.get();
     
-
+        // Apply the 4-hour logic to the worker's hours (always add 4 hours)
+        Integer newHours = worker.getWorkerHoursInWeek() + 4; 
+        worker.setWorkerHoursInWeek(newHours);
+    
+        // Save the updated worker to the database
+        workerRepository.save(worker);
+    
+        return true; 
+    }
 
 }

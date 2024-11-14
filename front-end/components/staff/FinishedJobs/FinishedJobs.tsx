@@ -30,7 +30,7 @@ export default function FinishedJobs() {
 
   const fetchCompletedTasks = async () => {
     try {
-      const workerId = 1 // Example worker ID, should come from the logged-in user's details
+      const workerId = 5 // Example worker ID, should come from the logged-in user's details
       const tasksResponse = await axios.get(`http://localhost:8080/cleaningTasks/tasks/${workerId}`, { params: { status: "Completed" } })
 
       console.log(tasksResponse.data)

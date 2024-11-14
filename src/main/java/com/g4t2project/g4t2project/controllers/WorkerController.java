@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.g4t2project.g4t2project.DTO.workerDTO;
 import com.g4t2project.g4t2project.entity.LeaveApplication;
 import com.g4t2project.g4t2project.entity.Worker;
+import com.g4t2project.g4t2project.entity.WorkerHours;
 import com.g4t2project.g4t2project.service.WorkerService;
 
 @RestController
@@ -85,4 +86,17 @@ public class WorkerController {
         return ResponseEntity.ok(adminId);  // Return the adminId as response
     }
 
+    @PutMapping("/{workerId}/updateHours")
+    public String updateWorkerHours(@PathVariable Long workerId) {
+        // Call the workerService to update the worker's hours
+        boolean isUpdated = workerService.updateWorkerHours(workerId);
+        
+        // Return the result (e.g., updated hours or a success message)
+        if (isUpdated) {
+            return "Worker hours updated successfully.";
+        } else {
+            return "Failed to update worker hours.";
+        }
+    }
 }
+

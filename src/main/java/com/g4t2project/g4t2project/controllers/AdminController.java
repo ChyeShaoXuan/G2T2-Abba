@@ -94,7 +94,11 @@ public class AdminController {
         return ResponseEntity.ok(workers);
     }
 
-
+    @GetMapping("/workersdetails")
+    public ResponseEntity<List<workerDetailsDTO>> getWorkerDetails() {
+        List<workerDetailsDTO> workers = workerService.getWorkerDetails();
+        return ResponseEntity.ok(workers);
+    }
 
 
     @GetMapping("/workers_admin")

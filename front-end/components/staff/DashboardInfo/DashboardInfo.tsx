@@ -31,20 +31,19 @@ export default function DashboardInfo() {
     phoneNumber: string
     shortBio: string
     deployed: boolean
-    tele_Id: string
     curPropertyId: number
-    available: boolean
-    adminId: number
     worker_hours_in_week: number
   }
   const [workers, setWorkers] = useState<Worker[]>([])
   const username = localStorage.getItem('username')
+  console.log(localStorage)
 
   useEffect(() => {
     // Fetch workers from the backend
     const fetchWorkers = async () => {
       try {
         const workersResponse = await axios.get(`http://localhost:8080/admin/workers`)
+        console.log(workersResponse)
         const worker = workersResponse.data.find((worker: Worker) => worker.name === username)
         if (worker) {
           setWorkers([worker]) // Set only the worker with workerId = 1
@@ -130,42 +129,15 @@ export default function DashboardInfo() {
                       </MDBCol>
                     </MDBRow>
                     <hr />
-                    <MDBRow>
-                      <MDBCol sm="3">
-                        <MDBCardText>Tele ID</MDBCardText>
-                      </MDBCol>
-                      <MDBCol sm="9">
-                        <MDBCardText className="text-muted">{worker.tele_Id}</MDBCardText>
-                      </MDBCol>
-                    </MDBRow>
-                    <hr />
-                    <MDBRow>
+                    {/* <MDBRow>
                       <MDBCol sm="3">
                         <MDBCardText>Worker Hours in Week</MDBCardText>
                       </MDBCol>
                       <MDBCol sm="9">
-                        <MDBCardText className="text-muted">{worker.workerHoursInWeek}</MDBCardText>
+                        <MDBCardText className="text-muted">30{worker.workerHoursInWeek}</MDBCardText>
                       </MDBCol>
                     </MDBRow>
-                    <hr />
-                    <MDBRow>
-                      <MDBCol sm="3">
-                        <MDBCardText>Deployed</MDBCardText>
-                      </MDBCol>
-                      <MDBCol sm="9">
-                        <MDBCardText className="text-muted">{worker.deployed ? 'Yes' : 'No'}</MDBCardText>
-                      </MDBCol>
-                    </MDBRow>
-                    <hr />
-                    <MDBRow>
-                      <MDBCol sm="3">
-                        <MDBCardText>Available</MDBCardText>
-                      </MDBCol>
-                      <MDBCol sm="9">
-                        <MDBCardText className="text-muted">{worker.available ? 'Yes' : 'No'}</MDBCardText>
-                      </MDBCol>
-                    </MDBRow>
-                    <hr />
+                    <hr /> */}
                     <MDBRow className="justify-content-end">
                       <MDBCol sm="3" className="d-flex justify-content-end">
                         <MDBBtn outline color="dark" style={{ height: '36px', overflow: 'visible' }}>

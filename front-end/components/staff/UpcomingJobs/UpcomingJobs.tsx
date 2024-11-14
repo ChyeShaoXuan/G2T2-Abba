@@ -77,11 +77,12 @@ useEffect(() => {
     // Fetch tasks from the backend
     const fetchTasks = async () => {
       try {
-        const workerId = 1 // Example worker ID, should come from the logged-in user's details
+        const workerId = 5 // Example worker ID, should come from the logged-in user's details
         const tasksResponse = await axios.get(`http://localhost:8080/cleaningTasks/tasks/${workerId}`)
 
         console.log(tasksResponse.data)
         setMyJobs(tasksResponse.data.filter((task: Job) => task.status !== 'Completed'))
+        setWorkerId(workerId);
 
       } catch (error) {
         console.error('Error fetching tasks:', error)
@@ -138,7 +139,16 @@ useEffect(() => {
     }
   }
 
-  const handleCompletionConfirmation = async () => {
+  const updateWorkerHours = async (workerId: number) => {
+    try {
+      await axios.put(`http://localhost:8080/worker/${workerId}/updateHours`);
+      console.log('Worker hours updated');
+    } catch (error) {
+      console.error('Error updating worker hours:', error);
+    }
+  }
+
+  const handleCompletionConfirmation = async (workerId: number) => {
     if (selectedJob && completionPhoto) {
       const formData = new FormData()
       formData.append('photo', completionPhoto)
@@ -149,6 +159,8 @@ useEffect(() => {
             'Content-Type': 'multipart/form-data'
           }
         })
+
+        console.log(11111)
 
         if (response.status === 200) {
           setMyJobs(prevJobs =>
@@ -163,14 +175,21 @@ useEffect(() => {
           setCompletionPhoto(null)
           console.log(`Completion photo uploaded for job ${selectedJob.taskId}`)
 
+          //function here to add worker hours of 4h to Worker table: worker_hours_in_week
+          console.log(workerId)
+          
+          updateWorkerHours(workerId);
+
         } else {
           console.error('Completion confirmation failed:', response.data)
         }
-      } catch (error) {
+      } 
+      catch (error) {
         console.error('Error confirming completion:', error)
       }
     }
   }
+
 
   return (
     <div className="container mx-auto p-4">
@@ -261,11 +280,15 @@ useEffect(() => {
             />
           </div>
           <DialogFooter>
-            <Button onClick={handleCompletionConfirmation} disabled={!completionPhoto}>Complete Job</Button>
+            <Button onClick={() => handleCompletionConfirmation(workerId)} disabled={!completionPhoto}>Complete Job</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>
   )
+}
+
+function type(workerId: number | null): any {
+  throw new Error('Function not implemented.')
 }
 
