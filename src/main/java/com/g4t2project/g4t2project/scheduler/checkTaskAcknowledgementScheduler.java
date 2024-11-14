@@ -62,8 +62,14 @@ public class CheckTaskAcknowledgementScheduler {
         System.out.println("-------------------------------");
         System.out.println("Sending alert to admin " + adminEmail);
         System.out.println("-------------------------------");
-        
-        notificationService.alertAdminOfFailedAck(task, adminEmail);
+        try{
+            // Send alert email using NotificationService
+            notificationService.alertAdminOfFailedAck(task, adminEmail);
+            task.setStatus(CleaningTask.Status.Unacknowledged);
+            cleaningTaskRepository.save(task);
+        }catch(Exception e){
+            System.out.println("Failed to send alert to admin " + adminEmail);
+        }
     }
 
 
