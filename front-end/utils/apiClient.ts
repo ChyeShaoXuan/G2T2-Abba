@@ -84,3 +84,12 @@ export async function submitFeedback(taskId: number, rating: number, comment: st
         throw error;
     }
 }
+
+export async function getAvailableWorkers(): Promise<{ workerId: number; name: string }[]> {
+    const response = await axios.get(`http://localhost:8080/worker/available`);
+    return response.data.map((worker: any) => ({
+        workerId: worker.workerId,
+        name: worker.name,
+    }));
+}
+

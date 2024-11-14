@@ -1,94 +1,88 @@
+// File: frontend/app/Login/page.jsx
 "use client";
 
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
+import { useGlobalState } from '@/context/StateContext';
+import styles from '../register/Register.module.css';
 
-import styles from '../register/Register.module.css'; // Import the CSS module
-
-const LOGIN_URL = 'http://localhost:8080/authentication/login'; 
-
+const LOGIN_URL = 'http://localhost:8080/authentication/login';
 
 const Login = () => {
-
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    
-
     const [errors, setErrors] = useState([]);
-    const [loggedIn, setLoggedIn] = useState(false);
     const [isBlank, setIsBlank] = useState(true);
     const [isSubmitted, setIsSubmitted] = useState(false);
+    const [userId, setUserId] = useState('');
     
-
     const router = useRouter();
-  
+    const { login } = useGlobalState();
 
-    const login = async (e) => {
-        e.preventDefault()
-        setIsSubmitted(true)
+    const fetchUserId = async (name, userType) => {
+      try {
+          let response;
+          switch (userType) {
+              case 'Worker':
+                  response = await axios.get(`http://localhost:8080/worker/workerId/${name}`);
+                  break;
+              case 'Admin':
+                  response = await axios.get(`http://localhost:8080/admin/adminId/${name}`);
+                  break;
+              case 'Client':
+                  response = await axios.get(`http://localhost:8080/clients/clientId/${name}`);
+                  break;
+              default:
+                  throw new Error('Invalid user type');
+          }
+          return response.data;
+      } catch (error) {
+          console.error('Error fetching user ID:', error);
+          throw error;
+      }
+  };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setIsSubmitted(true);
 
         if (username === '' || password === '') {
-
             setIsBlank(true);
             return;
-
-        } 
-
-        else {
-
-            setIsBlank(false);
-
         }
+
+        setIsBlank(false);
 
         try {
-
-            const res = await axios.post(LOGIN_URL, {
+            const response = await axios.post(LOGIN_URL, {
                 username,
                 password
-            })
+            });
 
-            if (res.status === 200) {
-                console.log(res.data)
-                console.log('Logged in successfully')
-                localStorage.setItem('username', username);
-                setLoggedIn(true)
-                
+            if (response.status === 200) {
+                // Store the complete login response in context
+                login(response.data);
+                const userId = await fetchUserId(response.data.username, response.data.role);
+                login({ ...response.data, userId });
 
-                
-                localStorage.setItem('jwtToken', res.data.token);
-
-                if (res.data.username === 'root' || res.data.roles.includes('ROLE_ADMIN')) {
-
+                // Route based on role
+                if (response.data.username === 'root' || response.data.roles.includes('ROLE_ADMIN')) {
                     router.push('/admin/JobStatisticsDashboard');
-
+                } else if (response.data.role === 'Worker') {
+                    router.push('/staff/Dashboard');
+                } else if (response.data.role === 'Client') {
+                    router.push('/client/Dashboard');
                 }
-
-                else if (res.data.role === 'Worker') {
-
-                    router.push('/staff/Dashboard')
-                
-                }
-
-                else if (res.data.role === 'Client') {
-                    router.push('/client/Dashboard')
-                }
-
-                
-                
             }
-
+        } catch (error) {
+            console.error('Login error:', error);
+            setErrors(['Invalid credentials']);
         }
-
-        catch (error) {
-            console.log(error)
-            setErrors([error])
-        }
-
-    }
+    };
 
     return (
-        <form onSubmit={login}>
+        <form onSubmit={handleSubmit}>
           <div className={styles['input-container']}>
             <div className={`${styles['form-container']} ${styles.username}`}>
               <input
@@ -118,12 +112,12 @@ const Login = () => {
             {isBlank && isSubmitted && (
               <div style={{ marginBottom: '15px' }}>Something is missing...</div>
             )}
-            {!isBlank && isSubmitted && loggedIn && (
-              <div style={{ marginBottom: '15px' }}>Successfully Logged In!</div>
-            )}
-
-            {!isBlank && isSubmitted && !loggedIn && (
-              <div style={{ marginBottom: '15px' }}>Username or password is incorrect.</div>
+            {errors.length > 0 && (
+              <div style={{ marginBottom: '15px', color: 'red' }}>
+                {errors.map((error, index) => (
+                  <div key={index}>{error}</div>
+                ))}
+              </div>
             )}
     
             <div className={styles['button-container']}>
@@ -133,8 +127,7 @@ const Login = () => {
             </div>
           </div>
         </form>
-      );
-
-}
+    );
+};
 
 export default Login;

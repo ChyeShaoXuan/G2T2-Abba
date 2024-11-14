@@ -145,7 +145,8 @@ public class WorkerService {
         return worker.getAdminId();
     }
 
-    
-
+    public List<Worker> getAvailableWorkers() {
+        return workerRepository.findAllAvailableWorkers();
+    }
 
 }
