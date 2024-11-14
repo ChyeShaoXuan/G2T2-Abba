@@ -2,11 +2,11 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { useAuth } from '../../app/context/useAuth'; // Adjust the path as necessary
+import { useGlobalState } from '@/context/StateContext'; // Adjust the path as necessary
 import { useRouter } from 'next/navigation';
 
 const Navbar = () => {
-  const { logout } = useAuth();
+  const { logout } = useGlobalState();
   const router = useRouter();
 
   const handleLogout = () => {

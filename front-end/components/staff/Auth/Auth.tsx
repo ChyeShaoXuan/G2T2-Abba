@@ -47,28 +47,28 @@ export default function StaffAuth() {
     
     try {
       console.log('Making authentication request...');
-      const response = await axios.post('http://localhost:8080/worker/authenticate', values, {
-        headers: { 'Content-Type': 'application/json' },
-      });
+      // const response = await axios.post('http://localhost:8080/worker/authenticate', values, {
+      //   headers: { 'Content-Type': 'application/json' },
+      // });
 
-      console.log('Server response:', response.data);
+      // console.log('Server response:', response.data);
 
-      if (response.data.success) {
-        console.log('Login successful, storing data in context...');
-        login(response.data);
+      // if (response.data.success) {
+      //   console.log('Login successful, storing data in context...');
+      //   login(response.data);
         
-        console.log('Updated context state:', {
-          userType: localStorage.getItem('userType'),
-          username: localStorage.getItem('username'),
-          token: localStorage.getItem('jwtToken')
-        });
+      //   console.log('Updated context state:', {
+      //     userType: localStorage.getItem('userType'),
+      //     username: localStorage.getItem('username'),
+      //     token: localStorage.getItem('jwtToken')
+      //   });
 
-        console.log('Redirecting to dashboard...');
+      //   console.log('Redirecting to dashboard...');
         router.push('/staff/Dashboard');
-      } else {
-        console.log('Login failed:', response.data);
-        setError("Invalid employee ID or password");
-      }
+      // } else {
+      //   console.log('Login failed:', response.data);
+      //   setError("Invalid employee ID or password");
+      // }
     } catch (error) {
       console.error('Login error:', error);
       setError("An error occurred during login.");

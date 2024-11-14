@@ -1,6 +1,5 @@
 package com.g4t2project.g4t2project.controllers;
 
-import com.g4t2project.g4t2project.DTO.PlaceOrderRequestDTO;
 import com.g4t2project.g4t2project.entity.*;
 import com.g4t2project.g4t2project.service.*;
 import com.g4t2project.g4t2project.DTO.*;
@@ -10,6 +9,7 @@ import java.time.LocalDate;
 import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 
 @RestController
 @RequestMapping("/clients")
@@ -24,6 +24,16 @@ public class ClientController {
         LocalDate localDate = LocalDate.parse(request.getDate());
         cleaningTaskDTO task = clientService.placeOrder(clientId, request.getPackageType(), request.getPropertyType(), request.getNumberOfRooms(), request.getShift(), localDate);
         return ResponseEntity.ok(task);
+    }
+
+    @GetMapping("/clientId/{clientName}")
+    public ResponseEntity<Long> getClientIdByName(@PathVariable String clientName) {
+        try {
+            Long clientId = clientService.getClientIdByName(clientName);
+            return ResponseEntity.ok(clientId);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
     }
 
 
@@ -82,6 +92,8 @@ public class ClientController {
         CleaningPackage selectedPackage = clientService.selectPackage(clientId, propertyID, packageID);
         return ResponseEntity.ok(selectedPackage);
     }
+
+
 
 
 }
