@@ -171,14 +171,34 @@ public class CleaningTaskController {
 
         return new ResponseEntity<>("Cleaning task created successfully", HttpStatus.CREATED);
     }
-
+    
     // Function to get all cleaning tasks for a worker
     @GetMapping("/tasks/{workerId}")
-    public ResponseEntity<List<OverwriteCleaningTaskDTO>> getWorkerCleaningTask(@PathVariable Integer workerId) {
+    public ResponseEntity<List<OverwriteCleaningTaskDTO>> getWorkerCleaningTask(
+        @PathVariable Integer workerId, 
+        @RequestParam(required = false) String status) { {
+
         List<OverwriteCleaningTaskDTO> tasks = cleaningTaskService.getCleaningTasksById(workerId);
         System.out.println("Workers cleaning tasks: ");
         System.out.println(tasks);
+
+        if ("Completed".equalsIgnoreCase(status)) {
+            tasks = tasks.stream()
+                         .filter(task -> "Completed".equalsIgnoreCase(task.getStatus()))
+                         .collect(Collectors.toList());
+        } else {
+            // Update tasks that are neither "Finished" nor "In Progress" to "Assigned"
+            tasks.forEach(task -> {
+                System.out.println(task.getStatus());
+                if (!"Completed".equalsIgnoreCase(task.getStatus()) && 
+                    !"In Progress".equalsIgnoreCase(task.getStatus())) {
+                    task.setStatus("Assigned");
+                }
+            });
+        }
+
         return new ResponseEntity<>(tasks, HttpStatus.OK);
+        }
     }
 
     // @GetMapping
