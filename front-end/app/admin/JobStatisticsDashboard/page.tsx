@@ -9,7 +9,7 @@ function JobStatisticsPage() {
 
   return (
     <div>
-      <Navbar />
+      {/* <Navbar /> */}
       <JobStatisticsDashboard />
     </div>
   );
