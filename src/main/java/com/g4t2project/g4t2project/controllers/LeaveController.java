@@ -1,10 +1,9 @@
-// File: src/main/java/com/g4t2project/g4t2project/controllers/LeaveController.java
 package com.g4t2project.g4t2project.controllers;
 
+import com.g4t2project.g4t2project.DTO.LeaveApplicationDTO;
 import com.g4t2project.g4t2project.entity.LeaveApplication;
 import com.g4t2project.g4t2project.entity.CleaningTask;
 import com.g4t2project.g4t2project.entity.Client;
-import com.g4t2project.g4t2project.entity.LeaveApplication.LeaveType;
 import com.g4t2project.g4t2project.service.LeaveApplicationService;
 import com.g4t2project.g4t2project.service.NotificationService;
 
@@ -122,14 +121,12 @@ public class LeaveController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<List<LeaveApplication>> getAllLeaveApplications() {
+    public ResponseEntity<List<LeaveApplicationDTO>> getAllLeaveApplications() {
         try {
-            List<LeaveApplication> leaveApplications = leaveApplicationService.getAllLeaveApplications();
+            List<LeaveApplicationDTO> leaveApplications = leaveApplicationService.getAllLeaveApplications();
             return ResponseEntity.ok(leaveApplications);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
-
-    
 }

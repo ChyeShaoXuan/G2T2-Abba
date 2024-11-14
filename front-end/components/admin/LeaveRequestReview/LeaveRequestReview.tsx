@@ -2,12 +2,11 @@
 
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { useGlobalState } from '@/context/StateContext';
 
-interface LeaveApplication {
+interface LeaveApplicationDTO {
     leaveApplicationId: number;
-    worker: {
-        name: string;
-    };
+    workerName: string;
     leaveType: string;
     startDate: string;
     endDate: string;
@@ -15,8 +14,8 @@ interface LeaveApplication {
 }
 
 const LeaveRequestReview = () => {
-    const [leaveApplications, setLeaveApplications] = useState<LeaveApplication[]>([]);
-    const [selectedLeave, setSelectedLeave] = useState<LeaveApplication | null>(null);
+    const [leaveApplications, setLeaveApplications] = useState<LeaveApplicationDTO[]>([]);
+    const [selectedLeave, setSelectedLeave] = useState<LeaveApplicationDTO | null>(null);
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
@@ -30,7 +29,11 @@ const LeaveRequestReview = () => {
                     Authorization: `Bearer ${localStorage.getItem('jwtToken')}`
                 }
             });
-            setLeaveApplications(response.data);
+            if (Array.isArray(response.data)) {
+                setLeaveApplications(response.data);
+            } else {
+                setError('Unexpected response format');
+            }
         } catch (error) {
             console.error('Error fetching leave applications:', error);
             setError('Failed to fetch leave applications');
@@ -50,8 +53,6 @@ const LeaveRequestReview = () => {
             setError('Failed to approve leave application');
         }
     };
-
-    
 
     const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>, leaveId: number) => {
         const file = event.target.files?.[0];
@@ -93,7 +94,7 @@ const LeaveRequestReview = () => {
                 <tbody>
                     {leaveApplications.map((leave) => (
                         <tr key={leave.leaveApplicationId}>
-                            <td>{leave.worker.name}</td>
+                            <td>{leave.workerName}</td>
                             <td>{leave.leaveType}</td>
                             <td>{leave.startDate}</td>
                             <td>{leave.endDate}</td>
