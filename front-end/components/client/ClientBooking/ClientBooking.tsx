@@ -47,9 +47,27 @@ const ClientBooking: React.FC<ClientBookingProps> = ({ clientId }) => {
             setTimeout(() => {
                 setLoading(true);
                 setSuccessMessage(false);
-
                 setTimeout(() => {
-                    router.push(`/client/nearest-worker`);
+                    const worker = response.worker;
+                    if (worker) {
+                        console.log(worker);
+                        const query = new URLSearchParams({
+                            // workerId: worker.workerId.toString(),
+                            name: worker.name,
+                            phoneNumber: worker.phoneNumber,
+                            shortBio: worker.shortBio,
+                            // deployed: worker.deployed.toString(),
+                            // tele_Id: worker.tele_Id,
+                            // curPropertyId: worker.curPropertyId.toString(),
+                            available: worker.available.toString(),
+                            // adminId: worker.adminId.toString(),
+                            // worker_hours_in_week: worker.worker_hours_in_week.toString(),
+                        }).toString();
+                        console.log(query);
+                        router.push(`/client/NearestWorker?name=${worker.name}&phoneNumber=${worker.phoneNumber}&shortBio=${worker.shortBio}&available=${worker.available}`);
+                    } else {
+                        throw new Error("No worker assigned to this task");
+                    }
                 }, 1000); 
             }, 1000); // Show success message for 1 second
         } catch (err) {

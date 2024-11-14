@@ -15,9 +15,40 @@ INSERT INTO worker (WorkerId, adminId, name, phoneNumber, shortBio, deployed, te
 
 INSERT INTO cleaningpackage (packageId, packageType, price, hours, hourly_rate, property_details, pax, manualBookingRequired, propertyType) VALUES
 (1, 'Weekly', 200, 5, 40, '2-bedroom apartment', 2, false, 'Hdb'),
-(2, 'BiWeekly', 350, 10, 35, '3-bedroom house with garden', 4, false, 'Condominium'),
+(2, 'BiWeekly', 350, 10, 35, '3-bedroom house with garden', 3, false, 'Condominium'),
 (3, 'Weekly', 150, 3, 50, 'Studio apartment', 1, false, 'Landed'),
-(4, 'BiWeekly', 500, 15, 33, '4-bedroom family home', 6, True, 'Hdb');
+(4, 'BiWeekly', 500, 15, 33, '4-bedroom family home', 6, true, 'Hdb');
+
+-- To replace 0 with null for price and hourly_rate after changing entity
+INSERT INTO cleaningpackage (packageId, packageType, propertyType, price, hours, hourly_rate, pax, manualBookingRequired, property_details) VALUES
+-- Weekly
+-- HDB Packages
+(5, 'Weekly', 'Hdb', 0, 2, 0, 0, true, '2 Bedrooms and Below'),
+(6, 'Weekly', 'Hdb', 276, 3, 23, 1, false, '3-Room'),
+(7, 'Weekly', 'Hdb', 336, 4, 21, 1, false, '4-Room'),
+(8, 'Weekly', 'Hdb', 0, 5, 0, 0, true, '5 Bedrooms or More'),
+
+-- Condominium Packages
+(9, 'Weekly', 'Condominium', 276, 3, 23, 1, false, '2 Bedroom and below'),
+(10, 'Weekly', 'Condominium', 336, 4, 21, 1, false, '3 Bedroom'),
+(11, 'Weekly', 'Condominium', 0, 5, 0, 0, true, '4 Bedrooms or More'),
+
+-- Night Shift Packages for Condominium
+(12, 'Weekly', 'Condominium', 0, 2.5, 19, 1, true, '2-3 Bedroom Night Shift (After 7 pm)'),
+(13, 'Weekly', 'Condominium', 0, 3, 19, 1, true, '2-3 Bedroom Night Shift (After 6 pm)'),
+(14, 'Weekly', 'Condominium', 0, 4, 18, 1, true, '2-3 Bedroom Night Shift (After 6 pm)');
+
+-- Insert Bi-weekly packages into the cleaningpackage table
+INSERT INTO cleaningpackage (packageId, packageType, price, hours, hourly_rate, property_details, pax, manualBookingRequired, propertyType) VALUES
+(15, 'BiWeekly', 138.00, 3, 23, 'Promotion Bi-weekly - 3 hours', 1, false, 'Hdb'),
+(16, 'BiWeekly', 168.00, 4, 21, 'Promotion Bi-weekly - 4 hours', 1, false, 'Hdb'),
+(17, 'BiWeekly', 0, 5, 0, 'Promotion Bi-weekly - 5 hours, contact sales', 1, true, 'Hdb');
+
+-- Insert Landed property information for manual booking
+INSERT INTO cleaningpackage (packageId, packageType, price, hours, hourly_rate, property_details, pax, manualBookingRequired, propertyType) VALUES
+(18, 'BiWeekly', 0, 0, 0, 'Landed property cleaning, contact sales', 0, true, 'Landed');
+
+
 
 INSERT INTO client (clientId, name, phoneNumber, email, adminId, packageId, workerId) VALUES
 (1, 'John Doe', '123-456-7890', 'johndoe@example.com', 1,1,1),
@@ -27,10 +58,14 @@ INSERT INTO client (clientId, name, phoneNumber, email, adminId, packageId, work
 
 
 INSERT INTO Property (propertyId, clientId, packageId, address, latitude, longitude, numberOfRooms) VALUES
-(101, 1, 1, '123 Street', 1.12345, 103.12345,2),
-(102, 2, 2, '456 Avenue', 1.23456, 103.23456,3),
-(103, 3, 3, '789 Road', 1.34567, 103.34567,4),
-(104, 4, 4, '101 Boulevard', 1.45678, 103.45678,5);
+(101, 1, 1, 'Pasir Ris Sports Centre, 120 Pasir Ris Central, Singapore 519640', 1.3741178512573242, 103.9515151977539,2),
+(102, 2, 2, 'Boon Keng Ville, Block 17 Upper Boon Keng Rd, Boon Keng Ville, Singapore 380017', 1.3149851560592651, 103.87104797363281,3),
+(103, 3, 1, 'Woodlands Civic Centre, Block 900 South Woodlands Dr, Woodlands Civic Centre, Singapore 730900', 1.4352025985717773, 103.78697204589844,4),
+(104, 4, 2, '6 Holland Cl, Singapore', 1.3076527118682861, 103.79556274414062,5),
+(105, 1, 1, '81 Victoria St, Singapore 188065', 1.2963, 103.8502,5),
+(106, 2, 1, '13 Holland Dr, Singapore', 1.3093297481536865, 103.79297637939453,3);
+
+
 
 
 INSERT INTO cleaningtask (taskId, propertyId, workerId, feedbackId, shift, status, date, Acknowledged) VALUES

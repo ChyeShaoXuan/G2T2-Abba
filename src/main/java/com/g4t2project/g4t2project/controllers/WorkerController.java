@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -70,6 +71,12 @@ public class WorkerController {
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(false);
         }
+    }
+
+    @GetMapping("/workerId/{username}")
+    public ResponseEntity<Integer> getWorkerIdByUsername(@PathVariable String username) {
+        Integer workerId = workerService.getWorkerIdByUsername(username);
+        return ResponseEntity.ok(workerId);
     }
 
 }

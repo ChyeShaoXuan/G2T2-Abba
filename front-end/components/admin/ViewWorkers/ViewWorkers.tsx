@@ -41,7 +41,7 @@ export default function ViewWorkers() {
   useEffect(() => {
     const fetchWorkers = async () => {
       try {
-        const workersResponse = await axios.get(`http://localhost:8080/admin/workers`)
+        const workersResponse = await axios.get(`http://localhost:8080/admin/workers_admin`)
         setWorkers(workersResponse.data)
       } catch (error) {
         console.error('Error fetching workers:', error)
@@ -114,8 +114,8 @@ export default function ViewWorkers() {
   }
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value, type, checked } = e.target;
-    const newValue = type === 'checkbox' ? checked : value;
+    const { name, value, type } = e.target;
+    const newValue = type === 'checkbox' ? (e.target as HTMLInputElement).checked : value;
     if (editingWorker) {
       setEditingWorker({ ...editingWorker, [name]: newValue });
     } else {

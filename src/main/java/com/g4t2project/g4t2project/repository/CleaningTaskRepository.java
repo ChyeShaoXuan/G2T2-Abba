@@ -25,10 +25,19 @@ public interface CleaningTaskRepository extends JpaRepository<CleaningTask, Inte
     @Query("SELECT t FROM CleaningTask t WHERE t.worker = :worker")
     Optional<CleaningTask> findTaskByWorker(@Param("worker") Worker worker);
 
+    Optional<CleaningTask> findFirstByWorkerOrderByTaskIdDesc(Worker worker);
+        
+    @Query("SELECT t FROM CleaningTask t WHERE t.worker.workerId = :workerId")
+    List<CleaningTask> findTasksByWorker(@Param("workerId") Integer workerId);
 
     @Modifying
     @Transactional
     @Query("DELETE FROM CleaningTask p WHERE p.worker.workerId = :workerId")
     void deleteTaskByWorkerId(Long workerId);
 
+    @Query("SELECT ct FROM CleaningTask ct WHERE ct.property.propertyId = :propertyId AND ct.date = :date AND ct.shift = :shift")
+    Optional<CleaningTask> findTaskByDateShiftProperty(Long propertyId, LocalDate date, CleaningTask.Shift shift);
+
+    @Query("SELECT ct FROM CleaningTask ct WHERE ct.worker.workerId = :workerId AND ct.status IN :statuses")
+    List<CleaningTask> findByWorkerIdAndStatusIn(@Param("workerId") Long workerId, @Param("statuses") List<CleaningTask.Status> statuses);
 }

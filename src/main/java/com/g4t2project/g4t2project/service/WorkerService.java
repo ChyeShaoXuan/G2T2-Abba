@@ -2,12 +2,15 @@ package com.g4t2project.g4t2project.service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.g4t2project.g4t2project.DTO.workerDTO;
 import com.g4t2project.g4t2project.entity.CleaningTask;
 import com.g4t2project.g4t2project.entity.LeaveApplication;
+import com.g4t2project.g4t2project.entity.Property;
 import com.g4t2project.g4t2project.entity.Worker;
 import com.g4t2project.g4t2project.repository.CleaningTaskRepository;
 import com.g4t2project.g4t2project.repository.LeaveApplicationRepository;
@@ -72,9 +75,64 @@ public class WorkerService {
         return false;
     }
 
-    public List<Long> getAllWorkerIds() {
-        return workerRepository.findAllWorkerIds();
+    // public List<workerDTO> getAllWorkers() {
+    //     List<Worker> workers = workerRepository.findAll();
+    //     return workers.stream()
+    //             .map(worker -> new workerDTO(
+    //                     worker.getWorkerId().longValue(),
+    //                     worker.getName(),
+    //                     worker.getPhoneNumber(),
+    //                     worker.getShortBio(),
+    //                     worker.isAvailable()
+    //             ))
+    //             .collect(Collectors.toList());
+    // }
+
+    public List<workerDTO> getAllWorkers() {
+        List<Worker> workers = workerRepository.findAll();
+        return workers.stream()
+                .map(worker -> new workerDTO(
+                        worker.getWorkerId().longValue(),
+                        worker.getName(),
+                        worker.getPhoneNumber(),
+                        worker.getShortBio(),
+                        worker.isAvailable()
+                ))
+                .collect(Collectors.toList());
     }
+    
+    //Long workerId, String name, String phoneNumber, String shortBio, boolean available
+    // function that updates the status of a task to progress
+    public boolean updateToProgress(int taskId, Long workerId) {
+        Optional<CleaningTask> taskOpt = cleaningTaskRepository.findById(taskId);
+        Optional<Worker> workerOpt = workerRepository.findById(workerId);
+
+        if (taskOpt.isPresent() && workerOpt.isPresent()) {
+            CleaningTask task = taskOpt.get();
+            Worker worker = workerOpt.get();
+            Property property = task.getProperty();
+            Long propId = property.getPropertyId();
+
+            if (task.getWorker().equals(worker) && task.getStatus() == CleaningTask.Status.Accepted) {
+                task.setStatus(CleaningTask.Status.InProgress);
+                cleaningTaskRepository.save(task);
+                worker.setCurPropertyId(propId);
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    public Integer getWorkerIdByUsername(String username) {
+        List<Worker> workers = workerRepository.findByName(username);
+        if (workers.isEmpty()) {
+            throw new RuntimeException("Worker not found with username: " + username);
+        }
+        Worker worker = workers.get(0);
+        return worker.getWorkerId();
+    }
+
+    
 
 
 }

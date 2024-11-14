@@ -25,6 +25,7 @@
     "date-fns": "^3.6.0",
     "framer-motion": "^11.11.11",
     "lucide-react": "^0.451.0",
+    "mdb-react-ui-kit": "^9.0.0",
     "next": "^14.2.15",
     "papaparse": "^5.4.1",
     "react": "^18.3.1",

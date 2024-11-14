@@ -8,6 +8,7 @@ import com.g4t2project.g4t2project.DTO.*;
 import com.g4t2project.g4t2project.entity.*;
 import com.g4t2project.g4t2project.entity.CleaningPackage.PackageType;
 import com.g4t2project.g4t2project.entity.CleaningPackage.PropertyType;
+import com.g4t2project.g4t2project.exception.NoAvailableWorkerException;
 
 import java.time.*;
 import java.util.Optional;
@@ -43,13 +44,16 @@ public class ClientService {
         return new ClientDTO(client.getClientId(), client.getEmail(), client.getName(), client.getPhoneNumber());
     }
 
-    public PropertyDTO convertToPropertyDTO(Property property) {
-        return new PropertyDTO(property.getPropertyId(), property.getNumberOfRooms(), property.getAddress(), property.getLatitude(), property.getLongitude());
-    }
+    // public PropertyDTO convertToPropertyDTO(Property property) {
+    //     return new PropertyDTO(property.getPropertyId(), property.getNumberOfRooms(), property.getAddress(), property.getLatitude(), property.getLongitude());
+    // }
 
     public cleaningTaskDTO convertToCleaningTaskDTO(CleaningTask task) {
+        Worker worker = task.getWorker();
+        workerDTO workerDTO = new workerDTO(Long.valueOf(worker.getWorkerId()), worker.getName(), worker.getPhoneNumber(), worker.getShortBio(),worker.isAvailable());
+        // workerDTO workerDTO = new workerDTO(Long.valueOf(task.getWorker().getWorkerId()), task.getWorker().getName(), task.getWorker().getPhoneNumber());
         Long propertyId = task.getProperty().getPropertyId();
-        return new cleaningTaskDTO(propertyId, task.getShift().name(), task.getDate().toString(), task.isAcknowledged());
+        return new cleaningTaskDTO(propertyId, task.getShift().name(), task.getDate().toString(), task.isAcknowledged(), workerDTO);
     }
 
     public cleaningTaskDTO placeOrder(Long clientId, String packageType, String propertyType, int numberOfRooms, CleaningTask.Shift shift, LocalDate date) {
@@ -66,40 +70,41 @@ public class ClientService {
         // }
 
         Client client = clientRepository.findById(clientId).orElseThrow(() -> new IllegalArgumentException("Client not found"));
-        // Property property = propertyRepository.findById(propertyID).orElseThrow(() -> new IllegalArgumentException("Property not found"));
-        // CleaningPackage pkg = cleaningPackageRepository.findById(packageID).orElseThrow(() -> new IllegalArgumentException("Package not found"));
+        System.out.println("Client found: " + client.getClientId());
 
-        // Find or create the `CleaningPackage` based on `packageType` and `propertyType`
-        CleaningPackage pkg = cleaningPackageRepository.findByPackageTypeAndPropertyType(PackageType.valueOf(packageType), PropertyType.valueOf(propertyType))
-        .orElseThrow(() -> new IllegalArgumentException("Package not found for type: " + packageType + " and property type: " + propertyType));
+        CleaningPackage pkg = cleaningPackageRepository.findByPackageTypeAndPropertyTypeAndPax(
+            PackageType.valueOf(packageType),
+            PropertyType.valueOf(propertyType),
+            numberOfRooms
+        ).orElseThrow(() -> new IllegalArgumentException("Package not found for type: " + packageType + ", property type: " + propertyType + ", and number of rooms: " + numberOfRooms));
+        System.out.println("Package found: " + pkg.getPackageId());
 
-        // Find or create the Property based on the number of rooms, property type, and client ID
-        Property property = propertyRepository.findByClientAndNumberOfRooms(client, numberOfRooms)
+        Property property = propertyRepository.findByClientAndCleaningPackage(client, pkg)
         .orElseGet(() -> {
-            // Create new property if it doesn't exist
             Property newProperty = new Property(client, pkg, "", 0.0, 0.0);
             newProperty.setNumberOfRooms(numberOfRooms);
             return propertyRepository.save(newProperty);
         });
+        System.out.println("Property found: " + property.getPropertyId());
 
         if (shift == null) {
             throw new IllegalArgumentException("Shift is required and cannot be empty");
         }
 
-        Worker worker = assignWorker(property, shift, date);
+        CleaningTask cleaningTask = new CleaningTask();
+        cleaningTask.setProperty(property);
+        cleaningTask.setShift(shift);
+        cleaningTask.setStatus(CleaningTask.Status.Scheduled);
+        cleaningTask.setDate(date);
+        System.out.println("Cleaning task created: " + cleaningTask.getTaskId());
+        try {
+            cleaningTaskService.addCleaningTask(cleaningTask);
+        } catch (NoAvailableWorkerException e) {
+            throw new RuntimeException("No worker available for the task: " + e.getMessage());
+        }
 
-        CleaningTask cleaningTask = new CleaningTask(property, worker, shift, CleaningTask.Status.Scheduled, date, false);
-
-        CleaningTask savedTask = cleaningTaskRepository.save(cleaningTask);
-
-        return convertToCleaningTaskDTO(savedTask);
+        return convertToCleaningTaskDTO(cleaningTask);
     }
-
-    private Worker assignWorker(Property property, CleaningTask.Shift shift, LocalDate date) {
-        Optional<Worker> optionalWorker = workerRepository.findFirstByAvailableTrue();
-        return optionalWorker.orElseThrow(() -> new IllegalStateException("No available workers"));
-    }
-
 
     public Feedback rateSession(Long clientId, int taskID, int rating, String comments) {
         CleaningTask task = cleaningTaskRepository.findById(taskID).orElseThrow(() -> new IllegalArgumentException("Cleaning task not found"));
@@ -116,7 +121,6 @@ public class ClientService {
 
         task.setFeedback(feedback);
         cleaningTaskRepository.save(task);
-
         return feedback;
     }
 

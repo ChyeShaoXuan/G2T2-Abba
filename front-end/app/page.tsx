@@ -8,6 +8,7 @@ export default function Home() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
 
+
   useEffect(() => {
     const timer = setTimeout(() => {
       setLoading(false); 
