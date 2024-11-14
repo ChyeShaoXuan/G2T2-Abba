@@ -32,6 +32,8 @@ public class LeaveApplication {
 
     private String mcDocumentUrl;
 
+    private String reason;
+
     @Column(name = "mcDocumentSubmitted")
     private boolean mcDocumentSubmitted;
 
@@ -132,6 +134,13 @@ public class LeaveApplication {
 
     public void setSubmissionDateTime(LocalDateTime submissionDateTime) {
         this.submissionDateTime = submissionDateTime;
+    }
+    public String getReason() {
+        return reason;
+    }
+
+    public void setReason(String reason) {
+        this.reason = reason;
     }
     
 }

@@ -132,6 +132,19 @@ public class WorkerService {
         return worker.getWorkerId();
     }
 
+    // Method to get adminId based on workerId
+    public Long getAdminIdByWorkerId(Long workerId) {
+        Optional<Worker> optionalWorker = workerRepository.findById(workerId);
+
+        // Throw RuntimeException if worker is not found
+        Worker worker = optionalWorker.orElseThrow(() -> 
+            new RuntimeException("Worker not found with ID: " + workerId)
+        );
+
+        // Return the adminId from the worker
+        return worker.getAdminId();
+    }
+
     
 
 
