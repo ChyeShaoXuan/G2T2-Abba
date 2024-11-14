@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.g4t2project.g4t2project.DTO.workerDTO;
 import com.g4t2project.g4t2project.entity.CleaningTask;
 import com.g4t2project.g4t2project.entity.LeaveApplication;
 import com.g4t2project.g4t2project.entity.Property;
@@ -87,18 +88,15 @@ public class WorkerService {
     //             .collect(Collectors.toList());
     // }
 
-    public List<Worker> getAllWorkers() {
+    public List<workerDTO> getAllWorkers() {
         List<Worker> workers = workerRepository.findAll();
         return workers.stream()
-                .map(worker -> new Worker(
-                        worker.getAdmin(),  
+                .map(worker -> new workerDTO(
+                        worker.getWorkerId().longValue(),
                         worker.getName(),
                         worker.getPhoneNumber(),
                         worker.getShortBio(),
-                        worker.getDeployed(),  
-                        worker.getTele_Id(),  
-                        worker.getCurPropertyId(),  
-                        worker.getWorkerHoursInWeek()  
+                        worker.isAvailable()
                 ))
                 .collect(Collectors.toList());
     }

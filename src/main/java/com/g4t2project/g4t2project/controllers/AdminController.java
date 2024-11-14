@@ -17,9 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.g4t2project.g4t2project.DTO.ClientDTO;
-import com.g4t2project.g4t2project.DTO.StatsDTO;
-import com.g4t2project.g4t2project.DTO.UserDTO;
+import com.g4t2project.g4t2project.DTO.*;
 import com.g4t2project.g4t2project.entity.Admin;
 import com.g4t2project.g4t2project.entity.Client;
 import com.g4t2project.g4t2project.entity.LeaveApplication;
@@ -90,17 +88,13 @@ public class AdminController {
         }
     }
 
-    // @GetMapping("/workers")
-    // public ResponseEntity<List<workerDTO>> getAllWorkers() {
-    //     List<workerDTO> workers = workerService.getAllWorkers();
-    //     return ResponseEntity.ok(workers);
-    // }
-
     @GetMapping("/workers")
-    public ResponseEntity<List<Worker>> getAllWorkers() {
-        List<Worker> workers = adminService.getAllWorkers();
+    public ResponseEntity<List<workerDTO>> getAllWorkers() {
+        List<workerDTO> workers = workerService.getAllWorkers();
         return ResponseEntity.ok(workers);
     }
+
+
 
 
     @GetMapping("/workers_admin")

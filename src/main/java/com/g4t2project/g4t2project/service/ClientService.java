@@ -44,13 +44,13 @@ public class ClientService {
         return new ClientDTO(client.getClientId(), client.getEmail(), client.getName(), client.getPhoneNumber());
     }
 
-    public PropertyDTO convertToPropertyDTO(Property property) {
-        return new PropertyDTO(property.getPropertyId(), property.getNumberOfRooms(), property.getAddress(), property.getLatitude(), property.getLongitude());
-    }
+    // public PropertyDTO convertToPropertyDTO(Property property) {
+    //     return new PropertyDTO(property.getPropertyId(), property.getNumberOfRooms(), property.getAddress(), property.getLatitude(), property.getLongitude());
+    // }
 
     public cleaningTaskDTO convertToCleaningTaskDTO(CleaningTask task) {
         Worker worker = task.getWorker();
-        workerDTO workerDTO = new workerDTO(Long.valueOf(worker.getWorkerId()), worker.getName(), worker.getPhoneNumber(), worker.getShortBio(), worker.isAvailable());
+        workerDTO workerDTO = new workerDTO(Long.valueOf(worker.getWorkerId()), worker.getName(), worker.getPhoneNumber(), worker.getShortBio(),worker.isAvailable());
         // workerDTO workerDTO = new workerDTO(Long.valueOf(task.getWorker().getWorkerId()), task.getWorker().getName(), task.getWorker().getPhoneNumber());
         Long propertyId = task.getProperty().getPropertyId();
         return new cleaningTaskDTO(propertyId, task.getShift().name(), task.getDate().toString(), task.isAcknowledged(), workerDTO);
@@ -121,7 +121,6 @@ public class ClientService {
 
         task.setFeedback(feedback);
         cleaningTaskRepository.save(task);
-
         return feedback;
     }
 
