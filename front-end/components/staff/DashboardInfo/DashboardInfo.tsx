@@ -6,6 +6,7 @@ import { useState, useEffect } from 'react'
 import axios from 'axios'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import React from 'react';
+import { useGlobalState } from '@/context/StateContext';
 import {
   MDBCol,
   MDBContainer,
@@ -29,6 +30,7 @@ interface DashboardInfoProps {
 }
 
 export default function DashboardInfo({ workerId }: DashboardInfoProps) {
+  const { setWorkerId } = useGlobalState();
   const [workers, setWorkers] = useState<Worker[]>([])
   interface Worker {
     workerId: number
@@ -45,7 +47,7 @@ export default function DashboardInfo({ workerId }: DashboardInfoProps) {
       try {
         // Use the workerId from props instead of username
         const workersResponse = await axios.get(`http://localhost:8080/admin/workers`)
-        const worker = workersResponse.data.find((worker: Worker) => worker.workerId === 1)
+        const worker = workersResponse.data.find((worker: Worker) => worker.workerId === setWorkerId)
         if (worker) {
           setWorkers([worker])
         }
@@ -57,7 +59,7 @@ export default function DashboardInfo({ workerId }: DashboardInfoProps) {
     if (workerId) {
       fetchWorkers()
     }
-  }, [workerId])
+  }, [workerId, setWorkerId])
   
   const username = localStorage.getItem('username')
   console.log(localStorage)
