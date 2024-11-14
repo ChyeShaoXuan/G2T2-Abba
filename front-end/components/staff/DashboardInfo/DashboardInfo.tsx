@@ -48,7 +48,7 @@ export default function DashboardInfo({ workerId }: DashboardInfoProps) {
       try {
         // Use the workerId from props instead of username
         const workersResponse = await axios.get(`http://localhost:8080/admin/workers`)
-        const worker = workersResponse.data.find((worker: Worker) => worker.workerId === workerId)
+        const worker = workersResponse.data.find((worker: Worker) => worker.workerId === 1)
         if (worker) {
           setWorkers([worker])
         }

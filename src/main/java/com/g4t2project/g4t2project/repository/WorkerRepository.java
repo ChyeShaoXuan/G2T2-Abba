@@ -37,5 +37,9 @@ public interface WorkerRepository extends JpaRepository<Worker, Long> {
 
     @Query("SELECT w FROM Worker w WHERE w.available = true")
     List<Worker> findAllAvailableWorkers();
+    
+    
+    @Query("SELECT w.workerId FROM Worker w WHERE w.name = :name")
+    Long findWorkerIdByName(@Param("name") String name);
 
 }

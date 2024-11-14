@@ -28,11 +28,11 @@ export default function StaffAuth() {
 
   // Log initial state
   console.log('Current userType:', userType);
-  console.log('localStorage data:', {
-    userType: localStorage.getItem('userType'),
-    username: localStorage.getItem('username'),
-    token: localStorage.getItem('jwtToken')
-  });
+  // console.log('localStorage data:', {
+  //   userType: localStorage.getItem('userType'),
+  //   username: localStorage.getItem('username'),
+  //   token: localStorage.getItem('jwtToken')
+  // });
 
   const form = useForm<z.infer<typeof workerAuthSchema>>({
     resolver: zodResolver(workerAuthSchema),
