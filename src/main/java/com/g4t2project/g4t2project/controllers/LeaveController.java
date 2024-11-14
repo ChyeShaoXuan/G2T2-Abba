@@ -11,6 +11,7 @@ import com.g4t2project.g4t2project.service.NotificationService;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -119,4 +120,16 @@ public class LeaveController {
                 .body(null);
         }
     }
+
+    @GetMapping("/all")
+    public ResponseEntity<List<LeaveApplication>> getAllLeaveApplications() {
+        try {
+            List<LeaveApplication> leaveApplications = leaveApplicationService.getAllLeaveApplications();
+            return ResponseEntity.ok(leaveApplications);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
+    
 }
