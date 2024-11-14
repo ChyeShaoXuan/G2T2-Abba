@@ -63,7 +63,6 @@ public class NotificationService {
     }
 
     // Notify the worker to remind them of an assigned task
-    // Notify the worker to remind them of an assigned task
     public void notifyWorkerForTaskReminder(String workerEmail, String subject, String workerName, String taskDetails, LocalDate taskDate) {
         // Prepare the email data
         Map<String, Object> data = new HashMap<>();
@@ -76,6 +75,23 @@ public class NotificationService {
 
         // Log the action for monitoring
         LOGGER.info("Task reminder sent to worker: {}", workerEmail);
+    }
+
+    // Notify the admin of a failed task acknowledgment
+    public void alertAdminOfFailedAck(CleaningTask task, String adminEmail){
+        System.out.println("Sending alert to admin " + adminEmail);
+        String detailsOfTask = task.getDescription();
+        String workerName = task.getWorker().getName();
+        Integer workerId = task.getWorker().getWorkerId();
+
+
+        // Send the alert email using SendMailService
+        sendMailService.sendAlertEmail(adminEmail, detailsOfTask, workerName, workerId, task.getDate());
+
+        // Log the action for monitoring    
+        LOGGER.info("Alert sent to admin: {}", adminEmail);
+
+
     }
 
 

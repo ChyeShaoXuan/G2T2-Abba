@@ -16,9 +16,10 @@ interface Worker {
   phoneNumber: string
   shortBio: string
   deployed: boolean
-  tele_Id: string
+
   curPropertyId: number
   available: boolean
+  emailId: string
   adminId: number
 }
 
@@ -29,14 +30,16 @@ export default function ViewWorkers() {
     phoneNumber: '',
     shortBio: '',
     deployed: false,
-    tele_Id: '',
+
     curPropertyId: 0,
     available: true,
+    emailId: '',
     adminId: 0
   })
   const [editingWorker, setEditingWorker] = useState<Worker | null>(null)
   const [adminIds, setAdminIds] = useState<number[]>([])
   const [propertyIds, setPropertyIds] = useState<number[]>([])
+  const [inputValue, setInputValue] = useState("");
 
   useEffect(() => {
     const fetchWorkers = async () => {
@@ -99,7 +102,7 @@ export default function ViewWorkers() {
         phoneNumber: '',
         shortBio: '',
         deployed: false,
-        tele_Id: '',
+        emailId: '',
         curPropertyId: 0,
         available: true,
         adminId: 0
@@ -140,7 +143,7 @@ export default function ViewWorkers() {
             <TableHead>Phone Number</TableHead>
             <TableHead>Short Bio</TableHead>
             <TableHead>Deployed</TableHead>
-            <TableHead>Telegram ID</TableHead>
+            <TableHead>Email</TableHead>
             <TableHead>Current Property ID</TableHead>
             <TableHead>Available</TableHead>
             <TableHead>Admin ID</TableHead>
@@ -207,12 +210,12 @@ export default function ViewWorkers() {
                   <input
                     type="text"
                     name="tele_Id"
-                    value={editingWorker.tele_Id}
+                    value={editingWorker.emailId}
                     onChange={handleInputChange}
                     className="border p-2"
                   />
                 ) : (
-                  worker.tele_Id
+                  worker.emailId
                 )}
               </TableCell>
               <TableCell>
@@ -318,14 +321,14 @@ export default function ViewWorkers() {
           />
         </div>
         <div className="space-y-2">
-          <label htmlFor="tele_Id" className="text-sm font-medium">Telegram ID</label>
+          <label htmlFor="tele_Id" className="text-sm font-medium">Email</label>
           <input
-            id="tele_Id"
+            id="emailId"
             type="text"
-            name="tele_Id"
-            value={newWorker.tele_Id}
+            name="emailId"
+            value={newWorker.emailId}
             onChange={handleInputChange}
-            placeholder="Telegram ID"
+            placeholder="email"
             className="w-full p-2 border rounded"
           />
         </div>

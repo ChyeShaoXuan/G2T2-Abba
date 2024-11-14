@@ -38,6 +38,9 @@ public class SendMailService {
     @Value("${courier.template.id.remindWorker}")
     private String remindWorkerTemplateId;
 
+    @Value("${courier.template.id.alertAdmin}")
+    private String alertTemplateId;
+
     public void sendEnhancedMail(String recipientEmail, String title, String community, String name, String verificationLink) {
         try {
             Courier courier = Courier.builder()
@@ -188,6 +191,37 @@ public class SendMailService {
             LOGGER.error("Error while sending the reminder email", e);
             e.printStackTrace();
             throw new RuntimeException("Error while sending the reminder email: " + e.getMessage());
+        }
+    }
+
+    public void sendAlertEmail(String adminEmail, String detailsOfTask, String workerName, Integer workerId, LocalDate taskDate) {
+        try {
+            Courier courier = Courier.builder()
+                .authorizationToken(courierAuthToken)
+                .build();
+    
+            Map<String, Object> data = new HashMap<>();
+            data.put("detailsOfTask", detailsOfTask);  // Include the task details in the email
+            data.put("workerName", workerName);  // Add the worker's name to the email body
+            data.put("workerId", workerId);  // Include the worker's ID in the email
+            data.put("taskDate", taskDate);  // Add the task date to the email body
+    
+            SendMessageRequest request = SendMessageRequest.builder()
+                .message(Message.of(TemplateMessage.builder()
+                    .template(alertTemplateId)  // Use the alert template
+                    .to(MessageRecipient.of(Recipient.of(UserRecipient.builder()
+                        .email(adminEmail)
+                        .build())))
+                    .data(data)
+                    .build()))
+                .build();
+    
+            courier.send(request);
+            LOGGER.info("Alert email sent successfully to {}", adminEmail);
+        } catch (Exception e) {
+            LOGGER.error("Error while sending the alert email", e);
+            e.printStackTrace();
+            throw new RuntimeException("Error while sending the alert email: " + e.getMessage());
         }
     }
     

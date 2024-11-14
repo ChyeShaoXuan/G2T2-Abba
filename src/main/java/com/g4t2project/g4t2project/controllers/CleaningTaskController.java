@@ -66,7 +66,7 @@ public class CleaningTaskController {
         }
 
         // Step 2: Fetch cleaning tasks for the worker with status "Pending" or "Scheduled"
-        List<CleaningTask> tasks = cleaningTaskRepository.findByWorkerIdAndStatusIn(workerIdLong, Arrays.asList(CleaningTask.Status.Pending, CleaningTask.Status.Scheduled));
+        List<CleaningTask> tasks = cleaningTaskRepository.findByWorkerIdAndStatusIn(workerIdLong, Arrays.asList(CleaningTask.Status.Unacknowledged, CleaningTask.Status.Scheduled));
         if (tasks.isEmpty()) {
             return new ResponseEntity<>("No assigned cleaning tasks found for this worker", HttpStatus.NOT_FOUND);
         }
@@ -155,7 +155,7 @@ public class CleaningTaskController {
         CleaningTask cleaningTask = new CleaningTask();
         cleaningTask.setProperty(property);
         cleaningTask.setShift(CleaningTask.Shift.valueOf(taskDTO.getShift()));
-        cleaningTask.setStatus(CleaningTask.Status.Pending);
+        cleaningTask.setStatus(CleaningTask.Status.Unacknowledged);
         cleaningTask.setDate(parsed_date);
 
         // Step 4: add the cleaning task
@@ -182,11 +182,11 @@ public class CleaningTaskController {
         return new ResponseEntity<>(tasks, HttpStatus.OK);
     }
 
-    @GetMapping
-    public ResponseEntity<List<CleaningTask>> getCleaningTasks(@RequestParam Integer clientId) {
-        List<CleaningTask> tasks = cleaningTaskService.getCleaningTasksByClient(clientId);
-        return new ResponseEntity<>(tasks, HttpStatus.OK);
-    }
+    // @GetMapping
+    // public ResponseEntity<List<CleaningTask>> getCleaningTasks(@RequestParam Integer clientId) {
+    //     List<CleaningTask> tasks = cleaningTaskService.getCleaningTasksByClient(clientId);
+    //     return new ResponseEntity<>(tasks, HttpStatus.OK);
+    // }
 
     @GetMapping("/tasks")
     public ResponseEntity<List<OverwriteCleaningTaskDTO>> getCleaningTasks() {

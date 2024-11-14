@@ -30,7 +30,6 @@ public class CleaningTaskReminderScheduler {
              // Get worker details
             String workerEmail = task.getWorker().getEmailId();
             String workerName = task.getWorker().getName();
-            String taskDescription = "Assigned Task";
             String taskDetails = task.getDescription(); 
             LocalDate taskDate = task.getDate(); 
 

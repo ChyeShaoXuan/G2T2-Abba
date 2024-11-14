@@ -55,7 +55,7 @@ public class CleaningTask {
 
     public enum Status {
         Scheduled,
-        Pending,
+        Unacknowledged,
         Assigned,
         Accepted,
         InProgress,
