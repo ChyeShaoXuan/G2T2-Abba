@@ -44,7 +44,7 @@ public class Worker {
     private String phoneNumber;
     private String shortBio;
     private boolean deployed;
-    private String tele_Id;
+    private String emailID;
     private long curPropertyId = 100;
     private boolean available;
 
@@ -56,13 +56,13 @@ public class Worker {
 
     public Worker() {}
 
-    public Worker(Admin admin, String name, String phoneNumber, String shortBio, boolean deployed, String tele_Id, long curPropertyId, int worker_hours_in_week) {
+    public Worker(Admin admin, String name, String phoneNumber, String shortBio, boolean deployed, String emailID, long curPropertyId, int worker_hours_in_week) {
         this.admin = admin;
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.shortBio = shortBio;
         this.deployed = deployed;
-        this.tele_Id = tele_Id;
+        this.emailID = emailID;
         this.curPropertyId = curPropertyId;
         this.available = true;
         this.worker_hours_in_week = worker_hours_in_week;
@@ -103,7 +103,7 @@ public class Worker {
     }
 
     public String getTele_Id() {
-        return tele_Id;
+        return emailID;
     }
 
     public long getCurPropertyId() {
@@ -130,8 +130,8 @@ public class Worker {
         this.deployed = deployed;
     }
 
-    public void setTele_Id(String tele_Id) {
-        this.tele_Id = tele_Id;
+    public void setemailID(String emailID) {
+        this.emailID = emailID;
     }
     // probably no need for this method
     public boolean isAvailable() {
