@@ -63,7 +63,6 @@ public class LeaveController {
     }
 
     @PostMapping(value = "/upload-mc", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-
     public ResponseEntity<String> uploadMcDocument(
             @RequestParam("leaveId") int leaveId,
             @RequestParam("mcDocument") MultipartFile mcDocument) {
@@ -84,7 +83,7 @@ public class LeaveController {
         }
     }
 
-    @PostMapping("/approve")
+    @PostMapping("/approve/{leaveId}")
     public ResponseEntity<String> approveLeave(@RequestBody int leaveId) {
         try {
             leaveApplicationService.approveLeave(leaveId);

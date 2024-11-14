@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { MapPin, Clock, Calendar, AlertTriangle } from 'lucide-react'
+import { useGlobalState } from '@/context/StateContext';
 
 
 interface Job {
@@ -42,7 +43,7 @@ interface Job {
 // }
 
 export default function UpcomingJobs() {
-  const username = localStorage.getItem('username')
+
   const [editingJob, setEditingJob] = useState<Job | null>(null)
   const [myJobs, setMyJobs] = useState<Job[]>([])
   const [selectedJob, setSelectedJob] = useState<Job | null>(null)
@@ -53,6 +54,8 @@ export default function UpcomingJobs() {
   const [arrivalPhotoUrl, setArrivalPhotoUrl] = useState<string | null>(null)
   const [workers, setWorkers] = useState<Worker[]>([])
   const [workerId, setWorkerId] = useState<number | null>(null)
+  const { userType } = useGlobalState();
+  const { userId } = useGlobalState();
 
   // useEffect(() => {
   //   // Fetch workers from the backend
