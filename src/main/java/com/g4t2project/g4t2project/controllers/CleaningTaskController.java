@@ -26,7 +26,6 @@ import org.springframework.web.multipart.MultipartFile;
 import com.g4t2project.g4t2project.DTO.OverwriteCleaningTaskDTO;
 import com.g4t2project.g4t2project.DTO.PropertyDTO;
 import com.g4t2project.g4t2project.DTO.cleaningTaskDTO;
-import com.g4t2project.g4t2project.DTO.CleaningPackageDTO;
 import com.g4t2project.g4t2project.entity.CleaningPackage;
 import com.g4t2project.g4t2project.entity.CleaningTask;
 import com.g4t2project.g4t2project.entity.Property;
