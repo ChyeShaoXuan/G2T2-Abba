@@ -44,15 +44,19 @@ public class LeaveApplicationService {
 
         // Fetch the worker associated with the leave application
         Worker worker = leaveApplication.getWorker();
+        System.out.println("Worker ID: " + worker.getWorkerId());
 
         // Fetch the cleaning task associated with the worker
-        CleaningTask task = getTaskForWorker(worker);
+        CleaningTask task = getTopTaskByWorker(worker);
+        System.out.println("Task ID: " + task.getTaskId());
 
         // Get the client from the cleaning task
         Client client = task.getProperty().getClient();  // Assuming CleaningTask has getClient() method
 
+        LocalDateTime leaveStartDateTime = leaveApplication.getStartDate().atStartOfDay();
+
         // Check if the leave is too close to the task start date
-        if (Duration.between(now, leaveApplication.getStartDate()).compareTo(MINIMUM_NOTICE_DURATION) < 0) {
+        if (Duration.between(now, leaveStartDateTime).compareTo(MINIMUM_NOTICE_DURATION) < 0) {
             // Notify the client that it's too late to reschedule
             notificationService.notifyClientForLateLeave(client, task);
         } else {
@@ -103,6 +107,11 @@ public class LeaveApplicationService {
         return false; // No worker was available for the reallocation
     }
     
+    public CleaningTask getTopTaskByWorker(Worker worker) {
+        Optional<CleaningTask> taskOpt = cleaningTaskRepository.findFirstByWorkerOrderByTaskIdDesc(worker);
+        System.out.println("Task: " + taskOpt);
+        return taskOpt.orElseThrow(() -> new RuntimeException("Cleaning task not found for worker ID: " + worker.getWorkerId()));
+    }
 
     public CleaningTask getTaskForWorker(Worker worker) {
         Optional<CleaningTask> taskOpt = cleaningTaskRepository.findTaskByWorker(worker);

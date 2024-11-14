@@ -4,6 +4,7 @@ package com.g4t2project.g4t2project.entity;
 import java.time.LocalDateTime;
 
 import jakarta.persistence.*;
+import java.util.Set;
 
 @Entity
 public class User {
@@ -21,6 +22,14 @@ public class User {
     private String twoFactorToken;
     private LocalDateTime tokenExpiryTime;
     private boolean isVerified;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+        name = "user_roles",
+        joinColumns = @JoinColumn(name = "user_id"),
+        inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    private Set<Role> roles;
 
 
     public Long getUserId() {
@@ -88,6 +97,14 @@ public class User {
 
     public void setVerified(boolean verified) {
         isVerified = verified;
+    }
+
+    public Set<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles;
     }
     
 

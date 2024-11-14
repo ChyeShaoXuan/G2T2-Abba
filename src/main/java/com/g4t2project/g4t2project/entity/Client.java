@@ -28,7 +28,10 @@ public class Client {
     @JoinColumn(name = "adminId")
     private Admin admin;
 
-    protected Client() {}
+    @OneToOne
+    private User user;
+
+    public Client() {}
 
     public Client(Admin admin, CleaningPackage preferredPackage, Worker preferredWorker, String name, String phoneNumber, String email) {
         this.name = name;
@@ -101,5 +104,14 @@ public class Client {
     public Admin getAdmin() {
         return admin;
     }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+    
     
 }

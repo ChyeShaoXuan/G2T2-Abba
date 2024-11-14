@@ -112,4 +112,5 @@ public class LeaveApplication {
     public void setMcDocumentUrl(String mcDocumentUrl) {
         this.mcDocumentUrl = mcDocumentUrl;
     }
+    
 }

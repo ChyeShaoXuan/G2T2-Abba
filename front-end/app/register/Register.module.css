@@ -1,19 +1,23 @@
 /* Register.module.css */
 
 .input-container {
-    border: 1px solid #ccc;
+    border: 1px solid #000000; /* Ensuring the border is black */
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     padding: 30px;
     position: relative;
     margin: 0 auto;
     margin-top: 50px;
-    width:50%;
+    width: 50%;
 }
 
 .form-container {
     position: relative;
     margin-bottom: 10px;
     margin-top: 15px;
+}
+
+.form-container input {
+    border: 1px solid #000000; /* Adding a black border to inputs */
 }
 
 .form-container input:focus + label {
@@ -43,19 +47,18 @@
     margin-bottom: 40px;
 }
 
+#pdt {
+    border: 1px solid #000000; /* Ensuring border is black */
+    margin-left: 10px;
+}
+
 #pdt:hover {
     background-color: rgb(72, 72, 72);
     color: white;
 }
 
-#pdt {
-    border: 1px black solid;
-    margin-left: 10px;
-}
-
-/* New styles for outlining buttons */
 .btn-outline {
-    border: 2px solid #000000;
+    border: 2px solid #000000; /* Ensuring border is black */
     color: #000000;
     background-color: transparent;
     padding: 10px 20px;
@@ -73,5 +76,4 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    
 }

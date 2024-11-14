@@ -1,7 +1,10 @@
+
+
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import TransitionLayout from '@/components/ui/transition-layout'
+import { AuthProvider } from "./context/useAuth";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -29,7 +32,9 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <TransitionLayout>{children}</TransitionLayout>
+          <AuthProvider>
+            <TransitionLayout>{children}</TransitionLayout>
+          </AuthProvider>
 
       </body>
     </html>

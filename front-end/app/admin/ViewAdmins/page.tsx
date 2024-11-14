@@ -1,15 +1,15 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import ViewClients from "@/components/admin/ViewClients/ViewClients"
+import ViewAdmins from "@/components/admin/ViewAdmins/ViewAdmins"
 import Navbar from "@/components/ui/adminpagesnavbar"
 
-export default function ViewClientsPage() {
+export default function ViewAdminsPage() {
 
   return (
     <div>
       <Navbar />
-      <ViewClients />
+      <ViewAdmins />
     </div>
   )
 }

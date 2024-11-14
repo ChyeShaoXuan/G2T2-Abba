@@ -1,8 +1,8 @@
 package com.g4t2project.g4t2project.service;
 
+import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.g4t2project.g4t2project.DTO.OverwriteCleaningTaskDTO;
 import com.g4t2project.g4t2project.entity.CleaningTask;
@@ -23,6 +24,7 @@ import com.g4t2project.g4t2project.repository.LeaveApplicationRepository;
 import com.g4t2project.g4t2project.repository.PropertyRepository;
 import com.g4t2project.g4t2project.repository.WorkerRepository;
 import com.g4t2project.g4t2project.util.DistanceCalculator;
+
 
 @Service
 public class CleaningTaskService {
@@ -85,8 +87,6 @@ public class CleaningTaskService {
     }
 
     public Optional<Worker> findClosestWorker(Property taskProperty, LocalDate taskDate, CleaningTask.Shift taskShift) {
-        // Fetch only deployed workers
-        List<Worker> deployedWorkers = workerRepository.findAllDeployed(0);
         Worker closestWorker = null;
         double minDistance = Double.MAX_VALUE;
 
@@ -260,23 +260,46 @@ public class CleaningTaskService {
 
         return true;
 
-        // Adjust task assignment time to 2.5 hours before the shift start
-        // LocalDateTime taskAssignmentTime = LocalDateTime.of(taskDate, shiftStart).minusHours(2).minusMinutes(30);
-
-        // // assigning
-        // task.setWorker(worker);
-        // task.setStatus(CleaningTask.Status.Assigned);
-        // task.setShift(shift);
-        // task.setDate(taskDate);
-
-        // task.setAssignedTime(taskAssignmentTime);
-
-        // worker.setWorkerHoursInWeek(currentWeeklyHours + shiftDurationHours); //only after 'finished'
-        // workerRepository.save(worker);
-
-        // cleaningTaskRepository.save(task);
-
+    }
+    
+    public void confirmArrival(Integer taskId, MultipartFile photo) throws IOException {
+        Optional<CleaningTask> taskOpt = cleaningTaskRepository.findById(taskId);
+        if (taskOpt.isPresent()) {
+            CleaningTask task = taskOpt.get();
+            byte[] photoBytes = photo.getBytes();
+            task.confirmArrival(photoBytes);
+            cleaningTaskRepository.save(task);
+        } else {
+            throw new RuntimeException("Task not found");
+        }
     }
 
+    public void confirmCompletion(Integer taskId, MultipartFile photo) throws IOException {
+        Optional<CleaningTask> taskOpt = cleaningTaskRepository.findById(taskId);
+        if (taskOpt.isPresent()) {
+            CleaningTask task = taskOpt.get();
+            byte[] photoBytes = photo.getBytes();
+            task.confirmCompletion(photoBytes);
+            cleaningTaskRepository.save(task);
+        } else {
+            throw new RuntimeException("Task not found");
+        }
+    }
 
+    public CleaningTask getCleaningTaskById(Integer taskId) {
+        return cleaningTaskRepository.findById(taskId)
+                .orElseThrow(() -> new RuntimeException("Task not found"));
+    }
+
+    public List<OverwriteCleaningTaskDTO> getCleaningTasksById(Integer workerId) {
+        List<CleaningTask> workerTasks = cleaningTaskRepository.findTasksByWorker(workerId);
+        System.out.println("----------------------------------");
+        System.out.println("Worker's cleaning tasks: ");
+        System.out.println(workerTasks);
+        return workerTasks.stream()
+        .map(this::convertToDTO)
+        .collect(Collectors.toList());
+    }
+    
 }
+

@@ -1,17 +1,31 @@
 package com.g4t2project.g4t2project.controllers;
 
+import java.util.List;
+import java.util.Map;
 
-import com.g4t2project.g4t2project.entity.*;
-import com.g4t2project.g4t2project.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import com. g4t2project.g4t2project.DTO.ClientDTO;
-import com.g4t2project.g4t2project.DTO.StatsDTO;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-import java.util.Map;
+import com.g4t2project.g4t2project.DTO.*;
+import com.g4t2project.g4t2project.entity.Admin;
+import com.g4t2project.g4t2project.entity.Client;
+import com.g4t2project.g4t2project.entity.LeaveApplication;
+import com.g4t2project.g4t2project.entity.User;
+import com.g4t2project.g4t2project.entity.Worker;
+import com.g4t2project.g4t2project.entity.WorkerHours;
+import com.g4t2project.g4t2project.service.AdminService;
+import com.g4t2project.g4t2project.service.WorkerService;
 
 @RestController
 @RequestMapping("/admin")
@@ -21,6 +35,8 @@ public class AdminController {
     @Autowired
     private AdminService adminService;
 
+    @Autowired
+    private WorkerService workerService;
 
     @PostMapping("/{adminId}/workers")
     public ResponseEntity<Worker> addWorker(@PathVariable Long adminId, @RequestBody Worker worker) {
@@ -28,13 +44,12 @@ public class AdminController {
         return ResponseEntity.ok(newWorker);
     }
 
-    // Remove worker under an admin
     @DeleteMapping("/{adminId}/workers/{workerId}")
     public ResponseEntity<Admin> removeWorker(@PathVariable Long adminId, @PathVariable Long workerId) {
         Admin admin = adminService.removeWorkerUnderAdmin(adminId, workerId);
         return ResponseEntity.ok(admin);
     }
-    
+
     @PutMapping("/workers/{workerId}")
     public ResponseEntity<Worker> updateWorker(@PathVariable Long workerId, @RequestBody Worker worker) {
         Worker updatedWorker = adminService.updateWorker(workerId, worker);
@@ -47,8 +62,6 @@ public class AdminController {
         return ResponseEntity.noContent().build();
     }
 
-
-    // Remove a client under a specific admin
     @DeleteMapping("/{adminId}/clients/{clientId}")
     public ResponseEntity<String> removeClientUnderAdmin(@PathVariable Long adminId, @PathVariable Long clientId) {
         try {
@@ -59,17 +72,12 @@ public class AdminController {
         }
     }
 
-    // Adding client record in database under a specific admin
     @PostMapping("/{adminId}/clients")
-    public ResponseEntity<Client> addClientUnderAdmin(
-            @PathVariable Long adminId,
-            @RequestBody ClientDTO clientDTO) {
-        
+    public ResponseEntity<Client> addClientUnderAdmin(@PathVariable Long adminId, @RequestBody ClientDTO clientDTO) {
         Client createdClient = adminService.addClientUnderAdmin(adminId, clientDTO);
         return ResponseEntity.ok(createdClient);
     }
 
-    
     @PutMapping("/{adminId}/tasks/{taskId}/assign/{workerId}")
     public ResponseEntity<String> assignTaskToWorker(@PathVariable int taskId, @PathVariable Long workerId) {
         try {
@@ -79,12 +87,22 @@ public class AdminController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
-    
+
     @GetMapping("/workers")
-    public ResponseEntity<List<Worker>> getAllWorkers() {
+    public ResponseEntity<List<workerDTO>> getAllWorkers() {
+        List<workerDTO> workers = workerService.getAllWorkers();
+        return ResponseEntity.ok(workers);
+    }
+
+
+
+
+    @GetMapping("/workers_admin")
+    public ResponseEntity<List<Worker>> getAllWorkersAdmin() {
         List<Worker> workers = adminService.getAllWorkers();
         return ResponseEntity.ok(workers);
     }
+
 
     @GetMapping("/clients")
     public ResponseEntity<List<ClientDTO>> getAllClients() {
@@ -92,23 +110,24 @@ public class AdminController {
         return ResponseEntity.ok(clients);
     }
 
-
     @PutMapping("/clients/{clientId}")
     public ResponseEntity<Client> updateClient(@PathVariable Long clientId, @RequestBody ClientDTO clientDTO) {
         Client updatedClient = adminService.updateClient(clientId, clientDTO);
         return ResponseEntity.ok(updatedClient);
     }
+
     @GetMapping("/stats")
     public ResponseEntity<Map<String, StatsDTO>> getAllStats() {
-            Map<String, StatsDTO> stats = adminService.getAllStats();
-            return ResponseEntity.ok(stats);
-        }
-    
+        Map<String, StatsDTO> stats = adminService.getAllStats();
+        return ResponseEntity.ok(stats);
+    }
+
     @GetMapping("/get_all_worker_ids")
     public ResponseEntity<List<Long>> getAllWorkerIds() {
         List<Long> workerIds = adminService.getAllWorkerIds();
         return ResponseEntity.ok(workerIds);
     }
+
     @GetMapping("/{workerId}/hours")
     public ResponseEntity<List<WorkerHours>> getWorkerHoursByWorkerId(@PathVariable Long workerId) {
         List<WorkerHours> workerHours = adminService.getWorkerHoursByWorkerId(workerId);
@@ -139,6 +158,21 @@ public class AdminController {
         return ResponseEntity.ok(packageIds);
     }
 
+    @GetMapping("/workerId/{username}")
+    public ResponseEntity<Integer> getWorkerIdByUsername(@PathVariable String username) {
+        Integer workerId = workerService.getWorkerIdByUsername(username);
+        return ResponseEntity.ok(workerId);
     }
 
-    
+    @GetMapping("/users")
+    public ResponseEntity<List<UserDTO>> getAllUsers() {
+        List<UserDTO> users = adminService.getAllUsers();
+        return ResponseEntity.ok(users);
+    }
+
+    @PutMapping("/users/{userId}/role")
+    public ResponseEntity<User> updateUserRole(@PathVariable Long userId, @RequestParam String role) {
+        User updatedUser = adminService.updateUserRole(userId, role);
+        return ResponseEntity.ok(updatedUser);
+    }
+}

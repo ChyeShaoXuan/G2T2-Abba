@@ -9,13 +9,18 @@ CREATE TABLE IF NOT EXISTS worker (
     deployed BOOLEAN,
     tele_Id VARCHAR(50),
     curPropertyId INT,
-    available BOOLEAN
+    available BOOLEAN,
+    userId INT,
+    FOREIGN KEY (userId) REFERENCES user(userId),
+    FOREIGN KEY (adminId) REFERENCES admin(adminId)
 );
 
 CREATE TABLE IF NOT EXISTS admin (
     adminId INT PRIMARY KEY,
     name VARCHAR(255),
-    isRoot BOOLEAN
+    isRoot BOOLEAN,
+    userId INT,
+    FOREIGN KEY (userId) REFERENCES user(userId)
 );
 
 CREATE TABLE IF NOT EXISTS cleaningtask (
@@ -38,6 +43,11 @@ CREATE TABLE IF NOT EXISTS client (
     propertyId INT,
     adminId INT,
     packageId INT PRIMARY KEY,
+    userId INT,
+    FOREIGN KEY (userId) REFERENCES user(userId),
+    FOREIGN KEY (workerId) REFERENCES worker(workerId),
+    FOREIGN KEY (adminId) REFERENCES admin(adminId),
+    FOREIGN KEY (packageId) REFERENCES cleaning_package(packageId)
 );
 
 CREATE TABLE IF NOT EXISTS feedback (
@@ -109,12 +119,26 @@ CREATE TABLE IF NOT EXISTS workerhours (
 );
 
 CREATE TABLE IF NOT EXISTS user (
-    userId INT PRIMARY KEY,
+    userId INT PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(255) NOT NULL, 
     email VARCHAR(100) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
     phoneNumber VARCHAR(50) NOT NULL,
     role ENUM('Admin', 'Worker', 'Client') NOT NULL,
     twoFactorToken VARCHAR(255),
+    tokenExpiryTime DATETIME,
     isVerified BOOLEAN
 )
+
+CREATE TABLE IF NOT EXISTS role (
+    roleId INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(50) NOT NULL UNIQUE
+);
+
+CREATE TABLE IF NOT EXISTS user_roles (
+    user_id INT,
+    role_id INT,
+    PRIMARY KEY (user_id, role_id),
+    FOREIGN KEY (user_id) REFERENCES user(userId),
+    FOREIGN KEY (role_id) REFERENCES role(roleId)
+);
