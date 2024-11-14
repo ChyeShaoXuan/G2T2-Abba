@@ -1,11 +1,11 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import ClientBooking from '@/components/client/ClientBooking/ClientBooking';
+import FinishedJobs from '@/components/client/FinishedJobs/FinishedJobs';
 import NavigationBar from "@/components/ui/clientpagesnavbar"
 import Loading from "@/components/ui/loading"
 
-export default function PlaceOrderPage() {
+export default function FinishedJobsPage() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -23,7 +23,7 @@ export default function PlaceOrderPage() {
       <div>
           {loading && <Loading />}
           <NavigationBar/>
-          <ClientBooking clientId={clientId} />
+          <FinishedJobs/>
       </div>
   );
 };

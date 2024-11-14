@@ -19,6 +19,7 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.List;
 
 
 @Service
@@ -185,5 +186,9 @@ public class LeaveApplicationService {
     public LeaveApplication getLeaveApplicationById(int leaveId) {
         return leaveApplicationRepository.findById(leaveId)
             .orElseThrow(() -> new RuntimeException("Leave Application not found for ID: " + leaveId));
+    }
+
+    public List<LeaveApplication> getAllLeaveApplications() {
+        return leaveApplicationRepository.findAll();
     }
 }
