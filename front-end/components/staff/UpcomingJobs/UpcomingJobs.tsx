@@ -28,18 +28,18 @@ interface Job {
   numberOfRooms: number
 }
 
-interface Worker {
-  workerId: number
-  name: string
-  phoneNumber: string
-  shortBio: string
-  deployed: boolean
-  tele_Id: string
-  curPropertyId: number
-  available: boolean
-  adminId: number
-  worker_hours_in_week: number
-}
+// interface Worker {
+//   workerId: number
+//   name: string
+//   phoneNumber: string
+//   shortBio: string
+//   deployed: boolean
+//   tele_Id: string
+//   curPropertyId: number
+//   available: boolean
+//   adminId: number
+//   worker_hours_in_week: number
+// }
 
 export default function UpcomingJobs() {
   const username = localStorage.getItem('username')
@@ -54,41 +54,45 @@ export default function UpcomingJobs() {
   const [workers, setWorkers] = useState<Worker[]>([])
   const [workerId, setWorkerId] = useState<number | null>(null)
 
-  useEffect(() => {
-    // Fetch workers from the backend
-    const fetchWorkers = async () => {
-      try {
-        const workersResponse = await axios.get(`http://localhost:8080/admin/workers`)
-        const worker = workersResponse.data.find((worker: Worker) => worker.name === username)
-        if (worker) {
-          setWorkers([worker]) 
-          setWorkerId(worker.workerId)
-        }
-        console.log(workersResponse.data) 
-      } catch (error) {
-        console.error('Error fetching workers:', error)
-      }
-    }
+  // useEffect(() => {
+  //   // Fetch workers from the backend
+  //   const fetchWorkers = async () => {
+  //     try {
+  //       const workersResponse = await axios.get(`http://localhost:8080/admin/workers`)
+  //       const worker = workersResponse.data.find((worker: Worker) => worker.name === username)
+  //       if (worker) {
+  //         setWorkers([worker]) 
+  //         setWorkerId(worker.workerId)
+  //       }
+  //       console.log(workersResponse.data) 
+  //     } catch (error) {
+  //       console.error('Error fetching workers:', error)
+  //     }
+  //   }
 
-    fetchWorkers()
-  }, [username])
+  //   fetchWorkers()
+  // }, [username])
 
-  useEffect(() => {
+useEffect(() => {
     // Fetch tasks from the backend
     const fetchTasks = async () => {
       try {
-        if (workerId !== null) {
-          const tasksResponse = await axios.get(`http://localhost:8080/cleaningTasks/tasks/myJobs/${workerId}`)
-          console.log(tasksResponse.data)
-          setMyJobs(tasksResponse.data)
-        }
+        const workerId = 1 // Example worker ID, should come from the logged-in user's details
+        const tasksResponse = await axios.get(`http://localhost:8080/cleaningTasks/tasks/${workerId}`)
+
+
+        //set the status to "in progress" if request is successful ///////////////////////
+        
+        console.log(tasksResponse.data)
+        setMyJobs(tasksResponse.data)
+
       } catch (error) {
         console.error('Error fetching tasks:', error)
       }
     }
 
     fetchTasks()
-  }, [workerId])
+  }, [])
 
   const handleArrivalConfirmation = async () => {
     if (selectedJob && arrivalPhoto) {
