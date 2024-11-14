@@ -35,6 +35,9 @@ public class SendMailService {
     @Value("${courier.template.id.lateleave}")
     private String lateLeaveTemplateId;
 
+    @Value("${courier.template.id.remindWorker}")
+    private String remindWorkerTemplateId;
+
     public void sendEnhancedMail(String recipientEmail, String title, String community, String name, String verificationLink) {
         try {
             Courier courier = Courier.builder()
@@ -156,4 +159,40 @@ public class SendMailService {
             throw new RuntimeException("Error while sending the late leave mail: " + e.getMessage());
         }
     }
+
+    public void sendReminderEmail(String recipientEmail, String title, String workerName, String taskDetails, LocalDate taskDate) {
+        try {
+            Courier courier = Courier.builder()
+                .authorizationToken(courierAuthToken)
+                .build();
+    
+            Map<String, Object> data = new HashMap<>();
+            data.put("title", title);
+            data.put("workerName", workerName);  // Include worker's name in the email
+            data.put("taskDetails", taskDetails);  // Add the task details to the email body
+            data.put("taskDate", taskDate);  // Include the task date in the email
+    
+            SendMessageRequest request = SendMessageRequest.builder()
+                .message(Message.of(TemplateMessage.builder()
+                    .template(remindWorkerTemplateId)  // Use the appropriate template for reminders
+                    .to(MessageRecipient.of(Recipient.of(UserRecipient.builder()
+                        .email(recipientEmail)
+                        .build())))
+                    .data(data)
+                    .build()))
+                .build();
+    
+            courier.send(request);
+            LOGGER.info("Reminder email sent successfully to {}", recipientEmail);
+        } catch (Exception e) {
+            LOGGER.error("Error while sending the reminder email", e);
+            e.printStackTrace();
+            throw new RuntimeException("Error while sending the reminder email: " + e.getMessage());
+        }
+    }
+    
+
+
+
+
 }

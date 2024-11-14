@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Component
@@ -26,10 +27,24 @@ public class CleaningTaskReminderScheduler {
 
         for (CleaningTask task : assignedTasks) {
             // Send reminder message to the assigned worker
+             // Get worker details
+            String workerEmail = task.getWorker().getEmailId();
+            String workerName = task.getWorker().getName();
+            String taskDescription = "Assigned Task";
+            String taskDetails = task.getDescription(); 
+            LocalDate taskDate = task.getDate(); 
+
+            // Log the reminder
             System.out.println("-------------------------------");
-            System.out.println("Sending reminder to worker " + task.getWorker().getName());
+            System.out.println("Sending reminder to worker " + workerName);
             System.out.println("-------------------------------");
 
+            // Send reminder email using NotificationService
+            notificationService.notifyWorkerForTaskReminder(workerEmail, 
+                    "Task Reminder: " + taskDescription, 
+                    workerName, 
+                    taskDetails, 
+                    taskDate);
         }
     }
 }

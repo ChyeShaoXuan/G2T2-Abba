@@ -152,5 +152,13 @@ public class CleaningTask {
         this.status = Status.Completed;
     }
 
+    public String getDescription() {
+        return String.format("Address: %s | Status: %s | Shift: %s", 
+                property.getAddress(), 
+                status.toString(), 
+                shift.toString());
+    }
+    
+
     
 }
