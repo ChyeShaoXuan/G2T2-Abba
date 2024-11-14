@@ -13,7 +13,7 @@ import com.g4t2project.g4t2project.repository.CleaningTaskRepository;
 import com.g4t2project.g4t2project.service.NotificationService;
 
 @Component
-public class CheckTaskAcknowledgementScheduler {
+class CheckTaskAcknowledgementScheduler {
 
     @Autowired
     private CleaningTaskRepository cleaningTaskRepository;
