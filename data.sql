@@ -8,9 +8,9 @@ INSERT INTO admin (adminId, name, isRoot) VALUES
 
 INSERT INTO worker (WorkerId, adminId, name, phoneNumber, shortBio, deployed, tele_Id, curPropertyId, available, worker_hours_in_week) VALUES
 (1, 1, 'John Smith', '+6512345678', 'Experienced cleaner, pet-friendly', true, '@johnsmith', 101, True, 20),
-(2, 1, 'Mary Tan', '+6598765432', 'Specializes in disinfection treatment', false, '@marytan', 0, True, 44),
+(2, 1, 'Mary Tan', '+6598765432', 'Specializes in disinfection treatment', false, '@marytan', 100, True, 44),
 (3, 1, 'Ahmed Ali', '+6581234567', 'No pets due to allergies', true, '@ahmedali', 103, False, 40),
-(4, 1, 'Susan Lee', '+6587654321', 'Background in carpet shampooing', false, '@susanlee', 0, False, 30);
+(4, 1, 'Susan Lee', '+6587654321', 'Background in carpet shampooing', false, '@susanlee', 100, False, 30);
 
 
 INSERT INTO cleaningpackage (packageId, packageType, price, hours, hourly_rate, property_details, pax, manualBookingRequired, propertyType) VALUES
@@ -69,10 +69,10 @@ INSERT INTO Property (propertyId, clientId, packageId, address, latitude, longit
 
 
 INSERT INTO cleaningtask (taskId, propertyId, workerId, feedbackId, shift, status, date, Acknowledged) VALUES
-(1, 101, 1, NULL, 'Morning', 'Scheduled', '2024-10-15', false),
-(2, 102, 2, NULL, 'Afternoon', 'InProgress', '2024-10-16', true),
-(3, 103, 3, NULL, 'Evening', 'Cancelled', '2024-10-17', false),
-(4, 104, 1, NULL, 'Morning', 'Completed', '2024-10-18', true);
+(1, 101, 1, NULL, 'Morning', 'Scheduled', '2024-11-15', false),
+(2, 102, 2, NULL, 'Afternoon', 'InProgress', '2024-11-16', true),
+(3, 103, 3, NULL, 'Evening', 'Cancelled', '2024-11-15', false),
+(4, 104, 1, NULL, 'Morning', 'Completed', '2024-11-15', true);
 
 INSERT INTO feedback (feedbackId, rating, comment) VALUES
 (1, 5, 'Great job, very satisfied!'),
