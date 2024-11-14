@@ -1,4 +1,6 @@
+// File: src/main/java/com/g4t2project/g4t2project/entity/LeaveApplication.java
 package com.g4t2project.g4t2project.entity;
+
 import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -30,7 +32,12 @@ public class LeaveApplication {
 
     private String mcDocumentUrl;
 
-    boolean mcDocumentSubmitted;
+    @Column(name = "mcDocumentSubmitted")
+    private boolean mcDocumentSubmitted;
+
+    @Lob
+    @Column(name = "mcDocument", columnDefinition="LONGBLOB")
+    private byte[] mcDocument;
 
     public enum LeaveType {
         MC,
@@ -45,18 +52,32 @@ public class LeaveApplication {
         Rejected
     }
 
-    protected LeaveApplication() {}
-
-    public LeaveApplication(Worker worker, Admin admin, LocalDate startDate, LocalDate endDate, LeaveType leaveType, LocalDateTime submissionDateTime) {
-        this.worker = worker;
-        this.admin = admin;
-        this.startDate = startDate;
-        this.endDate = endDate;
-        this.leaveType = leaveType;
-        this.status = Status.Pending;
-        this.submissionDateTime = submissionDateTime;
+    // Add getters and setters for mcDocument fields
+    public byte[] getMcDocument() {
+        return mcDocument;
     }
 
+    public void setMcDocument(byte[] mcDocument) {
+        this.mcDocument = mcDocument;
+    }
+
+    public String getMcDocumentUrl() {
+        return mcDocumentUrl;
+    }
+
+    public void setMcDocumentUrl(String mcDocumentUrl) {
+        this.mcDocumentUrl = mcDocumentUrl;
+    }
+
+    public boolean isMcDocumentSubmitted() {
+        return mcDocumentSubmitted;
+    }
+
+    public void setMcDocumentSubmitted(boolean mcDocumentSubmitted) {
+        this.mcDocumentSubmitted = mcDocumentSubmitted;
+    }
+
+    // Existing getters and setters
     public int getLeaveApplicationId() {
         return leaveApplicationId;
     }
@@ -109,7 +130,7 @@ public class LeaveApplication {
         return submissionDateTime;
     }
 
-    public void setMcDocumentUrl(String mcDocumentUrl) {
-        this.mcDocumentUrl = mcDocumentUrl;
+    public void setSubmissionDateTime(LocalDateTime submissionDateTime) {
+        this.submissionDateTime = submissionDateTime;
     }
 }

@@ -1,3 +1,4 @@
+// File: src/main/java/com/g4t2project/g4t2project/controllers/LeaveController.java
 package com.g4t2project.g4t2project.controllers;
 
 import com.g4t2project.g4t2project.entity.LeaveApplication;
@@ -9,9 +10,10 @@ import com.g4t2project.g4t2project.service.NotificationService;
 import java.time.Duration;
 import java.time.LocalDateTime;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -51,14 +53,24 @@ public class LeaveController {
         }
     }
 
-
-    @PostMapping("/upload-mc")
-    public ResponseEntity<String> uploadMcDocument(@RequestParam("leaveId") int leaveId, @RequestParam("mcDocument") MultipartFile mcDocument) {
+    @PostMapping(value = "/upload-mc", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<String> uploadMcDocument(
+            @RequestParam("leaveId") int leaveId,
+            @RequestParam("mcDocument") MultipartFile mcDocument) {
         try {
+            System.out.println("Received upload request:");
+            System.out.println("Leave ID: " + leaveId);
+            System.out.println("File name: " + mcDocument.getOriginalFilename());
+            System.out.println("File size: " + mcDocument.getSize());
+            System.out.println("Content type: " + mcDocument.getContentType());
+            
             leaveApplicationService.uploadMcDocument(leaveId, mcDocument);
             return ResponseEntity.ok("MC document uploaded successfully");
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to upload MC document: " + e.getMessage());
+            System.err.println("Error in controller:");
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("Failed to upload MC document: " + e.getMessage());
         }
     }
 
@@ -78,6 +90,23 @@ public class LeaveController {
             return ResponseEntity.ok("Leave approved successfully");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to approve leave: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/{leaveId}/mc-document")
+    public ResponseEntity<byte[]> getMcDocument(@PathVariable int leaveId) {
+        try {
+            LeaveApplication leaveApplication = leaveApplicationService.getLeaveApplicationById(leaveId);
+            byte[] mcDocument = leaveApplication.getMcDocument();
+            
+            return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, 
+                    "attachment; filename=\"" + leaveApplication.getMcDocumentUrl() + "\"")
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .body(mcDocument);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(null);
         }
     }
 }
