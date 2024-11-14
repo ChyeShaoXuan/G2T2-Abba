@@ -162,6 +162,7 @@ useEffect(() => {
           setIsCompletionDialogOpen(false)
           setCompletionPhoto(null)
           console.log(`Completion photo uploaded for job ${selectedJob.taskId}`)
+
         } else {
           console.error('Completion confirmation failed:', response.data)
         }

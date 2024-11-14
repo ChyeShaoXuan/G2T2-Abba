@@ -26,6 +26,7 @@ interface Job {
 
 export default function FinishedJobs() {
   const [myJobs, setMyJobs] = useState<Job[]>([])
+  const [isLoading, setIsLoading] = useState(false)
 
   const fetchCompletedTasks = async () => {
     try {
@@ -41,19 +42,24 @@ export default function FinishedJobs() {
   }
 
   useEffect(() => {
-    // Fetch tasks initially
     fetchCompletedTasks()
 
-    // Polling every 5 seconds to refresh the completed tasks list
-    const interval = setInterval(fetchCompletedTasks, 2000)
-    
-    // Cleanup the interval on component unmount
-    return () => clearInterval(interval)
+    // const interval = setInterval(fetchCompletedTasks, 2000)
+    // return () => clearInterval(interval)
   }, [])
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Finished Jobs</h1>
+      <div className="flex items-center mb-4">
+        <h1 className="text-2xl font-bold">Finished Jobs</h1>
+        <div className="ml-4">
+          <Button onClick={fetchCompletedTasks} disabled={isLoading}>
+            {isLoading ? 'Refreshing...' : 'Refresh'}
+          </Button>
+        </div>
+
+      </div>
+
 
       {/* Show message if no finished jobs */}
       {myJobs.length === 0 ? (
