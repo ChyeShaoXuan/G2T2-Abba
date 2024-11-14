@@ -7,15 +7,13 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.databind.annotation.JsonAppend.Prop;
 import com.g4t2project.g4t2project.entity.CleaningTask;
 import com.g4t2project.g4t2project.entity.LeaveApplication;
+import com.g4t2project.g4t2project.entity.Property;
 import com.g4t2project.g4t2project.entity.Worker;
 import com.g4t2project.g4t2project.repository.CleaningTaskRepository;
 import com.g4t2project.g4t2project.repository.LeaveApplicationRepository;
 import com.g4t2project.g4t2project.repository.WorkerRepository;
-import com.g4t2project.g4t2project.entity.Property;
-import com.g4t2project.g4t2project.DTO.workerDTO;
 
 @Service
 public class WorkerService {
@@ -76,18 +74,35 @@ public class WorkerService {
         return false;
     }
 
-    public List<workerDTO> getAllWorkers() {
+    // public List<workerDTO> getAllWorkers() {
+    //     List<Worker> workers = workerRepository.findAll();
+    //     return workers.stream()
+    //             .map(worker -> new workerDTO(
+    //                     worker.getWorkerId().longValue(),
+    //                     worker.getName(),
+    //                     worker.getPhoneNumber(),
+    //                     worker.getShortBio(),
+    //                     worker.isAvailable()
+    //             ))
+    //             .collect(Collectors.toList());
+    // }
+
+    public List<Worker> getAllWorkers() {
         List<Worker> workers = workerRepository.findAll();
         return workers.stream()
-                .map(worker -> new workerDTO(
-                        worker.getWorkerId().longValue(),
+                .map(worker -> new Worker(
+                        worker.getAdmin(),  
                         worker.getName(),
                         worker.getPhoneNumber(),
                         worker.getShortBio(),
-                        worker.isAvailable()
+                        worker.getDeployed(),  
+                        worker.getTele_Id(),  
+                        worker.getCurPropertyId(),  
+                        worker.getWorkerHoursInWeek()  
                 ))
                 .collect(Collectors.toList());
     }
+    
     //Long workerId, String name, String phoneNumber, String shortBio, boolean available
     // function that updates the status of a task to progress
     public boolean updateToProgress(int taskId, Long workerId) {

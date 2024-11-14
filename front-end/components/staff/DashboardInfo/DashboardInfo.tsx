@@ -39,6 +39,7 @@ export default function DashboardInfo() {
   }
   const [workers, setWorkers] = useState<Worker[]>([])
   const username = localStorage.getItem('username')
+  // console.log(localStorage)
 
   useEffect(() => {
     // Fetch workers from the backend
@@ -49,7 +50,7 @@ export default function DashboardInfo() {
         if (worker) {
           setWorkers([worker]) // Set only the worker with workerId = 1
         }
-        console.log(workersResponse.data) // Logs all workers (for debugging)
+        console.log(workersResponse.data) 
       } catch (error) {
         console.error('Error fetching workers:', error)
       }
@@ -100,15 +101,6 @@ export default function DashboardInfo() {
                       </MDBCol>
                       <MDBCol sm="9">
                         <MDBCardText className="text-muted">{worker.name}</MDBCardText>
-                      </MDBCol>
-                    </MDBRow>
-                    <hr />
-                    <MDBRow>
-                      <MDBCol sm="3">
-                        <MDBCardText>Email</MDBCardText>
-                      </MDBCol>
-                      <MDBCol sm="9">
-                        <MDBCardText className="text-muted">example@example.com</MDBCardText>
                       </MDBCol>
                     </MDBRow>
                     <hr />

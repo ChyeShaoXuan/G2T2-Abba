@@ -1,15 +1,33 @@
 package com.g4t2project.g4t2project.controllers;
 
-import com.g4t2project.g4t2project.entity.*;
-import com.g4t2project.g4t2project.service.*;
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import com.g4t2project.g4t2project.DTO.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-import java.util.Map;
+import com.g4t2project.g4t2project.DTO.ClientDTO;
+import com.g4t2project.g4t2project.DTO.StatsDTO;
+import com.g4t2project.g4t2project.DTO.UserDTO;
+import com.g4t2project.g4t2project.entity.Admin;
+import com.g4t2project.g4t2project.entity.Client;
+import com.g4t2project.g4t2project.entity.LeaveApplication;
+import com.g4t2project.g4t2project.entity.User;
+import com.g4t2project.g4t2project.entity.Worker;
+import com.g4t2project.g4t2project.entity.WorkerHours;
+import com.g4t2project.g4t2project.service.AdminService;
+import com.g4t2project.g4t2project.service.WorkerService;
 
 @RestController
 @RequestMapping("/admin")
@@ -72,11 +90,19 @@ public class AdminController {
         }
     }
 
+    // @GetMapping("/workers")
+    // public ResponseEntity<List<workerDTO>> getAllWorkers() {
+    //     List<workerDTO> workers = workerService.getAllWorkers();
+    //     return ResponseEntity.ok(workers);
+    // }
+
     @GetMapping("/workers")
-    public ResponseEntity<List<workerDTO>> getAllWorkers() {
-        List<workerDTO> workers = workerService.getAllWorkers();
+    public ResponseEntity<List<Worker>> getAllWorkers() {
+        List<Worker> workers = adminService.getAllWorkers();
         return ResponseEntity.ok(workers);
     }
+
+
     @GetMapping("/workers_admin")
     public ResponseEntity<List<Worker>> getAllWorkersAdmin() {
         List<Worker> workers = adminService.getAllWorkers();

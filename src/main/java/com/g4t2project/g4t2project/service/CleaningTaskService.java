@@ -1,20 +1,28 @@
 package com.g4t2project.g4t2project.service;
 
-import java.time.Duration;
-import com.g4t2project.g4t2project.DTO.OverwriteCleaningTaskDTO;
-import com.g4t2project.g4t2project.exception.NoAvailableWorkerException;
-import com.g4t2project.g4t2project.repository.*;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
-
 import java.io.IOException;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import com.g4t2project.g4t2project.entity.*;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.g4t2project.g4t2project.DTO.OverwriteCleaningTaskDTO;
+import com.g4t2project.g4t2project.entity.CleaningTask;
+import com.g4t2project.g4t2project.entity.LeaveApplication;
+import com.g4t2project.g4t2project.entity.Property;
+import com.g4t2project.g4t2project.entity.Worker;
+import com.g4t2project.g4t2project.exception.NoAvailableWorkerException;
+import com.g4t2project.g4t2project.repository.CleaningTaskRepository;
+import com.g4t2project.g4t2project.repository.FeedbackRepository;
+import com.g4t2project.g4t2project.repository.LeaveApplicationRepository;
+import com.g4t2project.g4t2project.repository.PropertyRepository;
+import com.g4t2project.g4t2project.repository.WorkerRepository;
 import com.g4t2project.g4t2project.util.DistanceCalculator;
 
 
@@ -254,8 +262,8 @@ public class CleaningTaskService {
 
         return true;
 
-
     }
+    
     public void confirmArrival(Integer taskId, MultipartFile photo) throws IOException {
         Optional<CleaningTask> taskOpt = cleaningTaskRepository.findById(taskId);
         if (taskOpt.isPresent()) {

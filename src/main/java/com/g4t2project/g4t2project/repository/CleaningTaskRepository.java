@@ -38,4 +38,6 @@ public interface CleaningTaskRepository extends JpaRepository<CleaningTask, Inte
     @Query("SELECT ct FROM CleaningTask ct WHERE ct.property.propertyId = :propertyId AND ct.date = :date AND ct.shift = :shift")
     Optional<CleaningTask> findTaskByDateShiftProperty(Long propertyId, LocalDate date, CleaningTask.Shift shift);
 
+    @Query("SELECT ct FROM CleaningTask ct WHERE ct.worker.workerId = :workerId AND ct.status IN :statuses")
+    List<CleaningTask> findByWorkerIdAndStatusIn(@Param("workerId") Long workerId, @Param("statuses") List<CleaningTask.Status> statuses);
 }
