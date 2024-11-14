@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import React, { createContext, useContext, useState } from 'react';
 
@@ -10,8 +10,16 @@ export const StateProvider = ({ children }) => {
   const [userId, setUserId] = useState(null); // Store the ID (WorkerId, ClientId, AdminId)
   const [userType, setUserType] = useState(null); // Store the user type (worker, client, admin)
 
+  // Logout function to clear state and localStorage
+  const logout = () => {
+    setUserId(null);
+    setUserType(null);
+    localStorage.removeItem('userId'); // Clear userId from localStorage if you're persisting it
+    localStorage.removeItem('userType'); // Clear userType from localStorage if you're persisting it
+  };
+
   return (
-    <StateContext.Provider value={{ userId, setUserId, userType, setUserType }}>
+    <StateContext.Provider value={{ userId, setUserId, userType, setUserType, logout }}>
       {children}
     </StateContext.Provider>
   );
