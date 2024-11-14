@@ -28,6 +28,19 @@ interface Job {
   numberOfRooms: number
 }
 
+interface Worker {
+  workerId: number
+  name: string
+  phoneNumber: string
+  shortBio: string
+  deployed: boolean
+  tele_Id: string
+  curPropertyId: number
+  available: boolean
+  adminId: number
+  worker_hours_in_week: number
+}
+
 export default function UpcomingJobs() {
   const username = localStorage.getItem('username')
   const [editingJob, setEditingJob] = useState<Job | null>(null)
@@ -38,27 +51,43 @@ export default function UpcomingJobs() {
   const [arrivalPhoto, setArrivalPhoto] = useState<File | null>(null)
   const [completionPhoto, setCompletionPhoto] = useState<File | null>(null)
   const [arrivalPhotoUrl, setArrivalPhotoUrl] = useState<string | null>(null)
+  const [workers, setWorkers] = useState<Worker[]>([])
+  const [workerId, setWorkerId] = useState<number | null>(null)
+
+  useEffect(() => {
+    // Fetch workers from the backend
+    const fetchWorkers = async () => {
+      try {
+        const workersResponse = await axios.get(`http://localhost:8080/admin/workers`)
+        const worker = workersResponse.data.find((worker: Worker) => worker.name === username)
+        if (worker) {
+          setWorkers([worker]) 
+          setWorkerId(worker.workerId)
+        }
+        console.log(workersResponse.data) 
+      } catch (error) {
+        console.error('Error fetching workers:', error)
+      }
+    }
+
+    fetchWorkers()
+  }, [username])
 
   useEffect(() => {
     // Fetch tasks from the backend
     const fetchTasks = async () => {
       try {
-        const workerId = 1 // Example worker ID, should come from the logged-in user's details
-        const tasksResponse = await axios.get(`http://localhost:8080/cleaningTasks/tasks/myJobs/${workerId}`)
-
-
-        //set the status to "in progress" if request is successful ///////////////////////
-        
-        console.log(tasksResponse.data)
-        setMyJobs(tasksResponse.data)
-
+        if (workerId !== null) {
+          const tasksResponse = await axios.get(`http://localhost:8080/cleaningTasks/tasks/myJobs/${workerId}`)
+          setMyJobs(tasksResponse.data)
+        }
       } catch (error) {
         console.error('Error fetching tasks:', error)
       }
     }
 
     fetchTasks()
-  }, [])
+  }, [workerId])
 
   const handleArrivalConfirmation = async () => {
     if (selectedJob && arrivalPhoto) {
@@ -149,7 +178,7 @@ export default function UpcomingJobs() {
               <CardTitle className="flex justify-between items-center">
                 <span>{`Property ID: ${task.propertyId}`}</span>
                 <Badge variant={task.status === 'upcoming' ? 'outline' : task.status === 'in progress' ? 'default' : 'secondary'}>
-                  {task.taskStatus}
+                  {task.status}
                 </Badge>
               </CardTitle>
             </CardHeader>
@@ -161,29 +190,11 @@ export default function UpcomingJobs() {
                 <MapPin className="mr-2" /> {task.address}
               </p>
               <p className="flex items-center">
-                <Clock className="mr-2" /> {task.taskShift}
+                <Clock className="mr-2" /> {task.shift}
               </p>
               <p className="flex items-center">
                 <strong>Number of Rooms:</strong> {task.numberOfRooms}
-              </p>
-              <p className="flex items-center">
-                <strong>Package Type:</strong> {task.packageType}
-              </p>
-              <p className="flex items-center">
-                <strong>Package Type:</strong> {task.propertyType}
-              </p>
-              <p className="flex items-center">
-                <strong>Number of Rooms:</strong> {task.price}
-              </p>
-              <p className="flex items-center">
-                <strong>Number of Rooms:</strong> {task.hours}
-              </p>
-              <p className="flex items-center">
-                <strong>Number of Rooms:</strong> {task.hourlyRate}
-              </p>
-              <p className="flex items-center">
-                <strong>Number of Rooms:</strong> {task.pax}
-              </p>
+                </p>
             </CardContent>
             <CardFooter>
               {task.status === 'upcoming' && !task.arrivalConfirmed && (
