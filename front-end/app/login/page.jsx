@@ -3,138 +3,127 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
+import { useGlobalState } from '@/context/StateContext';
 
-import styles from '../register/Register.module.css'; // Import the CSS module
+import styles from '../register/Register.module.css';
 
-const LOGIN_URL = 'http://localhost:8080/authentication/login'; 
+const LOGIN_URL = 'http://localhost:8080/authentication/login';
 
-
-const Login = () => {
-
+const LoginPage = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    
-
-    const [errors, setErrors] = useState([]);
-    const [loggedIn, setLoggedIn] = useState(false);
-    const [isBlank, setIsBlank] = useState(true);
+    const [isBlank, setIsBlank] = useState(false);
     const [isSubmitted, setIsSubmitted] = useState(false);
-    
-
+    const [loggedIn, setLoggedIn] = useState(false);
+    const { login } = useGlobalState();
     const router = useRouter();
-  
 
-    const login = async (e) => {
-        e.preventDefault()
-        setIsSubmitted(true)
+    const handleLogin = async (e) => {
+        e.preventDefault();
 
-        if (username === '' || password === '') {
+        setIsSubmitted(true);
 
+        if (!username || !password) {
             setIsBlank(true);
+            setLoggedIn(false);
             return;
-
-        } 
-
-        else {
-
-            setIsBlank(false);
-
         }
+
+        setIsBlank(false);
 
         try {
-
-            const res = await axios.post(LOGIN_URL, {
+            const response = await axios.post(LOGIN_URL, {
                 username,
                 password
-            })
+            });
 
-            if (res.status === 200) {
-                console.log(res.data)
-                console.log('Logged in successfully')
-                localStorage.setItem('username', username);
-                setLoggedIn(true)
-                
+            if (response.status === 200) {
+                // Store the complete login response in context
+                login(response.data);
+                const userId = await fetchUserId(response.data.username, response.data.role);
+                login({ ...response.data, userId });
 
-                
-                localStorage.setItem('jwtToken', res.data.token);
+                // Store userId in localStorage
+                localStorage.setItem('userId', userId);
 
-                if (res.data.username === 'root' || res.data.roles.includes('ROLE_ADMIN')) {
+                // Set loggedIn state
+                setLoggedIn(true);
 
+                // Route based on role
+                if (response.data.username === 'root' || response.data.roles.includes('ROLE_ADMIN')) {
                     router.push('/admin/JobStatisticsDashboard');
-
+                } 
+                else if (response.data.role === 'Client'){
+                  router.push('/client/Dashboard');
                 }
-
-                else if (res.data.role === 'Worker') {
-
-                    router.push('/staff/Dashboard')
-                
+                else {
+                    router.push('/staff/Dashboard');
                 }
-
-                else if (res.data.role === 'Client') {
-                    router.push('/client/Dashboard')
-                }
-
-                
-                
+            } else {
+                setLoggedIn(false);
             }
-
+        } catch (error) {
+            console.error('Error logging in:', error);
+            setLoggedIn(false);
         }
+    };
 
-        catch (error) {
-            console.log(error)
-            setErrors([error])
+    const fetchUserId = async (username, role) => {
+        try {
+            const response = await axios.get(`http://localhost:8080/worker/workerId/${username}`);
+            return response.data;
+        } catch (error) {
+            console.error('Error fetching user ID:', error);
+            return null;
         }
-
-    }
+    };
 
     return (
-        <form onSubmit={login}>
-          <div className={styles['input-container']}>
-            <div className={`${styles['form-container']} ${styles.username}`}>
-              <input
-                id="username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                placeholder="Username"
-              />
-              <label htmlFor="username" className={styles['form-label']}>
-                Username:
-              </label>
-            </div>
-    
-            <div className={`${styles['form-container']} ${styles.password}`}>
-              <input
-                type="password"
-                id="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Password"
-              />
-              <label htmlFor="password" className={styles['form-label']}>
-                Password:
-              </label>
-            </div>
-    
-            {isBlank && isSubmitted && (
-              <div style={{ marginBottom: '15px' }}>Something is missing...</div>
-            )}
-            {!isBlank && isSubmitted && loggedIn && (
-              <div style={{ marginBottom: '15px' }}>Successfully Logged In!</div>
-            )}
+        <form onSubmit={handleLogin}>
+            <div className={styles['input-container']}>
+                <div className={`${styles['form-container']} ${styles.username}`}>
+                    <input
+                        id="username"
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                        placeholder="Username"
+                    />
+                    <label htmlFor="username" className={styles['form-label']}>
+                        Username:
+                    </label>
+                </div>
 
-            {!isBlank && isSubmitted && !loggedIn && (
-              <div style={{ marginBottom: '15px' }}>Username or password is incorrect.</div>
-            )}
-    
-            <div className={styles['button-container']}>
-              <button className={`btn ${styles['btn-outline']}`} type="submit">
-                Login
-              </button>
+                <div className={`${styles['form-container']} ${styles.password}`}>
+                    <input
+                        type="password"
+                        id="password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        placeholder="Password"
+                    />
+                    <label htmlFor="password" className={styles['form-label']}>
+                        Password:
+                    </label>
+                </div>
+
+                {isBlank && isSubmitted && (
+                    <div style={{ marginBottom: '15px' }}>Something is missing...</div>
+                )}
+                {!isBlank && isSubmitted && loggedIn && (
+                    <div style={{ marginBottom: '15px' }}>Successfully Logged In!</div>
+                )}
+                {!isBlank && isSubmitted && !loggedIn && (
+                    <div style={{ marginBottom: '15px' }}>Username or password is incorrect.</div>
+                )}
+                <div className={styles['button-container']}>
+                  <button className={`btn ${styles['btn-outline']}`} type="submit">
+                    Login
+                  </button>
+                </div>
             </div>
-          </div>
+            
         </form>
-      );
+    );
+};
 
-}
-
-export default Login;
+export default LoginPage;

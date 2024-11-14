@@ -1,5 +1,6 @@
 package com.g4t2project.g4t2project.service;
 
+import com.g4t2project.g4t2project.DTO.LeaveApplicationDTO;
 import com.g4t2project.g4t2project.entity.LeaveApplication;
 import com.g4t2project.g4t2project.entity.Worker;
 import com.g4t2project.g4t2project.entity.Client;
@@ -19,7 +20,8 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
-
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class LeaveApplicationService {
@@ -118,53 +120,18 @@ public class LeaveApplicationService {
         return taskOpt.orElseThrow(() -> new RuntimeException("Cleaning task not found for worker ID: " + worker.getWorkerId()));
     }
 
-    // public void uploadMcDocument(int leaveId, MultipartFile mcDocument) {
-    //     LeaveApplication leaveApplication = leaveApplicationRepository.findById(leaveId)
-    //         .orElseThrow(() -> new RuntimeException("Leave Application not found for ID: " + leaveId));
-        
-    //     String fileName = leaveId + "_" + mcDocument.getOriginalFilename();
-    //     Path filePath = Paths.get(MC_UPLOAD_DIR + fileName);
-    
-    //     try {
-    //         Files.write(filePath, mcDocument.getBytes());
-    //         leaveApplication.setMcDocumentUrl(filePath.toString());
-    //         leaveApplicationRepository.save(leaveApplication);
-    //     } catch (IOException e) {
-    //         throw new RuntimeException("Failed to upload MC document", e);
-    //     }
-    // }
-
     public void uploadMcDocument(int leaveId, MultipartFile mcDocument) {
         try {
-            System.out.println("File size: " + mcDocument.getSize() + " bytes");
-            System.out.println("File name: " + mcDocument.getOriginalFilename());
-            System.out.println("Content type: " + mcDocument.getContentType());
-            
             LeaveApplication leaveApplication = leaveApplicationRepository.findById(leaveId)
                 .orElseThrow(() -> new RuntimeException("Leave Application not found for ID: " + leaveId));
             
-            System.out.println("Found leave application with ID: " + leaveId);
-            
-            byte[] mcDocumentBytes = mcDocument.getBytes();
-            System.out.println("Converted file to byte array, size: " + mcDocumentBytes.length);
-            
-            leaveApplication.setMcDocument(mcDocumentBytes);
+            leaveApplication.setMcDocument(mcDocument.getBytes());
             leaveApplication.setMcDocumentUrl(mcDocument.getOriginalFilename());
             leaveApplication.setMcDocumentSubmitted(true);
             
-            // Print leave application details before saving
-            System.out.println("Leave application details before save:");
-            System.out.println("ID: " + leaveApplication.getLeaveApplicationId());
-            System.out.println("Worker ID: " + (leaveApplication.getWorker() != null ? leaveApplication.getWorker().getWorkerId() : "null"));
-            System.out.println("Status: " + leaveApplication.getStatus());
-            
             leaveApplicationRepository.save(leaveApplication);
-            System.out.println("Successfully saved leave application");
-            
-        } catch (Exception e) {
-            System.err.println("Error in uploadMcDocument:");
-            e.printStackTrace();
-            throw new RuntimeException("Failed to upload MC document: " + e.getMessage());
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to upload MC document: " + e.getMessage(), e);
         }
     }
 
@@ -185,5 +152,19 @@ public class LeaveApplicationService {
     public LeaveApplication getLeaveApplicationById(int leaveId) {
         return leaveApplicationRepository.findById(leaveId)
             .orElseThrow(() -> new RuntimeException("Leave Application not found for ID: " + leaveId));
+    }
+
+    public List<LeaveApplicationDTO> getAllLeaveApplications() {
+        List<LeaveApplication> leaveApplications = leaveApplicationRepository.findAll();
+        return leaveApplications.stream()
+                .map(leaveApplication -> new LeaveApplicationDTO(
+                        leaveApplication.getLeaveApplicationId(),
+                        leaveApplication.getWorker().getName(),
+                        leaveApplication.getLeaveType().toString(),
+                        leaveApplication.getStartDate(),
+                        leaveApplication.getEndDate(),
+                        leaveApplication.getStatus().toString()
+                ))
+                .collect(Collectors.toList());
     }
 }

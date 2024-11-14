@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import NearestWorker from '@/components/client/NearestWorker/NearestWorker';
-import Loading from '@/components/ui/loading';
+import NavigationBar from "@/components/ui/clientpagesnavbar"
 
 interface WorkerDetails {
     name: string;
@@ -35,8 +35,14 @@ export default function NearestWorkerPage() {
     }, [searchParams]);
 
     if (!worker) {
-        return <Loading />;
+        return <div>No closest worker found.</div>;
     }
 
-    return <NearestWorker worker={worker} />;
-}
+    return (
+        <div>
+        <NavigationBar/>
+        <NearestWorker worker={worker} />
+        </div>
+    );
+
+};

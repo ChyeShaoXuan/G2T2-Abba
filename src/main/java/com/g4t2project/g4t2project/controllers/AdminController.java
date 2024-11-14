@@ -49,10 +49,10 @@ public class AdminController {
         Admin admin = adminService.removeWorkerUnderAdmin(adminId, workerId);
         return ResponseEntity.ok(admin);
     }
-
+    
     @PutMapping("/workers/{workerId}")
-    public ResponseEntity<Worker> updateWorker(@PathVariable Long workerId, @RequestBody Worker worker) {
-        Worker updatedWorker = adminService.updateWorker(workerId, worker);
+    public ResponseEntity<WorkerDTO_Admin> updateWorker(@PathVariable Long workerId, @RequestBody WorkerDTO_Admin workerDTO) {
+        WorkerDTO_Admin updatedWorker = adminService.updateWorker(workerId, workerDTO);
         return ResponseEntity.ok(updatedWorker);
     }
 
@@ -102,8 +102,8 @@ public class AdminController {
 
 
     @GetMapping("/workers_admin")
-    public ResponseEntity<List<Worker>> getAllWorkersAdmin() {
-        List<Worker> workers = adminService.getAllWorkers();
+    public ResponseEntity<List<WorkerDTO_Admin>> getAllWorkersAdmin() {
+        List<WorkerDTO_Admin> workers = adminService.getAllWorkersAdmin();
         return ResponseEntity.ok(workers);
     }
 

@@ -47,6 +47,8 @@ public class Worker {
     private String emailID;
     private long curPropertyId = 100;
     private boolean available;
+    private String tele_Id;  // Make sure this field exists
+
 
     @Column(name = "worker_hours_in_week")
     private Integer worker_hours_in_week;
@@ -68,6 +70,10 @@ public class Worker {
         this.worker_hours_in_week = worker_hours_in_week;
     }
 
+    public void setTele_Id(String tele_Id) {
+        this.tele_Id = tele_Id;
+    }
+
     public Integer getWorkerId() {
         return workerId;
     }
@@ -76,6 +82,7 @@ public class Worker {
     public Long getAdminId() {
         return admin.getAdminId();
     }
+
 
     public String getName() {
         return name;

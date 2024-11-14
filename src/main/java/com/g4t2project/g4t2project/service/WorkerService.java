@@ -150,6 +150,18 @@ public class WorkerService {
         return worker.getAdminId();
     }
 
+    public List<Worker> getAvailableWorkers() {
+        return workerRepository.findAllAvailableWorkers();
+    }
+
+    public Integer getWorkerIdByUsername_auth(String username) {
+        List<Worker> workers = workerRepository.findByName(username);
+        if (workers.isEmpty()) {
+            throw new RuntimeException("Worker not found with username: " + username);
+        }
+        Worker worker = workers.get(0);
+        return worker.getWorkerId();
+    }
     public boolean updateWorkerHours(Long workerId) {
         // Check if the worker exists
         Optional<Worker> workerOptional = workerRepository.findById(workerId);

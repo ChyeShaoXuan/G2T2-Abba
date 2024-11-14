@@ -175,6 +175,12 @@ public class ClientService {
         return selectedPackage;
     }
 
+    public Long getClientIdByName(String clientName) {
+        Client client = clientRepository.findByName(clientName)
+                .orElseThrow(() -> new RuntimeException("Client not found with name: " + clientName));
+        return client.getClientId();
+    }
+
     private LocalTime getShiftStartTime(CleaningTask.Shift shift) {
         switch (shift) {
             case Morning:

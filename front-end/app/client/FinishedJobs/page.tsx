@@ -1,12 +1,11 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import ClientBooking from '@/components/client/ClientBooking/ClientBooking';
+import FinishedJobs from '@/components/client/FinishedJobs/FinishedJobs';
 import NavigationBar from "@/components/ui/clientpagesnavbar"
 import Loading from "@/components/ui/loading"
-import { useGlobalState } from '@/context/StateContext';
 
-export default function PlaceOrderPage() {
+export default function FinishedJobsPage() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -18,15 +17,13 @@ export default function PlaceOrderPage() {
     return () => clearTimeout(timer)
   }, [])
 
-  // const { clientId } = useGlobalState();  
-  // console.log(clientId);
   const clientId = 2;
-
+  
   return (
       <div>
           {loading && <Loading />}
           <NavigationBar/>
-          <ClientBooking clientId={clientId} />
+          <FinishedJobs/>
       </div>
   );
 };

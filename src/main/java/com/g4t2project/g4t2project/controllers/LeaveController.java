@@ -1,16 +1,16 @@
-// File: src/main/java/com/g4t2project/g4t2project/controllers/LeaveController.java
 package com.g4t2project.g4t2project.controllers;
 
+import com.g4t2project.g4t2project.DTO.LeaveApplicationDTO;
 import com.g4t2project.g4t2project.entity.LeaveApplication;
 import com.g4t2project.g4t2project.entity.CleaningTask;
 import com.g4t2project.g4t2project.entity.Client;
-import com.g4t2project.g4t2project.entity.LeaveApplication.LeaveType;
 import com.g4t2project.g4t2project.service.LeaveApplicationService;
 import com.g4t2project.g4t2project.service.NotificationService;
 
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -63,7 +63,6 @@ public class LeaveController {
     }
 
     @PostMapping(value = "/upload-mc", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-
     public ResponseEntity<String> uploadMcDocument(
             @RequestParam("leaveId") int leaveId,
             @RequestParam("mcDocument") MultipartFile mcDocument) {
@@ -84,22 +83,31 @@ public class LeaveController {
         }
     }
 
-    @PostMapping("/approve")
-    public ResponseEntity<String> approveLeave(@RequestBody int leaveId) {
+    @PostMapping("/approve/{leaveId}")
+    public ResponseEntity<String> approveLeave(@PathVariable int leaveId) {
         try {
             leaveApplicationService.approveLeave(leaveId);
             
             // Retrieve the leave application to notify the client if necessary
             LeaveApplication leaveApplication = leaveApplicationService.getLeaveApplicationById(leaveId);
-            CleaningTask task = leaveApplicationService.getTaskForWorker(leaveApplication.getWorker());
-            Client client = task.getProperty().getClient();
-
-            // Notify client of the rescheduling if applicable
-            notificationService.notifyClientForReschedule(client, task);
+            
+            try {
+                CleaningTask task = leaveApplicationService.getTaskForWorker(leaveApplication.getWorker());
+                if (task != null && task.getProperty() != null && task.getProperty().getClient() != null) {
+                    Client client = task.getProperty().getClient();
+                    // Notify client of the rescheduling if applicable
+                    notificationService.notifyClientForReschedule(client, task);
+                }
+            } catch (RuntimeException e) {
+                // Log the error but don't fail the approval
+                System.err.println("Warning: Could not find task for worker or notify client: " + e.getMessage());
+            }
 
             return ResponseEntity.ok("Leave approved successfully");
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to approve leave: " + e.getMessage());
+            e.printStackTrace(); // Add this for debugging
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                   .body("Failed to approve leave: " + e.getMessage());
         }
     }
 
@@ -117,6 +125,16 @@ public class LeaveController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(null);
+        }
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<List<LeaveApplicationDTO>> getAllLeaveApplications() {
+        try {
+            List<LeaveApplicationDTO> leaveApplications = leaveApplicationService.getAllLeaveApplications();
+            return ResponseEntity.ok(leaveApplications);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
 }

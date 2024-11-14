@@ -2,11 +2,11 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { useAuth } from '../../app/context/useAuth'; // Adjust the path as necessary
+import { useGlobalState } from '@/context/StateContext'; // Adjust the path as necessary
 import { useRouter } from 'next/navigation';
 
 const Navbar = () => {
-  const { logout } = useAuth();
+  const { logout } = useGlobalState();
   const router = useRouter();
 
   const handleLogout = () => {
@@ -21,6 +21,7 @@ const Navbar = () => {
         <div className="flex space-x-4">
           <Link href="/client/Dashboard" className="text-white hover:text-gray-400">Dashboard</Link>
           <Link href="/client/Booking" className="text-white hover:text-gray-400">Booking</Link>
+          <Link href="/client/FinishedJobs" className="text-white hover:text-gray-400">Completed Jobs</Link>
           <button onClick={handleLogout} className="text-white hover:text-gray-400">Logout</button>
         </div>
       </div>

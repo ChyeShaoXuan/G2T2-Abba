@@ -6,12 +6,14 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 
 import com.g4t2project.g4t2project.entity.CleaningTask;
 import com.g4t2project.g4t2project.repository.CleaningTaskRepository;
 import com.g4t2project.g4t2project.service.NotificationService;
 
-public class checkTaskAcknowledgementScheduler {
+@Component
+class CheckTaskAcknowledgementScheduler {
 
     @Autowired
     private CleaningTaskRepository cleaningTaskRepository;
@@ -22,6 +24,7 @@ public class checkTaskAcknowledgementScheduler {
 
     @Scheduled(cron = "0 0/1 * * * ?")  // Every minute
     public void checkWorkerAcknowledgments() {
+        System.out.println("Checking worker acknowledgments...");
         // Fetch all tasks assigned to workers where arrival is not confirmed
         List<CleaningTask> assignedTasks = cleaningTaskRepository.findTasksWithoutArrivalConfirmation(CleaningTask.Status.Assigned);
         
@@ -44,6 +47,7 @@ public class checkTaskAcknowledgementScheduler {
 
             LocalDateTime currentTime = LocalDateTime.now();
             if (shiftStartTime != null && currentTime.isAfter(shiftStartTime.plusMinutes(5))) {
+                System.out.println("Task " + task.getTaskId() + " is overdue for acknowledgment");
                 // Send alert if the acknowledgment time is past
                 sendAlertToAdmin(task);
             }
@@ -58,8 +62,14 @@ public class checkTaskAcknowledgementScheduler {
         System.out.println("-------------------------------");
         System.out.println("Sending alert to admin " + adminEmail);
         System.out.println("-------------------------------");
-
-        notificationService.alertAdminOfFailedAck(task, adminEmail);
+        try{
+            // Send alert email using NotificationService
+            notificationService.alertAdminOfFailedAck(task, adminEmail);
+            task.setStatus(CleaningTask.Status.Unacknowledged);
+            cleaningTaskRepository.save(task);
+        }catch(Exception e){
+            System.out.println("Failed to send alert to admin " + adminEmail);
+        }
     }
 
 
