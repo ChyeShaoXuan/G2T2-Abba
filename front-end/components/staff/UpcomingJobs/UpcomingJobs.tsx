@@ -79,6 +79,7 @@ export default function UpcomingJobs() {
       try {
         if (workerId !== null) {
           const tasksResponse = await axios.get(`http://localhost:8080/cleaningTasks/tasks/myJobs/${workerId}`)
+          console.log(tasksResponse.data)
           setMyJobs(tasksResponse.data)
         }
       } catch (error) {

@@ -40,4 +40,8 @@ public interface CleaningTaskRepository extends JpaRepository<CleaningTask, Inte
 
     @Query("SELECT ct FROM CleaningTask ct WHERE ct.worker.workerId = :workerId AND ct.status IN :statuses")
     List<CleaningTask> findByWorkerIdAndStatusIn(@Param("workerId") Long workerId, @Param("statuses") List<CleaningTask.Status> statuses);
+
+    @Query("SELECT t FROM CleaningTask t WHERE t.status = :assignedStatus")
+    List<CleaningTask> findTasksWithoutArrivalConfirmation(@Param("assignedStatus") CleaningTask.Status assignedStatus);
+
 }

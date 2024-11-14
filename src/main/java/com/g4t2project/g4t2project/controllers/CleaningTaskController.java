@@ -56,7 +56,7 @@ public class CleaningTaskController {
 
     @GetMapping("/tasks/myJobs/{workerId}")
     public ResponseEntity<?> getJobDisplay(@PathVariable Integer workerId) {
-
+        System.out.println("endpoint hit");
         Long workerIdLong = workerId.longValue();
         // find worker pass the check
         Worker worker = workerRepository.findById(workerIdLong).orElse(null);
@@ -160,6 +160,7 @@ public class CleaningTaskController {
         // Step 4: add the cleaning task
         try {
             cleaningTaskService.addCleaningTask(cleaningTask); // Use the new method
+            // startReminderService(cleaningTask); // Start sending reminders to the assigned worker
         } catch (NoAvailableWorkerException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (IllegalArgumentException e) {
@@ -202,6 +203,7 @@ public class CleaningTaskController {
 
     @PostMapping("/{taskId}/confirmArrival")
     public ResponseEntity<String> confirmArrival(@PathVariable Integer taskId, @RequestParam("photo") MultipartFile photo) {
+        System.out.println("Confirming arrival for task " + taskId);
         try {
             cleaningTaskService.confirmArrival(taskId, photo);
             return ResponseEntity.ok("Arrival confirmed successfully");
