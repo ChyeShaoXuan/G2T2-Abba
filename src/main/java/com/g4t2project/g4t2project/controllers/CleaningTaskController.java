@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.g4t2project.g4t2project.DTO.FeedbackDTO;
 import com.g4t2project.g4t2project.DTO.OverwriteCleaningTaskDTO;
 import com.g4t2project.g4t2project.DTO.PropertyDTO;
 import com.g4t2project.g4t2project.DTO.cleaningTaskDTO;
@@ -231,4 +232,29 @@ public class CleaningTaskController {
                 .contentType(MediaType.IMAGE_JPEG)
                 .body(photo);
     }
+
+    @GetMapping("/completed-tasks")
+    public ResponseEntity<List<FeedbackDTO>> getCompletedCleaningTasks(@RequestParam Integer workerId) {
+        List<FeedbackDTO> feedbackList = cleaningTaskService.getCompletedCleaningTaskByWorker(workerId);
+        return new ResponseEntity<>(feedbackList, HttpStatus.OK);
+    }
+
+    @GetMapping("/completed-tasks-by-client")
+    public ResponseEntity<List<OverwriteCleaningTaskDTO>> getCompletedTasksByClient(@RequestParam Integer clientId) {
+        List<OverwriteCleaningTaskDTO> tasks = cleaningTaskService.getCompletedCleaningTasksByClient(clientId);
+        return new ResponseEntity<>(tasks, HttpStatus.OK);
+    }
+
+    @PostMapping("/{taskId}/feedback")
+    public ResponseEntity<String> submitFeedback(@PathVariable Integer taskId, @RequestBody FeedbackDTO feedbackDTO) 
+        {
+            try {
+                cleaningTaskService.addFeedbackToTask(taskId, feedbackDTO);
+                return ResponseEntity.ok("Feedback submitted successfully");
+            } catch (Exception e) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to submit feedback: " + e.getMessage());
+            }
+        }
+
+
 }

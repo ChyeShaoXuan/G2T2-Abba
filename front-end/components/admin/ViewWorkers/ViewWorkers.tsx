@@ -114,8 +114,8 @@ export default function ViewWorkers() {
   }
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value, type } = e.target;
-    const newValue = type === 'checkbox' ? (e.target as HTMLInputElement).checked : value;
+    const { name, value, type, checked } = e.target;
+    const newValue = type === 'checkbox' ? checked : value;
     if (editingWorker) {
       setEditingWorker({ ...editingWorker, [name]: newValue });
     } else {

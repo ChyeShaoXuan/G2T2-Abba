@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.g4t2project.g4t2project.DTO.OverwriteCleaningTaskDTO;
 import com.g4t2project.g4t2project.entity.CleaningTask;
 import java.util.List;
 import com.g4t2project.g4t2project.entity.Worker;
@@ -43,5 +44,11 @@ public interface CleaningTaskRepository extends JpaRepository<CleaningTask, Inte
 
     @Query("SELECT t FROM CleaningTask t WHERE t.status = :assignedStatus")
     List<CleaningTask> findTasksWithoutArrivalConfirmation(@Param("assignedStatus") CleaningTask.Status assignedStatus);
+
+    @Query("SELECT t FROM CleaningTask t WHERE t.status = 'Completed' AND t.worker.workerId = :workerId")
+    List<CleaningTask> findCompletedTasksByWorker(@Param("workerId") Integer workerId);
+
+    @Query("SELECT t FROM CleaningTask t WHERE t.status = 'Completed' AND t.property.client.clientId = :clientId")
+    List<CleaningTask> findCompletedTasksByClient(@Param("clientId") Integer clientId);
 
 }
