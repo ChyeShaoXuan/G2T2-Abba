@@ -11,6 +11,7 @@ public class OverwriteCleaningTaskDTO {
     private Integer feedbackId;
     private Long propertyId;
     private Long workerId;
+    private String propertyAddress;
 
     // Getters and Setters
     public Integer getTaskId() {
@@ -75,5 +76,13 @@ public class OverwriteCleaningTaskDTO {
 
     public void setWorkerId(Long workerId) {
         this.workerId = workerId;
+    }
+
+    public String getPropertyAddress() {
+        return propertyAddress;
+    }
+
+    public void setPropertyAddress(String propertyAddress) {
+        this.propertyAddress = propertyAddress;
     }
 }

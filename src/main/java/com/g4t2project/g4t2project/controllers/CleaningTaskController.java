@@ -181,11 +181,11 @@ public class CleaningTaskController {
         return new ResponseEntity<>(tasks, HttpStatus.OK);
     }
 
-    @GetMapping
-    public ResponseEntity<List<CleaningTask>> getCleaningTasks(@RequestParam Integer clientId) {
-        List<CleaningTask> tasks = cleaningTaskService.getCleaningTasksByClient(clientId);
-        return new ResponseEntity<>(tasks, HttpStatus.OK);
-    }
+    // @GetMapping
+    // public ResponseEntity<List<CleaningTask>> getCleaningTasks(@RequestParam Integer clientId) {
+    //     List<CleaningTask> tasks = cleaningTaskService.getCleaningTasksByClient(clientId);
+    //     return new ResponseEntity<>(tasks, HttpStatus.OK);
+    // }
 
     @GetMapping("/tasks")
     public ResponseEntity<List<OverwriteCleaningTaskDTO>> getCleaningTasks() {
