@@ -24,7 +24,12 @@ import {
   MDBListGroupItem
 } from 'mdb-react-ui-kit';
 
-export default function DashboardInfo() {
+interface DashboardInfoProps {
+  workerId: string;
+}
+
+export default function DashboardInfo({ workerId }: DashboardInfoProps) {
+  const [workers, setWorkers] = useState<Worker[]>([])
   interface Worker {
     workerId: number
     name: string
@@ -37,7 +42,26 @@ export default function DashboardInfo() {
     adminId: number
     worker_hours_in_week: number
   }
-  const [workers, setWorkers] = useState<Worker[]>([])
+
+  useEffect(() => {
+    const fetchWorkers = async () => {
+      try {
+        // Use the workerId from props instead of username
+        const workersResponse = await axios.get(`http://localhost:8080/admin/workers`)
+        const worker = workersResponse.data.find((worker: Worker) => worker.workerId === workerId)
+        if (worker) {
+          setWorkers([worker])
+        }
+      } catch (error) {
+        console.error('Error fetching workers:', error)
+      }
+    }
+
+    if (workerId) {
+      fetchWorkers()
+    }
+  }, [workerId])
+  
   const username = localStorage.getItem('username')
 
   useEffect(() => {

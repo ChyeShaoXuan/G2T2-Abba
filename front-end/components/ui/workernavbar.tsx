@@ -1,11 +1,11 @@
 "use client";
 
 import Link from 'next/link';
-import { useAuth } from '../../app/context/useAuth'; // Adjust the path as necessary
+import { useGlobalState } from '@/context/StateContext';
 import { useRouter } from 'next/navigation';
 
 const Navbar = () => {
-  const { logout } = useAuth();
+  const { logout } = useGlobalState();
   const router = useRouter();
 
   const handleLogout = () => {

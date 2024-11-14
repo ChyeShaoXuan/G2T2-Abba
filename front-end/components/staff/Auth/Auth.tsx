@@ -1,3 +1,4 @@
+// File: front-end/components/staff/Auth/Auth.tsx
 'use client'
 
 import { useState } from 'react';
@@ -7,25 +8,31 @@ import * as z from 'zod';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle } from 'lucide-react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useGlobalState } from '@/context/StateContext';
 import axios from 'axios';
-
-import { useNavigate } from 'react-router-dom';
-import Link from 'next/link'
-
 
 const workerAuthSchema = z.object({
   workerId: z.string().min(1, "Worker ID is required"),
   password: z.string().min(5, "Password must be at least 5 characters"),
-})
+});
 
 export default function StaffAuth() {
-  const [error, setError] = useState<string | null>(null)
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
+  const { login, logout, userType } = useGlobalState();
 
-  // const navigate = useNavigate();
+  // Log initial state
+  console.log('Current userType:', userType);
+  console.log('localStorage data:', {
+    userType: localStorage.getItem('userType'),
+    username: localStorage.getItem('username'),
+    token: localStorage.getItem('jwtToken')
+  });
 
   const form = useForm<z.infer<typeof workerAuthSchema>>({
     resolver: zodResolver(workerAuthSchema),
@@ -33,31 +40,46 @@ export default function StaffAuth() {
       workerId: "",
       password: "",
     },
-  })
+  });
 
-  // frontend post username (WorkerId), password (tele_Id) -> WorkerController.java login endpoint -> WorkerDTO.java 
   async function onSubmit(values: z.infer<typeof workerAuthSchema>) {
-    console.log("Form values:", values);
+    console.log('Login attempt with values:', values);
+    
     try {
+      console.log('Making authentication request...');
       const response = await axios.post('http://localhost:8080/worker/authenticate', values, {
         headers: { 'Content-Type': 'application/json' },
       });
 
-      console.log(response.data)
+      console.log('Server response:', response.data);
 
       if (response.data.success) {
-        setIsAuthenticated(true);
-        setError(null);
-        // navigate('/workerDashboard'); // Redirect to the desired route
+        console.log('Login successful, storing data in context...');
+        login(response.data);
+        
+        console.log('Updated context state:', {
+          userType: localStorage.getItem('userType'),
+          username: localStorage.getItem('username'),
+          token: localStorage.getItem('jwtToken')
+        });
+
+        console.log('Redirecting to dashboard...');
+        router.push('/staff/Dashboard');
       } else {
+        console.log('Login failed:', response.data);
         setError("Invalid employee ID or password");
       }
     } catch (error) {
+      console.error('Login error:', error);
       setError("An error occurred during login.");
     }
   }
 
-  if (isAuthenticated) {
+  // Log when component is determining what to render
+  console.log('Rendering component with userType:', userType);
+
+  if (userType === 'Worker') {
+    console.log('Rendering worker dashboard view');
     return (
       <div className="relative w-full max-w-md mx-auto">
         <div className="text-white text-lg font-bold">Worker Dashboard
@@ -75,7 +97,16 @@ export default function StaffAuth() {
               <CardDescription>You are logged in as a worker.</CardDescription>
             </CardHeader>
             <CardContent>
-              <Button onClick={() => setIsAuthenticated(false)}>Logout</Button>
+              <Button onClick={() => {
+                console.log('Logout clicked');
+                logout();
+                console.log('State after logout:', {
+                  userType: localStorage.getItem('userType'),
+                  username: localStorage.getItem('username'),
+                  token: localStorage.getItem('jwtToken')
+                });
+                router.push('/auth');
+              }}>Logout</Button>
             </CardContent>
           </Card>
         </div>
@@ -83,6 +114,7 @@ export default function StaffAuth() {
     );
   }
 
+  console.log('Rendering login form view');
   return (
     <Card className="w-full max-w-md mx-auto">
       <CardHeader>
@@ -130,5 +162,5 @@ export default function StaffAuth() {
         )}
       </CardContent>
     </Card>
-  )
+  );
 }
