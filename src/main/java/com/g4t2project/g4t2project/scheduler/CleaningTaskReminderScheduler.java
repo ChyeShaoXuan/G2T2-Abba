@@ -19,8 +19,8 @@ public class CleaningTaskReminderScheduler {
     @Autowired
     private NotificationService notificationService;
 
-    // Scheduler to send reminders every 5 seconds to workers with pending arrival confirmation
-    @Scheduled(fixedRate = 5000)  // 5 seconds interval
+    // Scheduler to send reminders every 5 mis to workers with pending arrival confirmation
+    @Scheduled(fixedRate = 300000)  // 5 mins interval
     public void sendArrivalReminders() {
         // Fetch all tasks assigned to workers where arrival is not confirmed
         List<CleaningTask> assignedTasks = cleaningTaskRepository.findTasksWithoutArrivalConfirmation(CleaningTask.Status.Assigned);
@@ -41,7 +41,7 @@ public class CleaningTaskReminderScheduler {
 
             // Send reminder email using NotificationService
             notificationService.notifyWorkerForTaskReminder(workerEmail, 
-                    "Task Reminder: " + taskDescription, 
+                    "Task Reminder", 
                     workerName, 
                     taskDetails, 
                     taskDate);
