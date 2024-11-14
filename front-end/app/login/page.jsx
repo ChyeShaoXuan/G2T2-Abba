@@ -15,9 +15,34 @@ const Login = () => {
     const [errors, setErrors] = useState([]);
     const [isBlank, setIsBlank] = useState(true);
     const [isSubmitted, setIsSubmitted] = useState(false);
+    const [userId, setUserId] = useState('');
     
     const router = useRouter();
     const { login } = useGlobalState();
+
+    const fetchUserId = async (name, userType) => {
+      try {
+          let response;
+          switch (userType) {
+              case 'Worker':
+                  response = await axios.get(`http://localhost:8080/worker/workerId/${name}`);
+                  break;
+              case 'Admin':
+                  response = await axios.get(`http://localhost:8080/admin/adminId/${name}`);
+                  break;
+              case 'Client':
+                  response = await axios.get(`http://localhost:8080/clients/clientId/${name}`);
+                  break;
+              default:
+                  throw new Error('Invalid user type');
+          }
+          return response.data;
+      } catch (error) {
+          console.error('Error fetching user ID:', error);
+          throw error;
+      }
+  };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setIsSubmitted(true);
@@ -38,6 +63,8 @@ const Login = () => {
             if (response.status === 200) {
                 // Store the complete login response in context
                 login(response.data);
+                const userId = await fetchUserId(response.data.username, response.data.role);
+                login({ ...response.data, userId });
 
                 // Route based on role
                 if (response.data.username === 'root' || response.data.roles.includes('ROLE_ADMIN')) {

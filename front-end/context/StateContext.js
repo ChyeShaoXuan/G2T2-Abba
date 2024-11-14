@@ -26,43 +26,42 @@ export const StateProvider = ({ children }) => {
     if (storedRoles) setRoles(JSON.parse(storedRoles));
   }, []);
 
-  const fetchUserIdByName = async (name) => {
-    setLoading(true);
-    setError(null);
-    try {
-      let response;
-      switch (userType) {
-        case 'worker':
-          response = await axios.get(`http://localhost:8080/worker/workerId/${name}`);
-          break;
-        case 'admin':
-          response = await axios.get(`http://localhost:8080/admin/adminId/${name}`);
-          break;
-        case 'client':
-          response = await axios.get(`http://localhost:8080/clients/clientId/${name}`);
-          break;
-        default:
-          throw new Error('Invalid user type');
-      }
+  // const fetchUserIdByName = async (name) => {
+  //   setLoading(true);
+  //   setError(null);
+  //   try {
+  //     let response;
+  //     switch (userType) {
+  //       case 'worker':
+  //         response = await axios.get(`http://localhost:8080/worker/workerId/${name}`);
+  //         break;
+  //       case 'admin':
+  //         response = await axios.get(`http://localhost:8080/admin/adminId/${name}`);
+  //         break;
+  //       case 'client':
+  //         response = await axios.get(`http://localhost:8080/clients/clientId/${name}`);
+  //         break;
+  //       default:
+  //         throw new Error('Invalid user type');
+  //     }
 
-      if (response.data) {
-        setUserId(response.data);
-        setUsername(name);
-        localStorage.setItem('userId', response.data);
-        localStorage.setItem('username', name);
-        return response.data;
-      }
-    } catch (err) {
-      setError(err.message);
-      console.error('Error fetching user:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  //     if (response.data) {
+  //       setUserId(response.data);
+  //       setUsername(name);
+  //       localStorage.setItem('userId', response.data);
+  //       localStorage.setItem('username', name);
+  //       return response.data;
+  //     }
+  //   } catch (err) {
+  //     setError(err.message);
+  //     console.error('Error fetching user:', err);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   const login = (loginResponse) => {
-    console.log('StateContext: Login called with:', loginResponse);
-    
+    setUserId(null);  // Reset userId since it will be fetched separately
     setUsername(loginResponse.username);
     setUserType(loginResponse.role);
     setRoles(loginResponse.roles || []);
@@ -71,10 +70,7 @@ export const StateProvider = ({ children }) => {
     localStorage.setItem('userType', loginResponse.role);
     localStorage.setItem('roles', JSON.stringify(loginResponse.roles || []));
     localStorage.setItem('jwtToken', loginResponse.token);
-
-    // Fetch user ID after setting user type
-    fetchUserIdByName(loginResponse.username);
-  };
+};
 
   const logout = () => {
     setUserId(null);
@@ -92,6 +88,7 @@ export const StateProvider = ({ children }) => {
   return (
     <StateContext.Provider value={{ 
       userId,
+      setUserId,
       userType, 
       username,
       roles,
@@ -99,7 +96,7 @@ export const StateProvider = ({ children }) => {
       error,
       login,
       logout,
-      fetchUserIdByName,
+      // fetchUserIdByName,
       isAdmin: roles?.includes('ROLE_ADMIN')
     }}>
       {children}
