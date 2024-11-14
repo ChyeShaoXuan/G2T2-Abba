@@ -77,7 +77,7 @@ public class AdminService {
         existingWorker.setName(updatedWorker.getName());
         existingWorker.setPhoneNumber(updatedWorker.getPhoneNumber());
         existingWorker.setShortBio(updatedWorker.getShortBio());
-        existingWorker.setTele_Id(updatedWorker.getTele_Id());
+        existingWorker.setemailID(updatedWorker.getEmailId());
         existingWorker.setCurPropertyId(updatedWorker.getCurPropertyId());
 
         // Ensure the worker is associated with the correct admin

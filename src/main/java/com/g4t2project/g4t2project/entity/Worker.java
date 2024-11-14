@@ -102,7 +102,7 @@ public class Worker {
         return deployed;
     }
 
-    public String getTele_Id() {
+    public String getEmailId() {
         return emailID;
     }
 
