@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { placeOrder, PlaceOrderRequestDTO, CleaningTaskDTO } from '@/utils/apiClient';
+import { placeOrder, PlaceOrderRequestDTO, CleaningTaskDTO, getAvailableWorkers } from '@/utils/apiClient';
 import { useRouter } from 'next/navigation';
 import styles from './ClientBooking.module.css';
 import Loading from "@/components/ui/loading"
@@ -17,15 +17,29 @@ const ClientBooking: React.FC<ClientBookingProps> = ({ clientId }) => {
         numberOfRooms: 0,
         shift: '',
         date: '',
-        preferredWorkerId: 0,
+        preferredWorkerId: 0 as number | undefined,
     });
 
+    const [workers, setWorkers] = useState<{ workerId: number; name: string }[]>([]);
     const [result, setResult] = useState<CleaningTaskDTO | null>(null);
     const [error, setError] = useState<string | null>(null);
-
     const [successMessage, setSuccessMessage] = useState(false);
     const router = useRouter();
     const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        // Fetch available workers when the component mounts
+        async function fetchWorkers() {
+          try {
+            const workerData = await getAvailableWorkers();
+            setWorkers(workerData);
+          } catch (err) {
+            console.error("Failed to fetch workers:", err);
+          }
+        }
+    
+        fetchWorkers();
+      }, []);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
@@ -37,8 +51,25 @@ const ClientBooking: React.FC<ClientBookingProps> = ({ clientId }) => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+
+        if (formData.numberOfRooms < 0) {
+            setError("Number of rooms cannot be negative.");
+            return;
+        }
+
+        if (formData.preferredWorkerId !== undefined && formData.preferredWorkerId < 0) {
+            setError("Preferred Worker ID cannot be negative.");
+            return;
+        }
+  
+    //   setLoading(true);
         try {
             const response = await placeOrder(clientId, formData);
+            // if (response.packageDetails && response.packageDetails.manualBookingRequired) {
+            //     setError("Please contact the sales team for manual booking assistance.");
+            //     setLoading(false);
+            //     return;
+            //   }
             setResult(response);
             setError(null);
             setSuccessMessage(true);
@@ -105,7 +136,7 @@ const ClientBooking: React.FC<ClientBookingProps> = ({ clientId }) => {
 
                 <label style={{ display: 'flex', flexDirection: 'column' }}>
                     Number of Rooms:
-                    <input type="number" name="numberOfRooms" value={formData.numberOfRooms || ''} onChange={handleChange} required />
+                    <input type="number" name="numberOfRooms" value={formData.numberOfRooms || ''} onChange={handleChange} min="0" required />
                 </label>
                 <label style={{ display: 'flex', flexDirection: 'column' }}>
                     Shift:
@@ -120,9 +151,24 @@ const ClientBooking: React.FC<ClientBookingProps> = ({ clientId }) => {
                     Date:
                     <input type="date" name="date" value={formData.date} onChange={handleChange} required />
                 </label>
-                <label style={{ display: 'flex', flexDirection: 'column' }}>
+                {/* <label style={{ display: 'flex', flexDirection: 'column' }}>
                     Worker ID (optional):
                     <input type="number" name="preferredWorkerId" value={formData.preferredWorkerId || ''} onChange={handleChange} />
+                </label> */}
+                <label>
+                Preferred Worker:
+                <select
+                    name="preferredWorkerId"
+                    value={formData.preferredWorkerId}
+                    onChange={handleChange}
+                >
+                    <option value="0">Select Preferred Worker (Optional)</option>
+                    {workers.map((worker) => (
+                    <option key={worker.workerId} value={worker.workerId}>
+                        {worker.name}
+                    </option>
+                    ))}
+                </select>
                 </label>
                 <button type="submit" style={{ padding: '10px', backgroundColor: '#007bff', color: '#fff', border: 'none', borderRadius: '5px', cursor: 'pointer' }}>
                     Place Order

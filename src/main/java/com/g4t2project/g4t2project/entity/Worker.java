@@ -83,6 +83,7 @@ public class Worker {
         return admin.getAdminId();
     }
 
+
     public String getName() {
         return name;
     }
@@ -108,7 +109,7 @@ public class Worker {
         return deployed;
     }
 
-    public String getTele_Id() {
+    public String getEmailId() {
         return emailID;
     }
 

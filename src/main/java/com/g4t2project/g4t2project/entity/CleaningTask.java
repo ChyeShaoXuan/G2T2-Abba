@@ -55,7 +55,7 @@ public class CleaningTask {
 
     public enum Status {
         Scheduled,
-        Pending,
+        Unacknowledged,
         Assigned,
         Accepted,
         InProgress,
@@ -151,6 +151,14 @@ public class CleaningTask {
         this.completionPhoto = photo;
         this.status = Status.Completed;
     }
+
+    public String getDescription() {
+        return String.format("Address: %s | Status: %s | Shift: %s", 
+                property.getAddress(), 
+                status.toString(), 
+                shift.toString());
+    }
+    
 
     
 }

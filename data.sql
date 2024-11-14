@@ -1,10 +1,10 @@
 -- Insert data
 
-INSERT INTO admin (adminId, name, isRoot) VALUES
-(1, 'John Doe', true),
-(2, 'Jane Smith', false),
-(3, 'Michael Brown', false),
-(4, 'Alice Johnson', false);
+INSERT INTO admin (adminId, name, isRoot, emailId) VALUES
+(1, 'John Doe', true, "is442g4t2@gmail.com"),
+(2, 'Jane Smith', false, "randomEmail"),
+(3, 'Michael Brown', false, "randomEmail"),
+(4, 'Alice Johnson', false, "randomEmail");
 
 INSERT INTO worker (WorkerId, adminId, name, phoneNumber, shortBio, deployed, emailId, curPropertyId, available, worker_hours_in_week) VALUES
 (1, 1, 'John Smith', '+6512345678', 'Experienced cleaner, pet-friendly', true, 'akannappan27@gmail.com', 101, True, 20),

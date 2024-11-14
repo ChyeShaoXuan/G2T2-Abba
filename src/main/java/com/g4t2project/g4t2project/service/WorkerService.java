@@ -31,7 +31,7 @@ public class WorkerService {
     // Authentication method for worker login
     public boolean authenticate(Long username, String password) {  
         Worker worker = workerRepository.findById(username).orElse(null);
-        return worker != null && worker.getTele_Id().equals(password); 
+        return worker != null && worker.getEmailId().equals(password); 
     }
     
     public boolean acceptAssignedTask(int taskId, Long workerId) {
@@ -145,7 +145,8 @@ public class WorkerService {
         return worker.getAdminId();
     }
 
-    
-
+    public List<Worker> getAvailableWorkers() {
+        return workerRepository.findAllAvailableWorkers();
+    }
 
 }

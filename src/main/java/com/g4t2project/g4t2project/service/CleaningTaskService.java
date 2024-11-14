@@ -12,8 +12,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.g4t2project.g4t2project.DTO.FeedbackDTO;
 import com.g4t2project.g4t2project.DTO.OverwriteCleaningTaskDTO;
 import com.g4t2project.g4t2project.entity.CleaningTask;
+import com.g4t2project.g4t2project.entity.Feedback;
 import com.g4t2project.g4t2project.entity.LeaveApplication;
 import com.g4t2project.g4t2project.entity.Property;
 import com.g4t2project.g4t2project.entity.Worker;
@@ -183,6 +185,7 @@ public class CleaningTaskService {
         dto.setFeedbackId(task.getFeedback() != null ? task.getFeedback().getFeedbackId() : null);
         dto.setPropertyId(task.getProperty().getPropertyId());
         dto.setWorkerId(task.getWorker() != null ? (long) task.getWorker().getWorkerId() : null);
+        dto.setPropertyAddress(task.getProperty().getAddress());
         return dto;
     }
 
@@ -300,6 +303,39 @@ public class CleaningTaskService {
         .map(this::convertToDTO)
         .collect(Collectors.toList());
     }
+
+    public List<FeedbackDTO> getCompletedCleaningTaskByWorker(Integer workerId) {
+        List<CleaningTask> completedTasks = cleaningTaskRepository.findCompletedTasksByWorker(workerId);
+        return completedTasks.stream()
+                .map(task -> new FeedbackDTO(
+                        task.getFeedback().getFeedbackId(),
+                        task.getFeedback().getRating(),
+                        task.getFeedback().getComment()
+                ))
+                .collect(Collectors.toList());
+    }
     
+    public List<OverwriteCleaningTaskDTO> getCompletedCleaningTasksByClient(Integer clientId) {
+        List<CleaningTask> clientTasks = cleaningTaskRepository.findCompletedTasksByClient(clientId);
+        // System.out.println("----------------------------------");
+        // System.out.println("Client's cleaning tasks: ");
+        // System.out.println(clientTasks);
+        return clientTasks.stream()
+        .map(this::convertToDTO)
+        .collect(Collectors.toList());    
+    }
+
+    public void addFeedbackToTask(Integer taskId, FeedbackDTO feedbackDTO) {
+        CleaningTask task = cleaningTaskRepository.findById(taskId)
+        .orElseThrow(() -> new RuntimeException("Task not found with ID: " + taskId));
+
+        Feedback feedback = new Feedback(feedbackDTO.getRating(), feedbackDTO.getComment(), task);
+        feedbackRepository.save(feedback);
+
+        task.setFeedback(feedback);
+        cleaningTaskRepository.save(task);
+    }
+
+
 }
 

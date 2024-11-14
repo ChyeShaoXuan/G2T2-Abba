@@ -5,10 +5,6 @@ import axios from 'axios'
 import { Button } from "@/components/ui/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 interface Worker {
   workerId: number
@@ -16,9 +12,9 @@ interface Worker {
   phoneNumber: string
   shortBio: string
   deployed: boolean
-  tele_Id: string
   curPropertyId: number
   available: boolean
+  emailID: string
   adminId: number
 }
 
@@ -29,9 +25,9 @@ export default function ViewWorkers() {
     phoneNumber: '',
     shortBio: '',
     deployed: false,
-    tele_Id: '',
     curPropertyId: 0,
     available: true,
+    emailID: '',
     adminId: 0
   })
   const [editingWorker, setEditingWorker] = useState<Worker | null>(null)
@@ -99,7 +95,7 @@ export default function ViewWorkers() {
         phoneNumber: '',
         shortBio: '',
         deployed: false,
-        tele_Id: '',
+        emailID: '',
         curPropertyId: 0,
         available: true,
         adminId: 0
@@ -114,21 +110,14 @@ export default function ViewWorkers() {
   }
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value, type } = e.target;
-    const newValue = type === 'checkbox' ? (e.target as HTMLInputElement).checked : value;
+    const { name, value, type, checked } = e.target as HTMLInputElement;
+    const newValue = type === 'checkbox' ? checked : value;
     if (editingWorker) {
       setEditingWorker({ ...editingWorker, [name]: newValue });
     } else {
       setNewWorker({ ...newWorker, [name]: newValue });
     }
   };
-
-  const handleSelectChange = (name: string, value: string | number) => {
-    setNewWorker(prev => ({
-      ...prev,
-      [name]: value,
-    }))
-  }
 
   return (
     <div className="container mx-auto p-4">
@@ -140,7 +129,7 @@ export default function ViewWorkers() {
             <TableHead>Phone Number</TableHead>
             <TableHead>Short Bio</TableHead>
             <TableHead>Deployed</TableHead>
-            <TableHead>Telegram ID</TableHead>
+            <TableHead>Email</TableHead>
             <TableHead>Current Property ID</TableHead>
             <TableHead>Available</TableHead>
             <TableHead>Admin ID</TableHead>
@@ -206,13 +195,13 @@ export default function ViewWorkers() {
                 {editingWorker && editingWorker.workerId === worker.workerId ? (
                   <input
                     type="text"
-                    name="tele_Id"
-                    value={editingWorker.tele_Id}
+                    name="emailID"
+                    value={editingWorker.emailID}
                     onChange={handleInputChange}
                     className="border p-2"
                   />
                 ) : (
-                  worker.tele_Id
+                  worker.emailID
                 )}
               </TableCell>
               <TableCell>
@@ -275,119 +264,119 @@ export default function ViewWorkers() {
         </TableBody>
       </Table>
       <div className="mt-8">
-  <Card className="w-full max-w-2xl mx-auto">
-    <CardHeader>
-      <CardTitle className="text-2xl font-bold">Add New Worker</CardTitle>
-    </CardHeader>
-    <CardContent>
-      <form className="grid gap-4 sm:grid-cols-2">
-        <div className="space-y-2">
-          <label htmlFor="name" className="text-sm font-medium">Name</label>
-          <input
-            id="name"
-            type="text"
-            name="name"
-            value={newWorker.name}
-            onChange={handleInputChange}
-            placeholder="Full Name"
-            className="w-full p-2 border rounded"
-          />
-        </div>
-        <div className="space-y-2">
-          <label htmlFor="phoneNumber" className="text-sm font-medium">Phone Number</label>
-          <input
-            id="phoneNumber"
-            type="text"
-            name="phoneNumber"
-            value={newWorker.phoneNumber}
-            onChange={handleInputChange}
-            placeholder="Phone Number"
-            className="w-full p-2 border rounded"
-          />
-        </div>
-        <div className="space-y-2 sm:col-span-2">
-          <label htmlFor="shortBio" className="text-sm font-medium">Short Bio</label>
-          <input
-            id="shortBio"
-            type="text"
-            name="shortBio"
-            value={newWorker.shortBio}
-            onChange={handleInputChange}
-            placeholder="Short Bio"
-            className="w-full p-2 border rounded"
-          />
-        </div>
-        <div className="space-y-2">
-          <label htmlFor="tele_Id" className="text-sm font-medium">Telegram ID</label>
-          <input
-            id="tele_Id"
-            type="text"
-            name="tele_Id"
-            value={newWorker.tele_Id}
-            onChange={handleInputChange}
-            placeholder="Telegram ID"
-            className="w-full p-2 border rounded"
-          />
-        </div>
-        <div className="space-y-2">
-          <label htmlFor="curPropertyId" className="text-sm font-medium">Property ID</label>
-          <select
-            id="curPropertyId"
-            name="curPropertyId"
-            value={newWorker.curPropertyId}
-            onChange={handleInputChange}
-            className="w-full p-2 border rounded"
-          >
-            <option value="">Select Property ID</option>
-            {propertyIds.map(id => (
-              <option key={id} value={id}>{id}</option>
-            ))}
-          </select>
-        </div>
-        <div className="space-y-2">
-          <label htmlFor="adminId" className="text-sm font-medium">Admin ID</label>
-          <select
-            id="adminId"
-            name="adminId"
-            value={newWorker.adminId}
-            onChange={handleInputChange}
-            className="w-full p-2 border rounded"
-          >
-            <option value="">Select Admin ID</option>
-            {adminIds.map(id => (
-              <option key={id} value={id}>{id}</option>
-            ))}
-          </select>
-        </div>
-        <div className="flex items-center space-x-2">
-          <input
-            type="checkbox"
-            id="deployed"
-            name="deployed"
-            checked={newWorker.deployed}
-            onChange={handleInputChange}
-            className="border rounded"
-          />
-          <label htmlFor="deployed" className="text-sm font-medium">Deployed</label>
-        </div>
-        <div className="flex items-center space-x-2">
-          <input
-            type="checkbox"
-            id="available"
-            name="available"
-            checked={newWorker.available}
-            onChange={handleInputChange}
-            className="border rounded"
-          />
-          <label htmlFor="available" className="text-sm font-medium">Available</label>
-        </div>
-        <Button className="sm:col-span-2 bg-blue-700 hover:bg-blue-900" onClick={addWorker}>
-          Add Worker
-        </Button>
-      </form>
-    </CardContent>
-  </Card>
-</div>
+        <Card className="w-full max-w-2xl mx-auto">
+          <CardHeader>
+            <CardTitle className="text-2xl font-bold">Add New Worker</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <form className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-2">
+                <label htmlFor="name" className="text-sm font-medium">Name</label>
+                <input
+                  id="name"
+                  type="text"
+                  name="name"
+                  value={newWorker.name}
+                  onChange={handleInputChange}
+                  placeholder="Full Name"
+                  className="w-full p-2 border rounded"
+                />
+              </div>
+              <div className="space-y-2">
+                <label htmlFor="phoneNumber" className="text-sm font-medium">Phone Number</label>
+                <input
+                  id="phoneNumber"
+                  type="text"
+                  name="phoneNumber"
+                  value={newWorker.phoneNumber}
+                  onChange={handleInputChange}
+                  placeholder="Phone Number"
+                  className="w-full p-2 border rounded"
+                />
+              </div>
+              <div className="space-y-2 sm:col-span-2">
+                <label htmlFor="shortBio" className="text-sm font-medium">Short Bio</label>
+                <input
+                  id="shortBio"
+                  type="text"
+                  name="shortBio"
+                  value={newWorker.shortBio}
+                  onChange={handleInputChange}
+                  placeholder="Short Bio"
+                  className="w-full p-2 border rounded"
+                />
+              </div>
+              <div className="space-y-2">
+                <label htmlFor="emailID" className="text-sm font-medium">Email</label>
+                <input
+                  id="emailID"
+                  type="text"
+                  name="emailID"
+                  value={newWorker.emailID}
+                  onChange={handleInputChange}
+                  placeholder="Email"
+                  className="w-full p-2 border rounded"
+                />
+              </div>
+              <div className="space-y-2">
+                <label htmlFor="curPropertyId" className="text-sm font-medium">Property ID</label>
+                <select
+                  id="curPropertyId"
+                  name="curPropertyId"
+                  value={newWorker.curPropertyId}
+                  onChange={handleInputChange}
+                  className="w-full p-2 border rounded"
+                >
+                  <option value="">Select Property ID</option>
+                  {propertyIds.map(id => (
+                    <option key={id} value={id}>{id}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="space-y-2">
+                <label htmlFor="adminId" className="text-sm font-medium">Admin ID</label>
+                <select
+                  id="adminId"
+                  name="adminId"
+                  value={newWorker.adminId}
+                  onChange={handleInputChange}
+                  className="w-full p-2 border rounded"
+                >
+                  <option value="">Select Admin ID</option>
+                  {adminIds.map(id => (
+                    <option key={id} value={id}>{id}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  id="deployed"
+                  name="deployed"
+                  checked={newWorker.deployed}
+                  onChange={handleInputChange}
+                  className="border rounded"
+                />
+                <label htmlFor="deployed" className="text-sm font-medium">Deployed</label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  id="available"
+                  name="available"
+                  checked={newWorker.available}
+                  onChange={handleInputChange}
+                  className="border rounded"
+                />
+                <label htmlFor="available" className="text-sm font-medium">Available</label>
+              </div>
+              <Button className="sm:col-span-2 bg-blue-700 hover:bg-blue-900" onClick={addWorker}>
+                Add Worker
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   )
 }

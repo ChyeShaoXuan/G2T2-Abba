@@ -20,6 +20,8 @@ import com.g4t2project.g4t2project.entity.LeaveApplication;
 import com.g4t2project.g4t2project.entity.Worker;
 import com.g4t2project.g4t2project.service.WorkerService;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/worker")
 @CrossOrigin(origins = "http://localhost:3000/")
@@ -79,10 +81,22 @@ public class WorkerController {
         Integer workerId = workerService.getWorkerIdByUsername(username);
         return ResponseEntity.ok(workerId);
     }
+
     @GetMapping("/{workerId}/admin")
     public ResponseEntity<Long> getAdminIdByWorkerId(@PathVariable Long workerId) {
         Long adminId = workerService.getAdminIdByWorkerId(workerId);
         return ResponseEntity.ok(adminId);  // Return the adminId as response
+    }
+
+    @GetMapping("/available")
+    public ResponseEntity<List<Worker>> getAvailableWorkers() {
+        List<Worker> availableWorkers = workerService.getAvailableWorkers();
+        
+        if (availableWorkers.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+        
+        return new ResponseEntity<>(availableWorkers, HttpStatus.OK);
     }
 
 }

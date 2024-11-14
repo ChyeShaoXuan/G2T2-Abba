@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -60,5 +61,39 @@ public class NotificationService {
         LOGGER.info("Late leave notification sent to client: {}", client.getEmail());
 
     }
+
+    // Notify the worker to remind them of an assigned task
+    public void notifyWorkerForTaskReminder(String workerEmail, String subject, String workerName, String taskDetails, LocalDate taskDate) {
+        // Prepare the email data
+        Map<String, Object> data = new HashMap<>();
+        data.put("worker_name", workerName);
+        data.put("task_details", taskDetails);
+        data.put("task_date", taskDate);
+
+        // Send the reminder email using SendMailService
+        sendMailService.sendReminderEmail(workerEmail, subject, workerName, taskDetails, taskDate);
+
+        // Log the action for monitoring
+        LOGGER.info("Task reminder sent to worker: {}", workerEmail);
+    }
+
+    // Notify the admin of a failed task acknowledgment
+    public void alertAdminOfFailedAck(CleaningTask task, String adminEmail){
+        System.out.println("Sending alert to admin " + adminEmail);
+        String detailsOfTask = task.getDescription();
+        String workerName = task.getWorker().getName();
+        Integer workerId = task.getWorker().getWorkerId();
+
+
+        // Send the alert email using SendMailService
+        sendMailService.sendAlertEmail(adminEmail, detailsOfTask, workerName, workerId, task.getDate());
+
+        // Log the action for monitoring    
+        LOGGER.info("Alert sent to admin: {}", adminEmail);
+
+
+    }
+
+
 }
 

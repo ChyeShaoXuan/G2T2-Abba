@@ -1,16 +1,16 @@
-// File: src/main/java/com/g4t2project/g4t2project/controllers/LeaveController.java
 package com.g4t2project.g4t2project.controllers;
 
+import com.g4t2project.g4t2project.DTO.LeaveApplicationDTO;
 import com.g4t2project.g4t2project.entity.LeaveApplication;
 import com.g4t2project.g4t2project.entity.CleaningTask;
 import com.g4t2project.g4t2project.entity.Client;
-import com.g4t2project.g4t2project.entity.LeaveApplication.LeaveType;
 import com.g4t2project.g4t2project.service.LeaveApplicationService;
 import com.g4t2project.g4t2project.service.NotificationService;
 
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -117,6 +117,16 @@ public class LeaveController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(null);
+        }
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<List<LeaveApplicationDTO>> getAllLeaveApplications() {
+        try {
+            List<LeaveApplicationDTO> leaveApplications = leaveApplicationService.getAllLeaveApplications();
+            return ResponseEntity.ok(leaveApplications);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
 }

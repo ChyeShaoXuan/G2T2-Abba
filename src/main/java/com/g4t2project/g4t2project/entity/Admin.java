@@ -31,6 +31,8 @@ public class Admin {
     @OneToOne
     private User user;
 
+    private String emailId;
+
     public Admin() {
         // Public constructor
     }
@@ -97,6 +99,14 @@ public class Admin {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public String getEmailId() {
+        return emailId;
+    }
+
+    public void setEmailId(String emailId) {
+        this.emailId = emailId;
     }
    
 }

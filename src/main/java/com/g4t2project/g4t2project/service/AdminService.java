@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.g4t2project.g4t2project.DTO.ClientDTO;
 import com.g4t2project.g4t2project.DTO.StatsDTO;
 import com.g4t2project.g4t2project.DTO.UserDTO;
+import com.g4t2project.g4t2project.DTO.WorkerDTO_Admin;
 import com.g4t2project.g4t2project.entity.*;
 import com.g4t2project.g4t2project.repository.*;
 
@@ -70,28 +71,39 @@ public class AdminService {
     }
 
     @Transactional
-    public Worker updateWorker(Long workerId, Worker updatedWorker) {
+    public WorkerDTO_Admin updateWorker(Long workerId, WorkerDTO_Admin workerDTO) {
         Worker existingWorker = workerRepository.findById(workerId)
                 .orElseThrow(() -> new RuntimeException("Worker not found"));
 
-        existingWorker.setName(updatedWorker.getName());
-        existingWorker.setPhoneNumber(updatedWorker.getPhoneNumber());
-        existingWorker.setShortBio(updatedWorker.getShortBio());
-        existingWorker.setTele_Id(updatedWorker.getTele_Id());
-        existingWorker.setCurPropertyId(updatedWorker.getCurPropertyId());
+        existingWorker.setName(workerDTO.getName());
+        existingWorker.setPhoneNumber(workerDTO.getPhoneNumber());
+        existingWorker.setShortBio(workerDTO.getShortBio());
+        existingWorker.setemailID(workerDTO.getEmailID());
+        existingWorker.setCurPropertyId(workerDTO.getCurPropertyId());
+        existingWorker.setAvailable(workerDTO.isAvailable());
+        existingWorker.setDeployed(workerDTO.isDeployed());
 
         // Ensure the worker is associated with the correct admin
-        if (updatedWorker.getAdmin() != null) {
-            Admin admin = adminRepository.findById(updatedWorker.getAdmin().getAdminId())
+        if (workerDTO.getAdminId() != null) {
+            Admin admin = adminRepository.findById(workerDTO.getAdminId())
                     .orElseThrow(() -> new RuntimeException("Admin not found"));
             existingWorker.setAdmin(admin);
-        } else {
-            // Keep the existing admin if not provided in the update
-            existingWorker.setAdmin(existingWorker.getAdmin());
         }
 
-        return workerRepository.save(existingWorker);
+        Worker updatedWorker = workerRepository.save(existingWorker);
+        return new WorkerDTO_Admin(
+                updatedWorker.getWorkerId(),
+                updatedWorker.getName(),
+                updatedWorker.getPhoneNumber(),
+                updatedWorker.getShortBio(),
+                updatedWorker.isAvailable(),
+                updatedWorker.getDeployed(),
+                updatedWorker.getCurPropertyId(),
+                updatedWorker.getEmailId(),
+                updatedWorker.getAdminId()
+        );
     }
+    
 
     public void updateLeaveApplicationStatus(int leaveApplicationId, LeaveApplication.Status status) {
         Optional<LeaveApplication> leaveApplicationOpt = leaveApplicationRepository.findById(leaveApplicationId);
@@ -138,8 +150,21 @@ public class AdminService {
         return adminRepository.save(admin);
     }
 
-    public List<Worker> getAllWorkers() {
-        return workerRepository.findAll();
+   public List<WorkerDTO_Admin> getAllWorkersAdmin() {
+        List<Worker> workers = workerRepository.findAll();
+        return workers.stream()
+                .map(worker -> new WorkerDTO_Admin(
+                        worker.getWorkerId(),
+                        worker.getName(),
+                        worker.getPhoneNumber(),
+                        worker.getShortBio(),
+                        worker.isAvailable(),
+                        worker.getDeployed(),
+                        worker.getCurPropertyId(),
+                        worker.getEmailId(),
+                        worker.getAdminId()
+                ))
+                .collect(Collectors.toList());
     }
 
     public List<ClientDTO> getAllClients() {
