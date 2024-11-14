@@ -72,16 +72,21 @@ export default function LeaveApplicationForm() {
     formData.append('endDate', format(values.endDate, 'yyyy-MM-dd'));
     formData.append('reason', values.reason);
 
+    // Fetch the admin ID dynamically based on worker ID
+    const response = await axios.get(`http://localhost:8080/worker/${values.workerID}/admin`);
+    const adminId = response.data;  // Directly use the fetched adminId
+
     const leaveApplication = {
       worker: {
         workerId: values.workerID,
       },
       admin: {
-        adminId: 2, // Hardcoded for now
+        adminId: adminId, // Hardcoded for now
       },
       startDate: values.startDate,
       endDate: values.endDate, 
       leaveType: values.leaveType,
+      reason: values.reason,
       submissionDateTime: new Date().toISOString(),
     };
 

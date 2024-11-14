@@ -30,6 +30,8 @@ public class LeaveApplication {
 
     private String mcDocumentUrl;
 
+    private String reason;
+
     boolean mcDocumentSubmitted;
 
     public enum LeaveType {
@@ -47,7 +49,7 @@ public class LeaveApplication {
 
     protected LeaveApplication() {}
 
-    public LeaveApplication(Worker worker, Admin admin, LocalDate startDate, LocalDate endDate, LeaveType leaveType, LocalDateTime submissionDateTime) {
+    public LeaveApplication(Worker worker, Admin admin, LocalDate startDate, LocalDate endDate, LeaveType leaveType, LocalDateTime submissionDateTime, String reason) {
         this.worker = worker;
         this.admin = admin;
         this.startDate = startDate;
@@ -55,6 +57,7 @@ public class LeaveApplication {
         this.leaveType = leaveType;
         this.status = Status.Pending;
         this.submissionDateTime = submissionDateTime;
+        this.reason = reason;
     }
 
     public int getLeaveApplicationId() {
@@ -111,6 +114,13 @@ public class LeaveApplication {
 
     public void setMcDocumentUrl(String mcDocumentUrl) {
         this.mcDocumentUrl = mcDocumentUrl;
+    }
+    public String getReason() {
+        return reason;
+    }
+
+    public void setReason(String reason) {
+        this.reason = reason;
     }
     
 }

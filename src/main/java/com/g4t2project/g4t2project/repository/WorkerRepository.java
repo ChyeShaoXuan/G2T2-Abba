@@ -35,4 +35,6 @@ public interface WorkerRepository extends JpaRepository<Worker, Long> {
     @Query("SELECT w FROM Worker w WHERE w.name = :name")
     List<Worker> findByName(String name);
 
+    
+
 }

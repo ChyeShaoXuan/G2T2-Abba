@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.g4t2project.g4t2project.DTO.workerDTO;
 import com.g4t2project.g4t2project.entity.LeaveApplication;
+import com.g4t2project.g4t2project.entity.Worker;
 import com.g4t2project.g4t2project.service.WorkerService;
 
 @RestController
@@ -77,6 +78,11 @@ public class WorkerController {
     public ResponseEntity<Integer> getWorkerIdByUsername(@PathVariable String username) {
         Integer workerId = workerService.getWorkerIdByUsername(username);
         return ResponseEntity.ok(workerId);
+    }
+    @GetMapping("/{workerId}/admin")
+    public ResponseEntity<Long> getAdminIdByWorkerId(@PathVariable Long workerId) {
+        Long adminId = workerService.getAdminIdByWorkerId(workerId);
+        return ResponseEntity.ok(adminId);  // Return the adminId as response
     }
 
 }
