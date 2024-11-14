@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+
 import { useGlobalState } from '@/context/StateContext';
 
 interface LeaveApplicationDTO {
@@ -42,7 +43,7 @@ const LeaveRequestReview = () => {
 
     const handleApprove = async (leaveId: number) => {
         try {
-            await axios.put(`http://localhost:8080/leave/approve/${leaveId}`, null, {
+            await axios.post(`http://localhost:8080/leave/approve/${leaveId}`, null, {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem('jwtToken')}`
                 }
@@ -67,6 +68,7 @@ const LeaveRequestReview = () => {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem('jwtToken')}`,
                     'Content-Type': 'multipart/form-data'
+                
                 }
             });
             fetchLeaveApplications();
