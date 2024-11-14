@@ -87,12 +87,12 @@ export const StateProvider = ({ children }) => {
   };
 
   // Logout function to clear state and localStorage
-  const logout = () => {
-    setUserId(null);
-    setUserType(null);
-    localStorage.removeItem('userId'); // Clear userId from localStorage if you're persisting it
-    localStorage.removeItem('userType'); // Clear userType from localStorage if you're persisting it
-  };
+  // const logout = () => {
+  //   setUserId(null);
+  //   setUserType(null);
+  //   localStorage.removeItem('userId'); // Clear userId from localStorage if you're persisting it
+  //   localStorage.removeItem('userType'); // Clear userType from localStorage if you're persisting it
+  // };
 
   return (
     <StateContext.Provider value={{ 
