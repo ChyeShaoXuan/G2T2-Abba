@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import ClientBooking from '@/components/client/ClientBooking/ClientBooking';
 import NavigationBar from "@/components/ui/clientpagesnavbar"
 import Loading from "@/components/ui/loading"
+import { useGlobalState } from '@/context/StateContext';
 
 export default function PlaceOrderPage() {
   const [loading, setLoading] = useState(true)
@@ -17,8 +18,10 @@ export default function PlaceOrderPage() {
     return () => clearTimeout(timer)
   }, [])
 
+  // const { clientId } = useGlobalState();  
+  // console.log(clientId);
   const clientId = 2;
-  
+
   return (
       <div>
           {loading && <Loading />}

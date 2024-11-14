@@ -15,7 +15,8 @@ export interface CleaningTaskDTO {
     shift: string;
     date: string;
     acknowledged: boolean;
-    worker: Worker
+    worker: Worker;
+    // packageDetails: string | null; 
 }
 
 export interface Worker {

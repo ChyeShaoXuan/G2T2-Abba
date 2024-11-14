@@ -26,7 +26,8 @@ export default function FinishedJobs() {
   const [loading, setLoading] = useState(true);
   const [selectedJob, setSelectedJob] = useState<CompletedTaskDTO | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const clientId = 4; 
+  const clientId = 2; 
+  const [successMessage, setSuccessMessage] = useState(false);
 
   useEffect(() => {
     async function fetchCompletedTasks() {
@@ -77,11 +78,21 @@ export default function FinishedJobs() {
   };
 
   const handleFeedbackSubmit = async (rating: number, comment: string) => {
-      if (selectedJob) {
-          await submitFeedback(selectedJob.taskId, rating, comment);
-          console.log("Feedback submitted for task ID:", selectedJob.taskId);
-          handleCloseModal();
-      }
+    if (!rating || rating < 1 || rating > 5) {
+      window.alert("Please provide a rating between 1 and 5.");
+      return;
+    }
+    if (!comment || comment.trim() === "") {
+      window.alert("Please provide a comment.");
+      return;
+    }
+    if (selectedJob) {
+        await submitFeedback(selectedJob.taskId, rating, comment);
+        console.log("Feedback submitted for task ID:", selectedJob.taskId);
+        window.alert("Feedback submitted successfully!");
+
+        handleCloseModal();
+    }
   };
 
   return (

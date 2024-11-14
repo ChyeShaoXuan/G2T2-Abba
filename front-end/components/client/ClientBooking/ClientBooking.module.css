@@ -6,7 +6,7 @@
     margin-top: 20px;
     font-weight: bold;
     border-radius: 5px;
-    animation: fadeInOut 2s ease-in-out; /* add a fade-in/out effect */
+    animation: fadeInOut 2s ease-in-out; 
 }
 
 @keyframes fadeInOut {

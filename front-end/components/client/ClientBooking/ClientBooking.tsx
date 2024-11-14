@@ -4,7 +4,8 @@ import React, { useState, useEffect } from 'react';
 import { placeOrder, PlaceOrderRequestDTO, CleaningTaskDTO, getAvailableWorkers } from '@/utils/apiClient';
 import { useRouter } from 'next/navigation';
 import styles from './ClientBooking.module.css';
-import Loading from "@/components/ui/loading"
+import Loading from "@/components/ui/loading";
+import { useGlobalState } from '@/context/StateContext';
 
 interface ClientBookingProps {
     clientId: number;

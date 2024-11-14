@@ -21,6 +21,7 @@ const Navbar = () => {
         <div className="flex space-x-4">
           <Link href="/client/Dashboard" className="text-white hover:text-gray-400">Dashboard</Link>
           <Link href="/client/Booking" className="text-white hover:text-gray-400">Booking</Link>
+          <Link href="/client/FinishedJobs" className="text-white hover:text-gray-400">Completed Jobs</Link>
           <button onClick={handleLogout} className="text-white hover:text-gray-400">Logout</button>
         </div>
       </div>
