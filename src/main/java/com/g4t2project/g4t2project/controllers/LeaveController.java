@@ -84,21 +84,30 @@ public class LeaveController {
     }
 
     @PostMapping("/approve/{leaveId}")
-    public ResponseEntity<String> approveLeave(@RequestBody int leaveId) {
+    public ResponseEntity<String> approveLeave(@PathVariable int leaveId) {
         try {
             leaveApplicationService.approveLeave(leaveId);
             
             // Retrieve the leave application to notify the client if necessary
             LeaveApplication leaveApplication = leaveApplicationService.getLeaveApplicationById(leaveId);
-            CleaningTask task = leaveApplicationService.getTaskForWorker(leaveApplication.getWorker());
-            Client client = task.getProperty().getClient();
-
-            // Notify client of the rescheduling if applicable
-            notificationService.notifyClientForReschedule(client, task);
+            
+            try {
+                CleaningTask task = leaveApplicationService.getTaskForWorker(leaveApplication.getWorker());
+                if (task != null && task.getProperty() != null && task.getProperty().getClient() != null) {
+                    Client client = task.getProperty().getClient();
+                    // Notify client of the rescheduling if applicable
+                    notificationService.notifyClientForReschedule(client, task);
+                }
+            } catch (RuntimeException e) {
+                // Log the error but don't fail the approval
+                System.err.println("Warning: Could not find task for worker or notify client: " + e.getMessage());
+            }
 
             return ResponseEntity.ok("Leave approved successfully");
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to approve leave: " + e.getMessage());
+            e.printStackTrace(); // Add this for debugging
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                   .body("Failed to approve leave: " + e.getMessage());
         }
     }
 

@@ -27,39 +27,6 @@ export const StateProvider = ({ children }) => {
     if (storedRoles) setRoles(JSON.parse(storedRoles));
   }, []);
 
-  // const fetchUserIdByName = async (name) => {
-  //   setLoading(true);
-  //   setError(null);
-  //   try {
-  //     let response;
-  //     switch (userType) {
-  //       case 'worker':
-  //         response = await axios.get(`http://localhost:8080/worker/workerId/${name}`);
-  //         break;
-  //       case 'admin':
-  //         response = await axios.get(`http://localhost:8080/admin/adminId/${name}`);
-  //         break;
-  //       case 'client':
-  //         response = await axios.get(`http://localhost:8080/clients/clientId/${name}`);
-  //         break;
-  //       default:
-  //         throw new Error('Invalid user type');
-  //     }
-
-  //     if (response.data) {
-  //       setUserId(response.data);
-  //       setUsername(name);
-  //       localStorage.setItem('userId', response.data);
-  //       localStorage.setItem('username', name);
-  //       return response.data;
-  //     }
-  //   } catch (err) {
-  //     setError(err.message);
-  //     console.error('Error fetching user:', err);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
 
   const login = (loginResponse) => {
     setUserId(null);  // Reset userId since it will be fetched separately
@@ -86,13 +53,6 @@ export const StateProvider = ({ children }) => {
     localStorage.removeItem('jwtToken');
   };
 
-  // Logout function to clear state and localStorage
-  // const logout = () => {
-  //   setUserId(null);
-  //   setUserType(null);
-  //   localStorage.removeItem('userId'); // Clear userId from localStorage if you're persisting it
-  //   localStorage.removeItem('userType'); // Clear userType from localStorage if you're persisting it
-  // };
 
   return (
     <StateContext.Provider value={{ 
