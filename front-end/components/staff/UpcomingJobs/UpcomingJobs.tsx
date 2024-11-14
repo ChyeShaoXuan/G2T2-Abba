@@ -46,6 +46,9 @@ export default function UpcomingJobs() {
         const workerId = 1 // Example worker ID, should come from the logged-in user's details
         const tasksResponse = await axios.get(`http://localhost:8080/cleaningTasks/tasks/myJobs/${workerId}`)
 
+
+        //set the status to "in progress" if request is successful ///////////////////////
+        
         console.log(tasksResponse.data)
         setMyJobs(tasksResponse.data)
 
@@ -146,7 +149,7 @@ export default function UpcomingJobs() {
               <CardTitle className="flex justify-between items-center">
                 <span>{`Property ID: ${task.propertyId}`}</span>
                 <Badge variant={task.status === 'upcoming' ? 'outline' : task.status === 'in progress' ? 'default' : 'secondary'}>
-                  {task.status}
+                  {task.taskStatus}
                 </Badge>
               </CardTitle>
             </CardHeader>
@@ -158,7 +161,7 @@ export default function UpcomingJobs() {
                 <MapPin className="mr-2" /> {task.address}
               </p>
               <p className="flex items-center">
-                <Clock className="mr-2" /> {task.shift}
+                <Clock className="mr-2" /> {task.taskShift}
               </p>
               <p className="flex items-center">
                 <strong>Number of Rooms:</strong> {task.numberOfRooms}

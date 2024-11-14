@@ -78,7 +78,6 @@ public class CleaningTaskController {
                 .collect(Collectors.toList());
 
         // return new ResponseEntity<>(propertyIds, HttpStatus.OK);
-
         // Step 4: Fetch properties that match the propertyIds (use a single query to avoid repeated queries)
         List<Property> properties = propertyRepository.findByPropertyIds(propertyIds);
 
@@ -87,6 +86,12 @@ public class CleaningTaskController {
         List<PropertyDTO> propertyDTOs = properties.stream().map(property -> {
             // For each property, we will get the associated cleaning package and map them to DTOs
             CleaningPackage cleaningPackage = property.getPkg(); // Retrieve the cleaning package associated with the property
+
+            List<CleaningTask> relatedTasks = tasks.stream()
+                    .filter(task -> task.getProperty().getPropertyId().equals(property.getPropertyId()))
+                    .collect(Collectors.toList());
+
+            CleaningTask cleaningTask = relatedTasks.isEmpty() ? null : relatedTasks.get(0);
 
             // Ensure a cleaning package exists
             if (cleaningPackage != null) {
@@ -99,8 +104,10 @@ public class CleaningTaskController {
                         cleaningPackage.getPrice(),
                         cleaningPackage.getHours(),
                         cleaningPackage.getHourly_rate(),
-                        cleaningPackage.getPax()
-                ); 
+                        cleaningPackage.getPax(),
+                        cleaningTask.getStatus(),
+                        cleaningTask.getShift()
+                );
             }
             return null;
         }).filter(dto -> dto != null).collect(Collectors.toList());

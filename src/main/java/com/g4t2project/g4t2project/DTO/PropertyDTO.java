@@ -2,6 +2,8 @@ package com.g4t2project.g4t2project.DTO;
 
 import com.g4t2project.g4t2project.entity.CleaningPackage.PackageType;
 import com.g4t2project.g4t2project.entity.CleaningPackage.PropertyType;
+import com.g4t2project.g4t2project.entity.CleaningTask.Status;
+import com.g4t2project.g4t2project.entity.CleaningTask.Shift;
 
 public class PropertyDTO {
     private Long propertyId;
@@ -17,10 +19,13 @@ public class PropertyDTO {
     private int pax; // Pax from CleaningPackage
     private boolean manualBookingRequired; // Manual booking required field
 
+    private Status taskStatus;
+    private Shift taskShift;
+
     // Constructor
     public PropertyDTO(Long propertyId, int numberOfRooms, String address, 
                        PackageType packageType, PropertyType propertyType, double price, double hours, 
-                       int hourlyRate, int pax) {
+                       int hourlyRate, int pax, Status taskStatus, Shift taskShift) {
         this.propertyId = propertyId;
         this.numberOfRooms = numberOfRooms;
         this.address = address;
@@ -32,6 +37,8 @@ public class PropertyDTO {
         this.hours = hours;
         this.hourlyRate = hourlyRate;
         this.pax = pax;
+        this.taskStatus = taskStatus;
+        this.taskShift = taskShift;
     }
 
     // Getters and Setters
@@ -130,4 +137,21 @@ public class PropertyDTO {
     public void setManualBookingRequired(boolean manualBookingRequired) {
         this.manualBookingRequired = manualBookingRequired;
     }
+
+    public Status getTaskStatus() {
+        return taskStatus;
+    }
+
+    public void setTaskStatus(Status taskStatus) {
+        this.taskStatus = taskStatus;
+    }
+
+    public Shift getTaskShift() {
+        return taskShift;
+    }
+
+    public void setTaskShift(Shift taskShift) {
+        this.taskShift = taskShift;
+    }
+
 }
