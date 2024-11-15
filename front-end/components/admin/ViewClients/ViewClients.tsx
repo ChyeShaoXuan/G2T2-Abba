@@ -30,6 +30,7 @@ export default function ViewClients() {
   const [adminIds, setAdminIds] = useState<number[]>([])
   const [workerIds, setWorkerIds] = useState<number[]>([])
   const [packageIds, setPackageIds] = useState<number[]>([])
+  const [errors, setErrors] = useState<{ [key: string]: string }>({})
 
   useEffect(() => {
     // Fetch clients from the backend
@@ -102,7 +103,24 @@ export default function ViewClients() {
     }
   }
 
+  const validateInputs = () => {
+    const newErrors: { [key: string]: string } = {}
+    if (!newClient.name) newErrors.name = 'Name is required'
+    if (!newClient.phoneNumber) newErrors.phoneNumber = 'Phone number is required'
+    if (!newClient.email) newErrors.email = 'Email is required'
+    if (!newClient.adminId) newErrors.adminId = 'Admin ID is required'
+    if (!newClient.packageId) newErrors.packageId = 'Package ID is required'
+    if (!newClient.workerId) newErrors.workerId = 'Worker ID is required'
+    return newErrors
+  }
+
   const addClient = async () => {
+    const newErrors = validateInputs()
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors)
+      return
+    }
+
     try {
       if (newClient.adminId === 0) {
         console.error('Error: adminId is not set')
@@ -118,6 +136,7 @@ export default function ViewClients() {
         packageId: 0,
         workerId: 0
       })
+      setErrors({})
       window.location.reload()
     } catch (error) {
       console.error('Error adding client:', error)
@@ -275,6 +294,7 @@ export default function ViewClients() {
                   placeholder="Full Name"
                   className="w-full p-2 border rounded"
                 />
+                {errors.name && <p className="text-red-500 text-sm">{errors.name}</p>}
               </div>
               <div className="space-y-2">
                 <label htmlFor="phoneNumber" className="text-sm font-medium">Phone Number</label>
@@ -287,8 +307,9 @@ export default function ViewClients() {
                   placeholder="Phone Number"
                   className="w-full p-2 border rounded"
                 />
+                {errors.phoneNumber && <p className="text-red-500 text-sm">{errors.phoneNumber}</p>}
               </div>
-              <div className="space-y-2">
+              <div className="space-y-2 sm:col-span-2">
                 <label htmlFor="email" className="text-sm font-medium">Email</label>
                 <input
                   id="email"
@@ -299,6 +320,7 @@ export default function ViewClients() {
                   placeholder="Email"
                   className="w-full p-2 border rounded"
                 />
+                {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
               </div>
               <div className="space-y-2">
                 <label htmlFor="adminId" className="text-sm font-medium">Admin ID</label>
@@ -314,6 +336,7 @@ export default function ViewClients() {
                     <option key={id} value={id}>{id}</option>
                   ))}
                 </select>
+                {errors.adminId && <p className="text-red-500 text-sm">{errors.adminId}</p>}
               </div>
               <div className="space-y-2">
                 <label htmlFor="packageId" className="text-sm font-medium">Package ID</label>
@@ -329,6 +352,7 @@ export default function ViewClients() {
                     <option key={id} value={id}>{id}</option>
                   ))}
                 </select>
+                {errors.packageId && <p className="text-red-500 text-sm">{errors.packageId}</p>}
               </div>
               <div className="space-y-2">
                 <label htmlFor="workerId" className="text-sm font-medium">Worker ID</label>
@@ -344,6 +368,7 @@ export default function ViewClients() {
                     <option key={id} value={id}>{id}</option>
                   ))}
                 </select>
+                {errors.workerId && <p className="text-red-500 text-sm">{errors.workerId}</p>}
               </div>
               <Button className="sm:col-span-2 bg-blue-700 hover:bg-blue-900" onClick={addClient}>
                 Add Client

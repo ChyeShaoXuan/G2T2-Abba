@@ -30,7 +30,6 @@ export default function JobNotifications() {
     <div className="min-h-screen bg-background">
     
       <main className="container mx-auto">
-      <p className='ml-4'>Welcome to your Dashboard. Worker ID: {userId}</p>
         <Navbar/>
         <UpcomingJobs workerId={userId}/>
         <FinishedJobs workerId={userId}/>

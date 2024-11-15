@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react'
 import FinishedJobs from '@/components/client/FinishedJobs/FinishedJobs';
 import NavigationBar from "@/components/ui/clientpagesnavbar"
 import Loading from "@/components/ui/loading"
+import { useGlobalState } from '@/context/StateContext';
+import { useRouter } from 'next/navigation';
 
 export default function FinishedJobsPage() {
   const [loading, setLoading] = useState(true)
@@ -17,13 +19,31 @@ export default function FinishedJobsPage() {
     return () => clearTimeout(timer)
   }, [])
 
-  const clientId = 2;
+  const router = useRouter();
+  const { userId, setUserId } = useGlobalState();
+
+  useEffect(() => {
+      // Check if we have a userId in localStorage
+      const storedUserId = localStorage.getItem('userId');
+      
+      if (!userId && !storedUserId) {
+          // No userId in global state or localStorage, redirect to auth
+          router.push('/auth');
+      } else if (!userId && storedUserId) {
+          // No userId in global state but found in localStorage, restore it
+          setUserId(storedUserId);
+      }
+  }, [userId, setUserId, router]);
+
+  if (!userId) {
+      return null; // Or a loading spinner
+  }
   
   return (
       <div>
           {loading && <Loading />}
           <NavigationBar/>
-          <FinishedJobs/>
+          <FinishedJobs clientId={userId}/>
       </div>
   );
 };

@@ -8,7 +8,7 @@ import { MapPin, Clock, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getCompletedTasksByClient, CompletedTaskDTO, submitFeedback } from "@/utils/apiClient";
 import FeedbackModal from "@/components/FeedbackModal";
-
+import { useRouter } from 'next/navigation';
 
 // interface Job {
 //   id: number;
@@ -21,12 +21,15 @@ import FeedbackModal from "@/components/FeedbackModal";
 //   address: string;
 // }
 
-export default function FinishedJobs() {
+interface ClientBookingProps {
+  clientId: number;
+}
+
+export default function FinishedJobs( { clientId }: ClientBookingProps) {
   const [myJobs, setMyJobs] = useState<CompletedTaskDTO[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedJob, setSelectedJob] = useState<CompletedTaskDTO | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const clientId = 2; 
   const [successMessage, setSuccessMessage] = useState(false);
 
   useEffect(() => {
@@ -100,10 +103,10 @@ export default function FinishedJobs() {
       <h1 className="text-2xl font-bold mb-4">Finished Jobs</h1>
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {myJobs.map((job) => (
-          <Card key={job.taskId} className="cursor-pointer">
+          <Card key={job.taskId} className="cursor-pointer"> 
             <CardHeader>
               <CardTitle className="flex justify-between items-center">
-                <span>{job.workerId}</span>
+                <span>Worker ID : {job.workerId}</span>
                 <Badge variant={job.status === "Completed" ? "secondary" : "outline"}>
                   {job.status}
                 </Badge>
@@ -114,7 +117,7 @@ export default function FinishedJobs() {
                 <Calendar className="mr-2" /> {format(new Date(job.date), "MMMM d, yyyy")}
               </p>
               <p className="flex items-center">
-                <MapPin className="mr-2" /> {job.propertyId}
+                <MapPin className="mr-2" /> Property Id: {job.propertyId}
               </p>
               <p className="flex items-center">
                 <Clock className="mr-2" /> Shift: {job.shift}

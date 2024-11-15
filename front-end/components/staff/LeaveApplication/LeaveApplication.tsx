@@ -80,11 +80,9 @@ export default function LeaveApplicationForm() {
 
     const leaveApplication = {
       worker: {
-        workerId: values.workerID,
+        workerId: parseInt(values.workerID), // Already an integer
       },
-      admin: {
-        adminId: adminId, // Hardcoded for now
-      },
+      adminId: Number(adminId), // Convert to number without truncating
       startDate: values.startDate,
       endDate: values.endDate, 
       leaveType: values.leaveType,
@@ -118,7 +116,7 @@ export default function LeaveApplicationForm() {
       form.reset();
       setFile(null);
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error submitting leave application:', error);
       if (error.response) {
         // The request was made and the server responded with a status code

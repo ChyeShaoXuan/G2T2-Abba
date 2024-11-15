@@ -61,7 +61,9 @@ const LoginPage = () => {
                     router.push('/admin/JobStatisticsDashboard');
                 } 
                 else if (response.data.role === 'Client'){
+                  localStorage.setItem('userId', userId);
                   router.push('/client/Dashboard');
+                  
                 }
                 else {
                     router.push('/staff/Dashboard');
@@ -77,6 +79,10 @@ const LoginPage = () => {
 
     const fetchUserId = async (username, role) => {
         try {
+            if(role === 'Client'){
+                const response = await axios.get(`http://localhost:8080/clients/clientId/${username}`);
+                return response.data;
+                }
             const response = await axios.get(`http://localhost:8080/worker/workerId/${username}`);
             return response.data;
         } catch (error) {
