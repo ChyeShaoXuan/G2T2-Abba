@@ -39,6 +39,7 @@ export const AuthProvider = ({ children }) => {
     const logout = () => {
         // Clear the JWT token from local storage
         localStorage.removeItem('jwtToken');
+        router.push('/login')
         
     };
 

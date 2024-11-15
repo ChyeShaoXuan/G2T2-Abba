@@ -105,7 +105,7 @@ export default function StaffAuth() {
                   username: localStorage.getItem('username'),
                   token: localStorage.getItem('jwtToken')
                 });
-                router.push('/auth');
+                router.push('/login');
               }}>Logout</Button>
             </CardContent>
           </Card>

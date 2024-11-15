@@ -18,7 +18,7 @@ const WorkerDashboard = () => {
         
         if (!userId && !storedUserId) {
             // No userId in global state or localStorage, redirect to auth
-            router.push('/auth');
+            router.push('/login');
         } else if (!userId && storedUserId) {
             // No userId in global state but found in localStorage, restore it
             setUserId(storedUserId);
