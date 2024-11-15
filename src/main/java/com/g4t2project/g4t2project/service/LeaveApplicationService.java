@@ -4,6 +4,7 @@ import com.g4t2project.g4t2project.DTO.LeaveApplicationDTO;
 import com.g4t2project.g4t2project.entity.LeaveApplication;
 import com.g4t2project.g4t2project.entity.Worker;
 import com.g4t2project.g4t2project.entity.Client;
+import com.g4t2project.g4t2project.entity.Admin;
 import com.g4t2project.g4t2project.entity.CleaningTask;
 import com.g4t2project.g4t2project.repository.CleaningTaskRepository;
 import com.g4t2project.g4t2project.repository.LeaveApplicationRepository;
@@ -47,12 +48,20 @@ public class LeaveApplicationService {
         // Set initial status to Pending
         leaveApplication.setStatus(LeaveApplication.Status.Pending);
 
-        // Fetch the worker associated with the leave application
-        Worker worker = leaveApplication.getWorker();
-        System.out.println("Worker ID: " + worker.getWorkerId());
-
-        // Set the admin from the worker's admin
-        leaveApplication.setAdmin(worker.getAdmin());
+        // Get worker ID from the leave application and convert to Long
+        Long workerId = Long.valueOf(leaveApplication.getWorker().getWorkerId());
+        
+        // Fetch the complete worker entity with admin info
+        Worker worker = workerRepository.findById(workerId)
+            .orElseThrow(() -> new RuntimeException("Worker not found with ID: " + workerId));
+        
+        // Get admin from worker and set it
+        Admin admin = worker.getAdmin();
+        if (admin == null) {
+            throw new RuntimeException("Worker with ID " + workerId + " has no assigned admin");
+        }
+        leaveApplication.setAdmin(admin);
+        leaveApplication.setWorker(worker);
 
         // Fetch the cleaning task associated with the worker
         CleaningTask task = getTopTaskByWorker(worker);

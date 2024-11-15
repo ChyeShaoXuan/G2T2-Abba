@@ -9,6 +9,7 @@ public class LeaveApplicationDTO {
     private LocalDate startDate;
     private LocalDate endDate;
     private String status;
+    private Long adminId;  
 
     // Constructors, getters, and setters
 
@@ -69,5 +70,13 @@ public class LeaveApplicationDTO {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public Long getAdminId() {
+        return adminId;
+    }
+
+    public void setAdminId(Long adminId) {
+        this.adminId = adminId;
     }
 }

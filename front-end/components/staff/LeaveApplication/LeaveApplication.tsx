@@ -80,11 +80,9 @@ export default function LeaveApplicationForm() {
 
     const leaveApplication = {
       worker: {
-        workerId: values.workerID,
+        workerId: parseInt(values.workerID), // Already an integer
       },
-      admin: {
-        adminId: adminId, // Hardcoded for now
-      },
+      adminId: Number(adminId), // Convert to number without truncating
       startDate: values.startDate,
       endDate: values.endDate, 
       leaveType: values.leaveType,
