@@ -96,6 +96,10 @@ public class LeaveApplication {
         return admin;
     }
 
+    public void setAdmin(Admin admin) {
+        this.admin = admin;
+    }
+
     public LocalDate getStartDate() {
         return startDate;
     }
