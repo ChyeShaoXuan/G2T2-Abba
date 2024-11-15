@@ -122,7 +122,21 @@ public class RegistrationService {
     }
 
     public Worker registerWorker(Worker worker) {
-        return workerRepository.save(worker);
+        try {
+            System.out.println("Registering worker: " + worker.getName());
+            // Get admin with ID 1 (using Long instead of int)
+            Admin admin = adminRepository.findById(1L)
+                .orElseThrow(() -> new RuntimeException("Admin not found"));
+            System.out.println("Found admin: " + admin.getName());
+            worker.setAdmin(admin);
+            Worker savedWorker = workerRepository.save(worker);
+            System.out.println("Worker saved successfully");
+            return savedWorker;
+        } catch (Exception e) {
+            System.err.println("Error registering worker: " + e.getMessage());
+            e.printStackTrace();
+            throw e;
+        }
     }
 
     public Admin registerAdmin(Admin admin) {

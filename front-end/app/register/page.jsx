@@ -32,6 +32,7 @@ const Register = () => {
     }
 
     try {
+      console.log('Sending registration request:', { name, email, phoneNumber, role });
       const res = await axios.post(REGISTER_URL, {
         name,
         email,
@@ -41,11 +42,13 @@ const Register = () => {
       });
 
       if (res.status === 200) {
-        console.log(res.data);
+        console.log('Registration successful:', res.data);
         router.push('/auth/verify-success');
       }
     } catch (error) {
-      if (error.response && error.response.data) {
+      console.error('Registration error:', error);
+      if (error.response) {
+        console.error('Error response:', error.response.data);
         const errorMessage = error.response.data.message;
         if (errorMessage === 'Verification email failed to send') {
           router.push('/auth/verify-failure');
