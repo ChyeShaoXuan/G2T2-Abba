@@ -28,10 +28,7 @@ interface Job {
   feedbackId: number | null
   propertyId: number
   workerId: number | null
-  address: string
-  latitude: number
-  longitude: number
-  numberOfRooms: number
+  propertyAddress: string
 }
 
 // interface Worker {
@@ -285,7 +282,7 @@ useEffect(() => {
             />
           </div>
           <DialogFooter>
-            <Button onClick={() => handleCompletionConfirmation(workerId)} disabled={!completionPhoto}>Complete Job</Button>
+            <Button onClick={() => handleCompletionConfirmation(Number(workerId))} disabled={!completionPhoto}>Complete Job</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

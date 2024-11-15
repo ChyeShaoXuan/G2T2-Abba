@@ -22,6 +22,7 @@ interface Job {
   latitude: number
   longitude: number
   numberOfRooms: number
+  propertyAddress: string
 }
 
 interface FinishedJobsProps {
