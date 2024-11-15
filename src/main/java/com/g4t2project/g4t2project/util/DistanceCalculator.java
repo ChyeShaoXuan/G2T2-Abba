@@ -37,7 +37,6 @@ public class DistanceCalculator {
         if (result.routes.length > 0) {
             System.out.println("-----------------------------------------------");
             System.out.println("Distance between worker location and task location: " + result.routes[0].legs[0].distance.inMeters / 1000.0);
-            System.out.println("Time taken to travel by public transport: " + result.routes[0].legs[0].duration.inSeconds / 60.0);
             System.out.println("-----------------------------------------------");
             return result.routes[0].legs[0].distance.inMeters / 1000.0;  // Convert meters to kilometers
         } else {

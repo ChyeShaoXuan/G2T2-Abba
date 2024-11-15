@@ -148,15 +148,10 @@ public class CleaningTaskService {
             System.out.println("Checking worker ID: " + curWorker.getWorkerId());
             if(curWorker.isAvailableOn(taskDate, taskShift)){
                 Long curWorkerPropId = (long)curWorker.getCurPropertyId();
-                System.out.println("==================================");
-                System.out.println("Current worker's property ID: " + curWorkerPropId);
-                System.out.println("==================================");
+               
 
                 Optional<Property> curWorkerProperty = propertyRepository.findById(curWorkerPropId);
                 // If the property exists, calculate the distance
-                System.out.println("----------------------------------");
-                System.out.println(curWorkerProperty.isPresent());
-                System.out.println("----------------------------------");
 
                 if (curWorkerProperty.isPresent() && check44Hours(curWorker)) {
                     Property property = curWorkerProperty.get();
@@ -323,6 +318,7 @@ public class CleaningTaskService {
         Optional<CleaningTask> taskOpt = cleaningTaskRepository.findById(taskId);
         if (taskOpt.isPresent()) {
             CleaningTask task = taskOpt.get();
+            task.getWorker().setCurPropertyId(task.getProperty().getPropertyId());
             byte[] photoBytes = photo.getBytes();
             task.confirmArrival(photoBytes);
             cleaningTaskRepository.save(task);
