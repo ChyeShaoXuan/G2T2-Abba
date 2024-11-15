@@ -9,6 +9,7 @@ import com.g4t2project.g4t2project.entity.*;
 import com.g4t2project.g4t2project.entity.CleaningPackage.PackageType;
 import com.g4t2project.g4t2project.entity.CleaningPackage.PropertyType;
 import com.g4t2project.g4t2project.exception.NoAvailableWorkerException;
+import com.g4t2project.g4t2project.exception.ManualBookingRequiredException;
 
 import java.time.*;
 import java.util.Optional;
@@ -54,23 +55,45 @@ public class ClientService {
         // workerDTO workerDTO = new workerDTO(Long.valueOf(task.getWorker().getWorkerId()), task.getWorker().getName(), task.getWorker().getPhoneNumber());
         Long propertyId = task.getProperty().getPropertyId();
         return new cleaningTaskDTO(propertyId, task.getShift().name(), task.getDate().toString(), task.isAcknowledged(), workerDTO);
+
+        // Worker worker = task.getWorker();
+        // workerDTO workerDTO = null;
+    
+        // if (worker != null) {
+        //     workerDTO = new workerDTO(
+        //         Long.valueOf(worker.getWorkerId()), 
+        //         worker.getName(), 
+        //         worker.getPhoneNumber(), 
+        //         worker.getShortBio(),
+        //         worker.isAvailable()
+        //     );
+        // }
+    
+        // Long propertyId = task.getProperty().getPropertyId();
+        // CleaningPackage cleaningPackage = task.getProperty().getPkg();
+        // String packageDetails = cleaningPackage != null ? cleaningPackage.getProperty_details() : null;
+        // return new cleaningTaskDTO(propertyId, task.getShift().name(), task.getDate().toString(), task.isAcknowledged(), workerDTO, packageDetails);
     }
 
-    public cleaningTaskDTO placeOrder(Long clientId, String packageType, String propertyType, int numberOfRooms, CleaningTask.Shift shift, LocalDate date) {
+    public cleaningTaskDTO placeOrder(Long clientId, String packageType, String propertyType, int numberOfRooms, CleaningTask.Shift shift, LocalDate date, Long getPreferredWorkerId) {
 
-        // Enforce booking constraints
-        // LocalDateTime currentDateTime = LocalDateTime.now();
-        // LocalDateTime earliestAllowed = currentDateTime.plusHours(24);
-        // LocalDateTime shiftStartDateTime = date.atTime(getShiftStartTime(shift));
-        // if (shiftStartDateTime.isBefore(earliestAllowed)) {
-        //     throw new IllegalArgumentException("Orders must be placed at least 24 hours in advance.");
-        // }
-        // if (!date.isEqual(LocalDate.now().plusDays(1))) {
-        //     throw new IllegalArgumentException("Orders can only be placed one day in advance.");
-        // }
+        // Ensure the order is placed one day in advance with at least 24 hours' notice
+        LocalDateTime currentDateTime = LocalDateTime.now();
+        LocalDateTime earliestAllowed = currentDateTime.plusHours(24);
+        LocalDateTime shiftStartDateTime = date.atTime(getShiftStartTime(shift));
+        if (shiftStartDateTime.isBefore(earliestAllowed)) {
+            throw new IllegalArgumentException("Orders must be placed at least 24 hours in advance.");
+        }
+        if (!date.isEqual(LocalDate.now().plusDays(1))) {
+            throw new IllegalArgumentException("Orders can only be placed one day in advance.");
+        }
 
         Client client = clientRepository.findById(clientId).orElseThrow(() -> new IllegalArgumentException("Client not found"));
         System.out.println("Client found: " + client.getClientId());
+
+        if (PackageType.valueOf(packageType) == PackageType.Weekly && PropertyType.valueOf(propertyType) == PropertyType.Landed) {
+            throw new ManualBookingRequiredException("Please note that HomecleaningSg offers regular cleaning services for landed properties. If you are interested, kindly contact our Sales Representatives at +65 31650568 for more information.");
+        }
 
         CleaningPackage pkg = cleaningPackageRepository.findByPackageTypeAndPropertyTypeAndPax(
             PackageType.valueOf(packageType),
@@ -78,6 +101,10 @@ public class ClientService {
             numberOfRooms
         ).orElseThrow(() -> new IllegalArgumentException("Package not found for type: " + packageType + ", property type: " + propertyType + ", and number of rooms: " + numberOfRooms));
         System.out.println("Package found: " + pkg.getPackageId());
+
+        if (pkg.isManualBookingRequired()) {
+            throw new IllegalArgumentException("This package requires manual booking. Please contact the sales team.");
+        }
 
         Property property = propertyRepository.findByClientAndCleaningPackage(client, pkg)
         .orElseGet(() -> {
@@ -90,18 +117,19 @@ public class ClientService {
         if (shift == null) {
             throw new IllegalArgumentException("Shift is required and cannot be empty");
         }
-
+        
         CleaningTask cleaningTask = new CleaningTask();
         cleaningTask.setProperty(property);
         cleaningTask.setShift(shift);
         cleaningTask.setStatus(CleaningTask.Status.Scheduled);
         cleaningTask.setDate(date);
         System.out.println("Cleaning task created: " + cleaningTask.getTaskId());
-        try {
-            cleaningTaskService.addCleaningTask(cleaningTask);
-        } catch (NoAvailableWorkerException e) {
-            throw new RuntimeException("No worker available for the task: " + e.getMessage());
-        }
+        cleaningTaskService.addCleaningTask(cleaningTask);
+        // try {
+        //     cleaningTaskService.addCleaningTask(cleaningTask);
+        // } catch (NoAvailableWorkerException e) {
+        //     throw new RuntimeException("No worker available for the task: " + e.getMessage());
+        // }
 
         return convertToCleaningTaskDTO(cleaningTask);
     }
