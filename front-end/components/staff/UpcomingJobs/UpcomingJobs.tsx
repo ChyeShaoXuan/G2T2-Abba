@@ -14,6 +14,11 @@ import { MapPin, Clock, Calendar, AlertTriangle } from 'lucide-react'
 import { useGlobalState } from '@/context/StateContext';
 
 
+interface UpcomingJobsProps {
+  workerId: string;
+}
+
+
 interface Job {
   taskId: number
   acknowledged: boolean
@@ -42,7 +47,7 @@ interface Job {
 //   worker_hours_in_week: number
 // }
 
-export default function UpcomingJobs() {
+export default function UpcomingJobs({workerId }: UpcomingJobsProps) {
 
   const [editingJob, setEditingJob] = useState<Job | null>(null)
   const [myJobs, setMyJobs] = useState<Job[]>([])
@@ -53,9 +58,9 @@ export default function UpcomingJobs() {
   const [completionPhoto, setCompletionPhoto] = useState<File | null>(null)
   const [arrivalPhotoUrl, setArrivalPhotoUrl] = useState<string | null>(null)
   const [workers, setWorkers] = useState<Worker[]>([])
-  const [workerId, setWorkerId] = useState<number | null>(null)
   const { userType } = useGlobalState();
   const { userId } = useGlobalState();
+ 
 
   // useEffect(() => {
   //   // Fetch workers from the backend
@@ -75,17 +80,14 @@ export default function UpcomingJobs() {
 
   //   fetchWorkers()
   // }, [username])
-
 useEffect(() => {
     // Fetch tasks from the backend
     const fetchTasks = async () => {
       try {
-        const workerId = 5 // Example worker ID, should come from the logged-in user's details
         const tasksResponse = await axios.get(`http://localhost:8080/cleaningTasks/tasks/${workerId}`)
-
+        console.log(userId)
         console.log(tasksResponse.data)
         setMyJobs(tasksResponse.data.filter((task: Job) => task.status !== 'Completed'))
-        setWorkerId(workerId);
 
       } catch (error) {
         console.error('Error fetching tasks:', error)

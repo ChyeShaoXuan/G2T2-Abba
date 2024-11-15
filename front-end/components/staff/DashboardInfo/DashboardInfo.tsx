@@ -29,9 +29,17 @@ interface DashboardInfoProps {
   workerId: string;
 }
 
+
+
 export default function DashboardInfo({ workerId }: DashboardInfoProps) {
   const { setWorkerId } = useGlobalState();
   const [workers, setWorkers] = useState<Worker[]>([])
+  const [username, setUsername] = useState<string | null>(null);
+
+  useEffect(() => {
+  const storedUsername = localStorage.getItem("username");
+  setUsername(storedUsername);
+}, []);
   interface Worker {
     workerId: number
     name: string
@@ -60,8 +68,7 @@ export default function DashboardInfo({ workerId }: DashboardInfoProps) {
       fetchWorkers()
     }
   }, [workerId, setWorkerId])
-  
-  const username = localStorage.getItem('username')
+  console.log(username)
   console.log(localStorage)
 
   useEffect(() => {

@@ -24,13 +24,17 @@ interface Job {
   numberOfRooms: number
 }
 
-export default function FinishedJobs() {
+interface FinishedJobsProps {
+  workerId: string;
+}
+
+
+export default function FinishedJobs({workerId }: FinishedJobsProps) {
   const [myJobs, setMyJobs] = useState<Job[]>([])
   const [isLoading, setIsLoading] = useState(false)
 
   const fetchCompletedTasks = async () => {
     try {
-      const workerId = 5 // Example worker ID, should come from the logged-in user's details
       const tasksResponse = await axios.get(`http://localhost:8080/cleaningTasks/tasks/${workerId}`, { params: { status: "Completed" } })
 
       console.log(tasksResponse.data)
