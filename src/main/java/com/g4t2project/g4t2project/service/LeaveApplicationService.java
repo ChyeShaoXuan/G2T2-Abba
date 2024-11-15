@@ -44,9 +44,15 @@ public class LeaveApplicationService {
     public void applyForLeave(LeaveApplication leaveApplication) {
         LocalDateTime now = LocalDateTime.now();
 
+        // Set initial status to Pending
+        leaveApplication.setStatus(LeaveApplication.Status.Pending);
+
         // Fetch the worker associated with the leave application
         Worker worker = leaveApplication.getWorker();
         System.out.println("Worker ID: " + worker.getWorkerId());
+
+        // Set the admin from the worker's admin
+        leaveApplication.setAdmin(worker.getAdmin());
 
         // Fetch the cleaning task associated with the worker
         CleaningTask task = getTopTaskByWorker(worker);
@@ -155,16 +161,47 @@ public class LeaveApplicationService {
     }
 
     public List<LeaveApplicationDTO> getAllLeaveApplications() {
-        List<LeaveApplication> leaveApplications = leaveApplicationRepository.findAll();
-        return leaveApplications.stream()
-                .map(leaveApplication -> new LeaveApplicationDTO(
-                        leaveApplication.getLeaveApplicationId(),
-                        leaveApplication.getWorker().getName(),
-                        leaveApplication.getLeaveType().toString(),
-                        leaveApplication.getStartDate(),
-                        leaveApplication.getEndDate(),
-                        leaveApplication.getStatus().toString()
-                ))
-                .collect(Collectors.toList());
+        try {
+            System.out.println("Fetching all leave applications...");
+            List<LeaveApplication> leaveApplications = leaveApplicationRepository.findAll();
+            System.out.println("Found " + leaveApplications.size() + " leave applications");
+            
+            return leaveApplications.stream()
+                    .map(leaveApplication -> {
+                        try {
+                            System.out.println("Processing leave application ID: " + leaveApplication.getLeaveApplicationId());
+                            
+                            // Get worker name safely
+                            String workerName = "Unknown";
+                            if (leaveApplication.getWorker() != null) {
+                                workerName = leaveApplication.getWorker().getName();
+                            }
+                            
+                            // Get other fields safely
+                            String leaveType = leaveApplication.getLeaveType() != null ? 
+                                leaveApplication.getLeaveType().toString() : "Unknown";
+                            String status = leaveApplication.getStatus() != null ? 
+                                leaveApplication.getStatus().toString() : "Unknown";
+                            
+                            return new LeaveApplicationDTO(
+                                    leaveApplication.getLeaveApplicationId(),
+                                    workerName,
+                                    leaveType,
+                                    leaveApplication.getStartDate(),
+                                    leaveApplication.getEndDate(),
+                                    status
+                            );
+                        } catch (Exception e) {
+                            System.err.println("Error processing leave application: " + e.getMessage());
+                            e.printStackTrace();
+                            throw e;
+                        }
+                    })
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
+            System.err.println("Error in getAllLeaveApplications: " + e.getMessage());
+            e.printStackTrace();
+            throw e;
+        }
     }
 }

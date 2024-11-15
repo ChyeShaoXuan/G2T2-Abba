@@ -140,7 +140,17 @@ public class RegistrationService {
     }
 
     public Admin registerAdmin(Admin admin) {
+        // Assign ROLE_ADMIN to the user
+        User user = admin.getUser();
+        if (user != null) {
+            Role adminRole = roleRepository.findByName("ROLE_ADMIN").orElseGet(() -> {
+                Role newAdminRole = new Role();
+                newAdminRole.setName("ROLE_ADMIN");
+                return roleRepository.save(newAdminRole);
+            });
+            user.getRoles().add(adminRole);
+            userRepository.save(user);
+        }
         return adminRepository.save(admin);
     }
-
 }

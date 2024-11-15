@@ -38,10 +38,17 @@ const LoginPage = () => {
             });
 
             if (response.status === 200) {
-                // Store the complete login response in context
-                login(response.data);
                 const userId = await fetchUserId(response.data.username, response.data.role);
-                login({ ...response.data, userId });
+                
+                // Set role to 'admin' if user has ROLE_ADMIN
+                const role = response.data.roles.includes('ROLE_ADMIN') ? 'admin' : response.data.role;
+                
+                // Call login only once with all data
+                login({
+                    ...response.data,
+                    userId,
+                    role
+                });
 
                 // Store userId in localStorage
                 localStorage.setItem('userId', userId);
