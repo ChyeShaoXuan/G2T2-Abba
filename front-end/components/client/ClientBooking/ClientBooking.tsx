@@ -150,7 +150,9 @@ const ClientBooking: React.FC<ClientBookingProps> = ({ clientId }) => {
                 </label>
                 <label style={{ display: 'flex', flexDirection: 'column' }}>
                     Date:
-                    <input type="date" name="date" value={formData.date} onChange={handleChange} required />
+                    <input type="date" name="date" value={formData.date} onChange={handleChange} required         
+                    min={new Date().toISOString().split("T")[0]} // Set the minimum date to today
+                    />                   
                 </label>
                 {/* <label style={{ display: 'flex', flexDirection: 'column' }}>
                     Worker ID (optional):

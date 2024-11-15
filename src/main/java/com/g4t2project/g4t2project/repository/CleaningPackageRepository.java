@@ -9,5 +9,5 @@ import com.g4t2project.g4t2project.entity.CleaningPackage.*;
 public interface CleaningPackageRepository extends JpaRepository<CleaningPackage, Long> {
     // @Query("SELECT p FROM CleaningPackage p WHERE p.packageId = :packageId")
     // Optional<CleaningPackage> findByIdWithEagerFetching(@Param("packageId") Long packageId);
-    Optional<CleaningPackage> findByPackageTypeAndPropertyTypeAndPax(PackageType packageType, PropertyType propertyType, int pax);
+    Optional<CleaningPackage> findByPackageTypeAndPropertyType(PackageType packageType, PropertyType propertyType);
 }

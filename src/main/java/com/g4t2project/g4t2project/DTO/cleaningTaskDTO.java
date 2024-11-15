@@ -6,7 +6,8 @@ public class cleaningTaskDTO {
     private String date;
     private boolean acknowledged;
     private workerDTO worker;
-    
+    private String packageDetails;
+
     public cleaningTaskDTO(Long propertyId, String shift, String date, boolean acknowledged, workerDTO worker) {
         this.propertyId = propertyId;
         this.shift = shift;
@@ -54,4 +55,17 @@ public class cleaningTaskDTO {
     public void setWorker(workerDTO worker) {
         this.worker = worker;
     }
+
+    // public void setTaskId(int taskId) {
+    // }
+
+    // public void setStatus(String name) {
+    // }
+
+    // public void setFeedbackId(Integer feedbackId) {
+    // }
+
+    // public void setWorkerId(Long workerId) {
+    // }
+
 }
