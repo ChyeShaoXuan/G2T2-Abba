@@ -93,17 +93,18 @@ export default function LeaveApplicationForm() {
     };
 
     try {
+      console.log('Submitting leave application:', leaveApplication);
       const response = await axios.post('http://localhost:8080/leave/apply', leaveApplication);
 
       // Capture the leaveId from the response if provided
       const result = response.data;
+      console.log('Leave application submitted successfully:', result);
       const leaveId = result.leaveId;
-      console.log(result);
-      console.log(leaveId);
+      
       // Step 2: Upload MC document if leave type is "mc"
       if (values.leaveType === "MC" && file && leaveId) {
         const mcData = new FormData();
-        mcData.append('leaveId', leaveId); // Use leaveId from the previous step
+        mcData.append('leaveId', leaveId);
         mcData.append('mcDocument', file);
 
         await axios.post('http://localhost:8080/leave/upload-mc', mcData, {
@@ -115,10 +116,23 @@ export default function LeaveApplicationForm() {
 
       setSubmitStatus('success');
       form.reset();
-      setFile(null); // Clear the file state
+      setFile(null);
 
     } catch (error) {
-      console.error(error);
+      console.error('Error submitting leave application:', error);
+      if (error.response) {
+        // The request was made and the server responded with a status code
+        // that falls out of the range of 2xx
+        console.error('Error response data:', error.response.data);
+        console.error('Error response status:', error.response.status);
+        console.error('Error response headers:', error.response.headers);
+      } else if (error.request) {
+        // The request was made but no response was received
+        console.error('No response received:', error.request);
+      } else {
+        // Something happened in setting up the request that triggered an Error
+        console.error('Error setting up request:', error.message);
+      }
       setSubmitStatus('error');
     }
   }
