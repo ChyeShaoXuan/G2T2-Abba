@@ -77,18 +77,61 @@ public class CleaningTaskService {
         System.out.println("----------------------------------");
 
         // Find the closest worker based on proximity to the property
-        Optional<Worker> closestWorkerOpt = findClosestWorker(property, cleaningTask.getDate(), cleaningTask.getShift());
+        // Optional<Worker> closestWorkerOpt = findClosestWorker(property, cleaningTask.getDate(), cleaningTask.getShift());
 
-        if (closestWorkerOpt.isPresent()) {
-            Worker closestWorker = closestWorkerOpt.get();
-            cleaningTask.setWorker(closestWorker); // Assign the worker to the task
-            cleaningTask.setStatus(CleaningTask.Status.Assigned); // Set the status
-            cleaningTaskRepository.save(cleaningTask); // Save the task
+        // if (closestWorkerOpt.isPresent()) {
+        //     System.out.println(closestWorkerOpt.isPresent());
+        //     Worker closestWorker = closestWorkerOpt.get();
+        //     cleaningTask.setWorker(closestWorker); // Assign the worker to the task
+        //     cleaningTask.setStatus(CleaningTask.Status.Assigned); // Set the status
+        //     cleaningTaskRepository.save(cleaningTask); // Save the task
+        // } else {
+        //     // Handle the case when no worker is available
+        //     throw new NoAvailableWorkerException("No worker available for the task on " + cleaningTask.getDate() + " during " + cleaningTask.getShift()
+        //             + " shift.");
+        // }
+
+        Worker assignedWorker = null;
+
+        // Check if a preferred worker is specified and valid
+        if (cleaningTask.getPreferredWorkerId() != null) {
+            Long preferredWorkerId = cleaningTask.getPreferredWorkerId();
+            
+            // Attempt to find the preferred worker
+            assignedWorker = workerRepository.findById(preferredWorkerId)
+                .orElseThrow(() -> new IllegalArgumentException("Preferred worker not found with ID: " + preferredWorkerId));
+            
+            // Check if the preferred worker is available on the requested date and shift
+            if (!assignedWorker.isAvailableOn(cleaningTask.getDate(), cleaningTask.getShift())) {
+                throw new NoAvailableWorkerException("Preferred worker is not available for the task on " 
+                    + cleaningTask.getDate() + " during " + cleaningTask.getShift() + " shift.");
+            }
+    
+            System.out.println("Assigned preferred worker: " + assignedWorker.getWorkerId());
         } else {
-            // Handle the case when no worker is available
-            throw new NoAvailableWorkerException("No worker available for the task on " + cleaningTask.getDate() + " during " + cleaningTask.getShift()
-                    + " shift.");
+            // No preferred worker provided, find the closest available worker
+            Optional<Worker> closestWorkerOpt = findClosestWorker(cleaningTask.getProperty(), cleaningTask.getDate(), cleaningTask.getShift());
+            
+            if (closestWorkerOpt.isPresent()) {
+                assignedWorker = closestWorkerOpt.get();
+                System.out.println("Assigned closest available worker: " + assignedWorker.getWorkerId());
+            } else {
+                throw new NoAvailableWorkerException("No worker available for the task on " 
+                    + cleaningTask.getDate() + " during " + cleaningTask.getShift() + " shift.");
+            }
         }
+    
+        // Final check to ensure assignedWorker is not null
+        // if (assignedWorker == null) {
+        //     throw new IllegalStateException("Worker assignment failed, no worker was assigned.");
+        // }
+    
+        // Assign the worker and set the task status as Assigned
+        cleaningTask.setWorker(assignedWorker);
+        cleaningTask.setStatus(CleaningTask.Status.Assigned);
+        cleaningTaskRepository.save(cleaningTask);
+    
+        System.out.println("Cleaning task successfully assigned to worker ID: " + assignedWorker.getWorkerId());
     }
 
     public Optional<Worker> findClosestWorker(Property taskProperty, LocalDate taskDate, CleaningTask.Shift taskShift) {

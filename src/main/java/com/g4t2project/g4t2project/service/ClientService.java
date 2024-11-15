@@ -75,7 +75,7 @@ public class ClientService {
         // return new cleaningTaskDTO(propertyId, task.getShift().name(), task.getDate().toString(), task.isAcknowledged(), workerDTO, packageDetails);
     }
 
-    public cleaningTaskDTO placeOrder(Long clientId, String packageType, String propertyType, int numberOfRooms, CleaningTask.Shift shift, LocalDate date, Long getPreferredWorkerId) {
+    public cleaningTaskDTO placeOrder(Long clientId, String packageType, String propertyType, int numberOfRooms, CleaningTask.Shift shift, LocalDate date, Long preferredWorkerId) {
 
         // Ensure the order is placed one day in advance with at least 24 hours' notice
         LocalDateTime currentDateTime = LocalDateTime.now();
@@ -95,10 +95,9 @@ public class ClientService {
             throw new ManualBookingRequiredException("Please note that HomecleaningSg offers regular cleaning services for landed properties. If you are interested, kindly contact our Sales Representatives at +65 31650568 for more information.");
         }
 
-        CleaningPackage pkg = cleaningPackageRepository.findByPackageTypeAndPropertyTypeAndPax(
+        CleaningPackage pkg = cleaningPackageRepository.findByPackageTypeAndPropertyType(
             PackageType.valueOf(packageType),
-            PropertyType.valueOf(propertyType),
-            numberOfRooms
+            PropertyType.valueOf(propertyType)
         ).orElseThrow(() -> new IllegalArgumentException("Package not found for type: " + packageType + ", property type: " + propertyType + ", and number of rooms: " + numberOfRooms));
         System.out.println("Package found: " + pkg.getPackageId());
 
@@ -124,6 +123,11 @@ public class ClientService {
         cleaningTask.setStatus(CleaningTask.Status.Scheduled);
         cleaningTask.setDate(date);
         System.out.println("Cleaning task created: " + cleaningTask.getTaskId());
+
+        // Set the preferred worker ID if provided
+        if (preferredWorkerId != null) {
+            cleaningTask.setPreferredWorkerId(preferredWorkerId);
+    }
         cleaningTaskService.addCleaningTask(cleaningTask);
         // try {
         //     cleaningTaskService.addCleaningTask(cleaningTask);

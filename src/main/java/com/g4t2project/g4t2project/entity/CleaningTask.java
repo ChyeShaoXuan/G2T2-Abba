@@ -63,6 +63,8 @@ public class CleaningTask {
         Completed,
     }
 
+    private Long preferredWorkerId;
+
     public CleaningTask() {}
 
     public CleaningTask(Property property, Worker worker, Shift shift, Status status, LocalDate date, boolean Acknowledged) {
@@ -159,6 +161,12 @@ public class CleaningTask {
                 shift.toString());
     }
     
+    public Long getPreferredWorkerId() {
+        return preferredWorkerId;
+    }
 
+    public void setPreferredWorkerId(Long preferredWorkerId) {
+        this.preferredWorkerId = preferredWorkerId;
+    }
     
 }
