@@ -22,7 +22,7 @@ public class ClientController {
     @PostMapping("/{clientId}/placeOrder")
     public ResponseEntity<cleaningTaskDTO> placeOrder(@PathVariable Long clientId, @RequestBody PlaceOrderRequestDTO request) {
         LocalDate localDate = LocalDate.parse(request.getDate());
-        cleaningTaskDTO task = clientService.placeOrder(clientId, request.getPackageType(), request.getPropertyType(), request.getNumberOfRooms(), request.getShift(), localDate);
+        cleaningTaskDTO task = clientService.placeOrder(clientId, request.getPackageType(), request.getPropertyType(), request.getNumberOfRooms(), request.getShift(), localDate, request.getPreferredWorkerId());
         return ResponseEntity.ok(task);
     }
 

@@ -53,7 +53,14 @@ export async function placeOrder(clientId: number, orderRequest: PlaceOrderReque
         return response.data;
     } catch (error) {
         if (axios.isAxiosError(error)) {
-            throw new Error(`Error: ${error.response?.status} - ${error.response?.statusText}`);
+            if (error.response?.status === 400) {
+                // Display the specific error message from the backend
+                throw new Error(error.response.data || "Invalid input. Please check your entries.");
+            } else if (error.response?.status === 409) {
+                throw new Error(error.response.data || "No available worker for this task. Please try again later.");
+            } else {
+                throw new Error(`Error: ${error.response?.status} - ${error.response?.statusText}`);
+            }
         }
         throw new Error("An unknown error occurred");
     }
@@ -61,7 +68,7 @@ export async function placeOrder(clientId: number, orderRequest: PlaceOrderReque
 
 export async function getCompletedTasksByClient(clientId: number): Promise<CompletedTaskDTO[]> {
     try {
-        console.log("Fetching completed tasks for client", clientId);
+        // console.log("Fetching completed tasks for client", clientId);
         const response = await axios.get<CompletedTaskDTO[]>(`http://localhost:8080/cleaningTasks/completed-tasks-by-client`, {
             params: { clientId }
         });

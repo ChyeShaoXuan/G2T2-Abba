@@ -7,10 +7,10 @@ INSERT INTO admin (adminId, name, isRoot, emailId) VALUES
 (4, 'Alice Johnson', false, "randomEmail");
 
 INSERT INTO worker (WorkerId, adminId, name, phoneNumber, shortBio, deployed, emailId, curPropertyId, available, worker_hours_in_week) VALUES
-(1, 1, 'John Smith', '+6512345678', 'Experienced cleaner, pet-friendly', true, 'akannappan27@gmail.com', 101, True, 20),
-(2, 1, 'Mary Tan', '+6598765432', 'Specializes in disinfection treatment', false, '@marytan', 100, True, 44),
-(3, 1, 'Ahmed Ali', '+6581234567', 'No pets due to allergies', true, '@ahmedali', 103, False, 40),
-(4, 1, 'Susan Lee', '+6587654321', 'Background in carpet shampooing', false, '@susanlee', 100, False, 30);
+(1, 1, 'John Smith', '+6512345678', 'Experienced cleaner, pet-friendly', true, 'akannappan27@gmail.com', 105, True, 20),
+(2, 1, 'Mary Tan', '+6598765432', 'Specializes in disinfection treatment', false, '@marytan', 105, True, 44),
+(3, 1, 'Ahmed Ali', '+6581234567', 'No pets due to allergies', true, '@ahmedali', 105, False, 40),
+(4, 1, 'Susan Lee', '+6587654321', 'Background in carpet shampooing', false, '@susanlee', 105, False, 30);
 
 
 INSERT INTO cleaningpackage (packageId, packageType, price, hours, hourly_rate, property_details, pax, manualBookingRequired, propertyType) VALUES

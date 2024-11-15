@@ -45,7 +45,7 @@ public class Worker {
     private String shortBio;
     private boolean deployed;
     private String emailID;
-    private long curPropertyId = 100;
+    private long curPropertyId = 105;
     private boolean available;
     private String tele_Id;  // Make sure this field exists
 
@@ -151,12 +151,17 @@ public class Worker {
 
     public boolean isAvailableOn(LocalDate date, CleaningTask.Shift shift) {
         // Check if the worker has any conflicting tasks on the given date and shift
+        System.out.println("Checking if worker is available on the given date and shift");
         for (CleaningTask task : cleaningTasks) {
             if (task.getDate().equals(date) && task.getShift() == shift) {
+                System.out.println("-----------------------------------------------");
+                System.out.println("Worker already has a task for the given date and shift");
+                System.out.println("-----------------------------------------------");
                 return false; // Worker already has a task for the given date and shift
             }
         }
         // If no conflicting tasks or leaves, the worker is available
+        System.out.println("it's going to return true");
         return true;
     }
 

@@ -47,7 +47,7 @@ export default function FinishedJobs() {
             feedbackId: task.feedbackId ?? null, // Dummy or default value if not available
           }));
 
-        console.log("Transformed jobs:", jobs);
+        // console.log("Transformed jobs:", jobs);
         setMyJobs(jobs);
       } catch (error) {
         console.error("Failed to load completed tasks:", error);

@@ -71,8 +71,11 @@ public class CleaningTaskService {
     public void addCleaningTask(CleaningTask cleaningTask) {
         // Retrieve the Property based on the propertyId from the task
         Property property = cleaningTask.getProperty();
-
+        
+        System.out.println("----------------------------------");
         System.out.println("Creating new task......");
+        System.out.println("----------------------------------");
+
         // Find the closest worker based on proximity to the property
         Optional<Worker> closestWorkerOpt = findClosestWorker(property, cleaningTask.getDate(), cleaningTask.getShift());
 
@@ -99,17 +102,25 @@ public class CleaningTaskService {
         // Fetch all workers
         List<Worker> allWorkers = workerRepository.findAll();
          for(Worker curWorker: allWorkers){
+            System.out.println("Checking worker ID: " + curWorker.getWorkerId());
             if(curWorker.isAvailableOn(taskDate, taskShift)){
                 Long curWorkerPropId = (long)curWorker.getCurPropertyId();
+                System.out.println("==================================");
+                System.out.println("Current worker's property ID: " + curWorkerPropId);
+                System.out.println("==================================");
+
                 Optional<Property> curWorkerProperty = propertyRepository.findById(curWorkerPropId);
                 // If the property exists, calculate the distance
+                System.out.println("----------------------------------");
+                System.out.println(curWorkerProperty.isPresent());
+                System.out.println("----------------------------------");
+
                 if (curWorkerProperty.isPresent() && check44Hours(curWorker)) {
                     Property property = curWorkerProperty.get();
                     double workerLat = property.getLatitude();
                     double workerLon = property.getLongitude();
-                    System.out.println("curWorkerId: " + curWorker.getWorkerId());
-                    System.out.println("curWorker location: " + property.getAddress());
-                    System.out.println("WorkerLat: " + workerLat + " WorkerLong: " + workerLon + " Task lat: " + taskLat + " Task lon: " + taskLon);
+
+                    System.out.println("Calculating distance for curWorkerId: " + curWorker.getWorkerId() + "with name" + curWorker.getName());
 
                     try {
                         // Calculate the distance between the worker and the task
@@ -119,7 +130,7 @@ public class CleaningTaskService {
                         if (distance < minDistance) {
                             minDistance = distance;
                             closestWorker = curWorker;
-                            System.out.println("New closest worker ID: " + curWorker.getWorkerId() + " with distance: " + distance);
+                            System.out.println("New closest worker found: " + curWorker.getWorkerId() + " " + closestWorker.getName() + " with distance: " + distance);
                         }
                     } catch (Exception e) {
                         System.err.println("Error calculating distance for worker ID: " + curWorker.getWorkerId());
