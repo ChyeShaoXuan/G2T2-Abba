@@ -42,7 +42,7 @@ public class Worker {
     
     private String name;
     private String phoneNumber;
-    private String shortBio;
+    private String shortBio = "I am a worker";
     private boolean deployed;
     private String emailID;
     private long curPropertyId = 100;
@@ -50,7 +50,7 @@ public class Worker {
 
 
     @Column(name = "worker_hours_in_week")
-    private Integer worker_hours_in_week;
+    private Integer worker_hours_in_week = 0;
 
     @OneToOne
     private User user;

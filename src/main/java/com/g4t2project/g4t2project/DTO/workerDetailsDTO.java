@@ -6,10 +6,10 @@ public class workerDetailsDTO {
     private String emailID;
     private String name;
     private String phoneNumber;
-    private String shortBio;
+    private String shortBio = "I am a worker";
     private boolean deployed;
     private long curPropertyId;
-    private Integer worker_hours_in_week;
+    private Integer worker_hours_in_week = 0;
 
     public workerDetailsDTO(Long workerId, String emailID, String name, String phoneNumber, String shortBio, boolean deployed, long curPropertyId, int worker_hours_in_week) {
         this.workerId = workerId;

@@ -42,24 +42,24 @@ export default function DashboardInfo({ workerId }: DashboardInfoProps) {
     worker_hours_in_week: number
   }
 
-  // useEffect(() => {
-  //   const fetchWorkers = async () => {
-  //     try {
-  //       // Use the workerId from props instead of username
-  //       const workersResponse = await axios.get(`http://localhost:8080/admin/workers`)
-  //       const worker = workersResponse.data.find((worker: Worker) => worker.workerId === setWorkerId)
-  //       if (worker) {
-  //         setWorkers([worker])
-  //       }
-  //     } catch (error) {
-  //       console.error('Error fetching workers:', error)
-  //     }
-  //   }
+  useEffect(() => {
+    const fetchWorkers = async () => {
+      try {
+        // Use the workerId from props instead of username
+        const workersResponse = await axios.get(`http://localhost:8080/admin/workers`)
+        const worker = workersResponse.data.find((worker: Worker) => worker.workerId === setWorkerId)
+        if (worker) {
+          setWorkers([worker])
+        }
+      } catch (error) {
+        console.error('Error fetching workers:', error)
+      }
+    }
 
-  //   if (workerId) {
-  //     fetchWorkers()
-  //   }
-  // }, [workerId, setWorkerId])
+    if (workerId) {
+      fetchWorkers()
+    }
+  }, [workerId, setWorkerId])
   
   const username = localStorage.getItem('username')
   console.log(localStorage)
@@ -133,7 +133,7 @@ export default function DashboardInfo({ workerId }: DashboardInfoProps) {
                         <MDBCardText>Email</MDBCardText>
                       </MDBCol>
                       <MDBCol sm="9">
-                        <MDBCardText className="text-muted">example@example.com</MDBCardText>
+                        <MDBCardText className="text-muted">{worker.emailID}</MDBCardText>
                       </MDBCol>
                     </MDBRow>
                     <hr />
