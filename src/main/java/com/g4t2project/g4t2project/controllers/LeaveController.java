@@ -11,6 +11,7 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -20,7 +21,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.http.MediaType;
 
 @RestController
 @RequestMapping("/leave")
@@ -34,9 +34,9 @@ public class LeaveController {
     private NotificationService notificationService;
 
     @PostMapping("/apply")
-    public ResponseEntity<String> applyForLeave(@RequestBody LeaveApplication leaveApplication) {
+    public ResponseEntity<?> applyForLeave(@RequestBody LeaveApplication leaveApplication) {
         try {
-            leaveApplicationService.applyForLeave(leaveApplication);
+            LeaveApplication savedApplication = leaveApplicationService.applyForLeave(leaveApplication);
             
             // Determine if the leave application is submitted too late for reassignment
             LocalDateTime startDateTime = leaveApplication.getStartDate().atStartOfDay();
@@ -55,31 +55,27 @@ public class LeaveController {
                 notificationService.notifyAdminForPendingMC(leaveApplication);
             }
             
-            return ResponseEntity.ok("Leave application submitted successfully");
+            // Return the leaveId in the response
+            return ResponseEntity.ok(Map.of(
+                "message", "Leave application submitted successfully",
+                "leaveId", savedApplication.getLeaveApplicationId()
+            ));
         } catch (Exception e) {
             e.printStackTrace(); // For debugging purposes
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to submit leave application: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("error", "Failed to submit leave application: " + e.getMessage()));
         }
     }
 
-    @PostMapping(value = "/upload-mc", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping("/{leaveId}/upload-mc")
     public ResponseEntity<String> uploadMcDocument(
-            @RequestParam("leaveId") int leaveId,
+            @PathVariable int leaveId,
             @RequestParam("mcDocument") MultipartFile mcDocument) {
         try {
-            System.out.println("Received upload request:");
-            System.out.println("Leave ID: " + leaveId);
-            System.out.println("File name: " + mcDocument.getOriginalFilename());
-            System.out.println("File size: " + mcDocument.getSize());
-            System.out.println("Content type: " + mcDocument.getContentType());
-            
             leaveApplicationService.uploadMcDocument(leaveId, mcDocument);
             return ResponseEntity.ok("MC document uploaded successfully");
         } catch (Exception e) {
-            System.err.println("Error in controller:");
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body("Failed to upload MC document: " + e.getMessage());
+            return ResponseEntity.status(500).body("Error uploading MC document: " + e.getMessage());
         }
     }
 

@@ -42,7 +42,7 @@ public class LeaveApplicationService {
     private final String MC_UPLOAD_DIR = "uploads/mc/";
     private final Duration MINIMUM_NOTICE_DURATION = Duration.ofHours(3);  // 3-hour minimum
 
-    public void applyForLeave(LeaveApplication leaveApplication) {
+    public LeaveApplication applyForLeave(LeaveApplication leaveApplication) {
         LocalDateTime now = LocalDateTime.now();
 
         // Set initial status to Pending
@@ -85,8 +85,10 @@ public class LeaveApplicationService {
         }
 
         // Save the leave application and notify the admin of the pending MC
-        leaveApplicationRepository.save(leaveApplication);
+        LeaveApplication savedApplication = leaveApplicationRepository.save(leaveApplication);
         notificationService.notifyAdminForPendingMC(leaveApplication);
+        
+        return savedApplication;
     }
 
     public boolean reallocateWorker(LeaveApplication leaveApplication) {
@@ -145,6 +147,7 @@ public class LeaveApplicationService {
             leaveApplication.setMcDocumentSubmitted(true);
             
             leaveApplicationRepository.save(leaveApplication);
+            
         } catch (IOException e) {
             throw new RuntimeException("Failed to upload MC document: " + e.getMessage(), e);
         }
