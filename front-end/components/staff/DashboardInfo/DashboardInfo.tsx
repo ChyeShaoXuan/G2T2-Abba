@@ -29,17 +29,9 @@ interface DashboardInfoProps {
   workerId: string;
 }
 
-
-
 export default function DashboardInfo({ workerId }: DashboardInfoProps) {
   const { setWorkerId } = useGlobalState();
   const [workers, setWorkers] = useState<Worker[]>([])
-  const [username, setUsername] = useState<string | null>(null);
-
-  useEffect(() => {
-  const storedUsername = localStorage.getItem("username");
-  setUsername(storedUsername);
-}, []);
   interface Worker {
     workerId: number
     name: string
@@ -50,32 +42,33 @@ export default function DashboardInfo({ workerId }: DashboardInfoProps) {
     worker_hours_in_week: number
   }
 
-  useEffect(() => {
-    const fetchWorkers = async () => {
-      try {
-        // Use the workerId from props instead of username
-        const workersResponse = await axios.get(`http://localhost:8080/admin/workers`)
-        const worker = workersResponse.data.find((worker: Worker) => worker.workerId === setWorkerId)
-        if (worker) {
-          setWorkers([worker])
-        }
-      } catch (error) {
-        console.error('Error fetching workers:', error)
-      }
-    }
+  // useEffect(() => {
+  //   const fetchWorkers = async () => {
+  //     try {
+  //       // Use the workerId from props instead of username
+  //       const workersResponse = await axios.get(`http://localhost:8080/admin/workers`)
+  //       const worker = workersResponse.data.find((worker: Worker) => worker.workerId === setWorkerId)
+  //       if (worker) {
+  //         setWorkers([worker])
+  //       }
+  //     } catch (error) {
+  //       console.error('Error fetching workers:', error)
+  //     }
+  //   }
 
-    if (workerId) {
-      fetchWorkers()
-    }
-  }, [workerId, setWorkerId])
-  console.log(username)
+  //   if (workerId) {
+  //     fetchWorkers()
+  //   }
+  // }, [workerId, setWorkerId])
+  
+  const username = localStorage.getItem('username')
   console.log(localStorage)
 
   useEffect(() => {
     // Fetch workers from the backend
     const fetchWorkers = async () => {
       try {
-        const workersResponse = await axios.get(`http://localhost:8080/admin/workers`)
+        const workersResponse = await axios.get(`http://localhost:8080/admin/workers_details`)
         console.log(workersResponse)
         const worker = workersResponse.data.find((worker: Worker) => worker.name === username)
         if (worker) {
@@ -162,15 +155,15 @@ export default function DashboardInfo({ workerId }: DashboardInfoProps) {
                       </MDBCol>
                     </MDBRow>
                     <hr />
-                    {/* <MDBRow>
+                    <MDBRow>
                       <MDBCol sm="3">
                         <MDBCardText>Worker Hours in Week</MDBCardText>
                       </MDBCol>
                       <MDBCol sm="9">
-                        <MDBCardText className="text-muted">30{worker.workerHoursInWeek}</MDBCardText>
+                        <MDBCardText className="text-muted">{worker.workerHoursInWeek}</MDBCardText>
                       </MDBCol>
                     </MDBRow>
-                    <hr /> */}
+                    <hr />
                     <MDBRow className="justify-content-end">
                       <MDBCol sm="3" className="d-flex justify-content-end">
                         <MDBBtn outline color="dark" style={{ height: '36px', overflow: 'visible' }}>

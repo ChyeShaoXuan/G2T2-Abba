@@ -39,10 +39,10 @@ const LoginPage = () => {
 
             if (response.status === 200) {
                 const userId = await fetchUserId(response.data.username, response.data.role);
-                
+
                 // Set role to 'admin' if user has ROLE_ADMIN
                 const role = response.data.roles.includes('ROLE_ADMIN') ? 'admin' : response.data.role;
-                
+
                 // Call login only once with all data
                 login({
                     ...response.data,
@@ -59,11 +59,11 @@ const LoginPage = () => {
                 // Route based on role
                 if (response.data.username === 'root' || response.data.roles.includes('ROLE_ADMIN')) {
                     router.push('/admin/JobStatisticsDashboard');
-                } 
-                else if (response.data.role === 'Client'){
-                  localStorage.setItem('userId', userId);
-                  router.push('/client/Dashboard');
-                  
+                }
+                else if (response.data.role === 'Client') {
+                    localStorage.setItem('userId', userId);
+                    router.push('/client/Dashboard');
+
                 }
                 else {
                     router.push('/staff/Dashboard');
@@ -79,10 +79,10 @@ const LoginPage = () => {
 
     const fetchUserId = async (username, role) => {
         try {
-            if(role === 'Client'){
+            if (role === 'Client') {
                 const response = await axios.get(`http://localhost:8080/clients/clientId/${username}`);
                 return response.data;
-                }
+            }
             const response = await axios.get(`http://localhost:8080/worker/workerId/${username}`);
             return response.data;
         } catch (error) {
@@ -129,12 +129,22 @@ const LoginPage = () => {
                     <div style={{ marginBottom: '15px' }}>Username or password is incorrect.</div>
                 )}
                 <div className={styles['button-container']}>
-                  <button className={`btn ${styles['btn-outline']}`} type="submit">
-                    Login
-                  </button>
+                    <button className={`btn ${styles['btn-outline']}`} type="submit">
+                        Login
+                    </button>
+                </div>
+                <div className="text-center text-red-500 text-sm">
+                    Not logged in ? Click
+                    <span
+                        className="underline cursor-pointer text-blue-500 ml-1 mr-1"
+                        onClick={() => router.push('/register')}
+                    >
+                        here
+                    </span>
+                    to register
                 </div>
             </div>
-            
+
         </form>
     );
 };

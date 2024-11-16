@@ -88,7 +88,7 @@ public class AdminController {
         return ResponseEntity.ok(workers);
     }
 
-    @GetMapping("/workersdetails")
+    @GetMapping("/workers_details")
     public ResponseEntity<List<workerDetailsDTO>> getWorkerDetails() {
         List<workerDetailsDTO> workers = workerService.getWorkerDetails();
         return ResponseEntity.ok(workers);
