@@ -3,6 +3,7 @@ package com.g4t2project.g4t2project.DTO;
 public class workerDetailsDTO {
 
     private Long workerId;
+    private String emailID;
     private String name;
     private String phoneNumber;
     private String shortBio;
@@ -10,14 +11,23 @@ public class workerDetailsDTO {
     private long curPropertyId;
     private Integer worker_hours_in_week;
 
-    public workerDetailsDTO(Long workerId, String name, String phoneNumber, String shortBio, boolean deployed, long curPropertyId, int worker_hours_in_week) {
+    public workerDetailsDTO(Long workerId, String emailID, String name, String phoneNumber, String shortBio, boolean deployed, long curPropertyId, int worker_hours_in_week) {
         this.workerId = workerId;
+        this.emailID = emailID;
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.shortBio = shortBio;
         this.deployed = deployed;
         this.curPropertyId = curPropertyId;
         this.worker_hours_in_week = worker_hours_in_week;
+    }
+
+    public String getEmailID() {
+        return emailID;
+    }
+
+    public void setEmailID(String emailID) {
+        this.emailID = emailID;
     }
 
     public Long getWorkerId() { 

@@ -96,6 +96,7 @@ public class WorkerService {
         return workers.stream()
                 .map(worker -> new workerDetailsDTO(
                 worker.getWorkerId().longValue(),
+                worker.getEmailId(),
                 worker.getName(),
                 worker.getPhoneNumber(),
                 worker.getShortBio(),
