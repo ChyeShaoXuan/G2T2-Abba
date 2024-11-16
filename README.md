@@ -8,9 +8,9 @@
 - On Java terminal it should say the application is started on port 8080
 - [AbbaApplication] [  restartedMain] c.g.g4t2project.AbbaApplication          : Started AbbaApplication in 8.209 seconds (process running for 8.805)
 
-pom.xml is the root folder
-classes are compiled into target folder, from src folder
-All java files can be found in src/main/java/com/g4t2project/g4t2project, from the root folder. They are categorised into entity, repository, scheduler, DTO, service, controller, config(for authentication feature), exception(for custom exceptions), scheduler for scheduled jobs, and util for more complex helper functions.
+- pom.xml is the root folder
+- classes are compiled into target folder, from src folder
+- All java files can be found in src/main/java/com/g4t2project/g4t2project, from the root folder. They are categorised into entity, repository, scheduler, DTO, service, controller, config(for authentication feature), exception(for custom exceptions), scheduler for scheduled jobs, and util for more complex helper functions.
 
 ### All entities are in src/main/java/com/g4t2project/g4t2project/entity/
 For front-end purposes(to access the UI of the application):
