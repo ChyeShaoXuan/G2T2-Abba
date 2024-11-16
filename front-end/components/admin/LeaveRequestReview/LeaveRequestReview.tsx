@@ -60,15 +60,15 @@ const LeaveRequestReview = () => {
 
         const formData = new FormData();
         formData.append('mcDocument', file);
-        formData.append('leaveId', leaveId.toString());
 
         try {
-            await axios.post('http://localhost:8080/leave/upload-mc', formData, {
+            await axios.post(`http://localhost:8080/leave/${leaveId}/upload-mc`, formData, {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem('jwtToken')}`,
                     'Content-Type': 'multipart/form-data'
                 }
             });
+            window.alert('MC document uploaded successfully!');
             fetchLeaveApplications();
         } catch (error) {
             console.error('Error uploading MC document:', error);
