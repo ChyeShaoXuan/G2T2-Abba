@@ -44,7 +44,31 @@ const formSchema = z.object({
   }),
 })
 
-
+const uploadMC = async (leaveId: number, mcFile: File) => {
+  try {
+    const formData = new FormData();
+    formData.append('mcDocument', mcFile);
+    
+    const response = await axios.post(
+      `http://localhost:8080/leave/${leaveId}/upload-mc`,
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      }
+    );
+    
+    if (response.status === 200) {
+      console.log('MC uploaded successfully');
+      return true;
+    }
+    return false;
+  } catch (error) {
+    console.error('Error uploading MC:', error);
+    return false;
+  }
+};
 
 export default function LeaveApplicationForm() {
   const [file, setFile] = useState<File | null>(null)
@@ -63,53 +87,34 @@ export default function LeaveApplicationForm() {
   const watchLeaveType = form.watch("leaveType")
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    // Create a FormData object to handle file uploads
-    const formData = new FormData();
-
-    // Append all the fields from the form
-    formData.append('workerName', values.workerName);
-    formData.append('workerID', values.workerID);
-    formData.append('leaveType', values.leaveType);
-    formData.append('startDate', format(values.startDate, 'yyyy-MM-dd'));
-    formData.append('endDate', format(values.endDate, 'yyyy-MM-dd'));
-    formData.append('reason', values.reason);
-
-    // Fetch the admin ID dynamically based on worker ID
-    const response = await axios.get(`http://localhost:8080/worker/${values.workerID}/admin`);
-    const adminId = response.data;  // Directly use the fetched adminId
-
-    const leaveApplication = {
-      worker: {
-        workerId: parseInt(values.workerID), // Already an integer
-      },
-      adminId: Number(adminId), // Convert to number without truncating
-      startDate: values.startDate,
-      endDate: values.endDate, 
-      leaveType: values.leaveType,
-      reason: values.reason,
-      submissionDateTime: new Date().toISOString(),
-    };
-
     try {
+      // Create the leave application object
+      const leaveApplication = {
+        worker: {
+          workerId: parseInt(values.workerID),
+        },
+        adminId: Number(values.workerID), // This will be fetched from backend
+        startDate: values.startDate,
+        endDate: values.endDate, 
+        leaveType: values.leaveType,
+        reason: values.reason,
+        submissionDateTime: new Date().toISOString(),
+      };
+
       console.log('Submitting leave application:', leaveApplication);
       const response = await axios.post('http://localhost:8080/leave/apply', leaveApplication);
 
-      // Capture the leaveId from the response if provided
-      const result = response.data;
-      console.log('Leave application submitted successfully:', result);
-      const leaveId = result.leaveId;
-      
-      // Step 2: Upload MC document if leave type is "mc"
-      if (values.leaveType === "MC" && file && leaveId) {
-        const mcData = new FormData();
-        mcData.append('leaveId', leaveId);
-        mcData.append('mcDocument', file);
+      // Get the leaveId from the response
+      const { leaveId } = response.data;
+      console.log('Leave application submitted successfully, leaveId:', leaveId);
 
-        await axios.post('http://localhost:8080/leave/upload-mc', mcData, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        });
+      // Step 2: Upload MC document if leave type is "MC"
+      if (values.leaveType === "MC" && file && leaveId) {
+        console.log('Uploading MC document for leaveId:', leaveId);
+        const uploaded = await uploadMC(leaveId, file);
+        if (!uploaded) {
+          throw new Error('Failed to upload MC document');
+        }
       }
 
       setSubmitStatus('success');
@@ -119,16 +124,12 @@ export default function LeaveApplicationForm() {
     } catch (error: any) {
       console.error('Error submitting leave application:', error);
       if (error.response) {
-        // The request was made and the server responded with a status code
-        // that falls out of the range of 2xx
         console.error('Error response data:', error.response.data);
         console.error('Error response status:', error.response.status);
         console.error('Error response headers:', error.response.headers);
       } else if (error.request) {
-        // The request was made but no response was received
         console.error('No response received:', error.request);
       } else {
-        // Something happened in setting up the request that triggered an Error
         console.error('Error setting up request:', error.message);
       }
       setSubmitStatus('error');
