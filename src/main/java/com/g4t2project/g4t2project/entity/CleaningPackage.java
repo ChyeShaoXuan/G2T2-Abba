@@ -40,14 +40,6 @@ public class CleaningPackage {
 
     protected CleaningPackage() {}
 
-    // public CleaningPackage(PackageType packageType, int price, int hours, int hourly_rate, String property_details, ArrayList<Property> properties) {
-    //     this.packageType = packageType;
-    //     this.price = price;
-    //     this.hours = hours;
-    //     this.hourly_rate = hourly_rate;
-    //     this.property_details = property_details;
-    //     this.properties = properties;
-    // }
 
     public CleaningPackage(PackageType packageType, PropertyType propertyType, int price, double hours, int hourlyRate, String propertyDetails, int pax, boolean manualBookingRequired) {
         this.packageType = packageType;

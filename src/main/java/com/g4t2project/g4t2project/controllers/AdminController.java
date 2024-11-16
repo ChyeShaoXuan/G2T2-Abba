@@ -18,14 +18,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.g4t2project.g4t2project.DTO.*;
-import com.g4t2project.g4t2project.entity.Admin;
-import com.g4t2project.g4t2project.entity.Client;
-import com.g4t2project.g4t2project.entity.LeaveApplication;
-import com.g4t2project.g4t2project.entity.User;
-import com.g4t2project.g4t2project.entity.Worker;
-import com.g4t2project.g4t2project.entity.WorkerHours;
-import com.g4t2project.g4t2project.service.AdminService;
-import com.g4t2project.g4t2project.service.WorkerService;
+import com.g4t2project.g4t2project.entity.*;
+import com.g4t2project.g4t2project.service.*;
 
 @RestController
 @RequestMapping("/admin")
@@ -175,8 +169,9 @@ public class AdminController {
     }
 
     @PutMapping("/users/{userId}/role")
-    public ResponseEntity<User> updateUserRole(@PathVariable Long userId, @RequestParam String role) {
-        User updatedUser = adminService.updateUserRole(userId, role);
-        return ResponseEntity.ok(updatedUser);
-    }
+    public ResponseEntity<User> updateUserRole(@PathVariable Long userId, @RequestBody Map<String, String> requestBody) {
+    String role = requestBody.get("role");
+    User updatedUser = adminService.updateUserRole(userId, role);
+    return ResponseEntity.ok(updatedUser);
+}
 }

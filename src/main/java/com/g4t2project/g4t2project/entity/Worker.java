@@ -45,9 +45,8 @@ public class Worker {
     private String shortBio;
     private boolean deployed;
     private String emailID;
-    private long curPropertyId = 105;
-    private boolean available;
-    private String tele_Id;  // Make sure this field exists
+    private long curPropertyId = 100;
+    private boolean available; 
 
 
     @Column(name = "worker_hours_in_week")
@@ -68,10 +67,6 @@ public class Worker {
         this.curPropertyId = curPropertyId;
         this.available = true;
         this.worker_hours_in_week = worker_hours_in_week;
-    }
-
-    public void setTele_Id(String tele_Id) {
-        this.tele_Id = tele_Id;
     }
 
     public Integer getWorkerId() {

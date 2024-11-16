@@ -17,6 +17,7 @@ public interface LeaveApplicationRepository extends JpaRepository<LeaveApplicati
     // currently the leaveApplication entity does not have a field for mcDocumentSubmitted. Do we include this field in the entity?
     @Query("SELECT la FROM LeaveApplication la WHERE la.mcDocumentSubmitted = false")
     List<LeaveApplication> findPendingMcSubmissions();
+    
     @Modifying
     @Transactional
     @Query("DELETE FROM LeaveApplication p WHERE p.worker.workerId = :workerId")

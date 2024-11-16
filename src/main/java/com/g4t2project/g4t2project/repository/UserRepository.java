@@ -12,5 +12,3 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByName(String name);
     Optional<User> findByTwoFactorToken(String twoFactorToken); 
 }
-
-// CRUD for user + find user by email 

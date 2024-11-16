@@ -42,7 +42,6 @@ export default function PlaceOrderPage() {
   return (
       <div>
           {loading && <Loading />}
-          <p className='ml-4'>Welcome to your Dashboard. Client ID: {userId}</p>
           <NavigationBar/>
           <ClientBooking clientId={userId} />
       </div>

@@ -7,16 +7,9 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.g4t2project.g4t2project.DTO.workerDTO;
-import com.g4t2project.g4t2project.DTO.workerDetailsDTO;
-import com.g4t2project.g4t2project.entity.CleaningTask;
-import com.g4t2project.g4t2project.entity.LeaveApplication;
-import com.g4t2project.g4t2project.entity.Property;
-import com.g4t2project.g4t2project.entity.Worker;
-import com.g4t2project.g4t2project.entity.WorkerHours;
-import com.g4t2project.g4t2project.repository.CleaningTaskRepository;
-import com.g4t2project.g4t2project.repository.LeaveApplicationRepository;
-import com.g4t2project.g4t2project.repository.WorkerRepository;
+import com.g4t2project.g4t2project.DTO.*;
+import com.g4t2project.g4t2project.entity.*;
+import com.g4t2project.g4t2project.repository.*;
 
 @Service
 public class WorkerService {

@@ -8,8 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import com.g4t2project.g4t2project.entity.CleaningTask;
-import com.g4t2project.g4t2project.entity.Worker;
+import com.g4t2project.g4t2project.entity.*;
 
 public interface WorkerRepository extends JpaRepository<Worker, Long> {
     Optional<Worker> findFirstByAvailableTrue();

@@ -1,6 +1,5 @@
 package com.g4t2project.g4t2project.scheduler;
 
-import java.sql.ClientInfoStatus;
 import java.time.LocalDateTime;
 import java.util.List;
 

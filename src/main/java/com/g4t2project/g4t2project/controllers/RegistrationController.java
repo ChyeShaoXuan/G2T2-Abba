@@ -1,10 +1,6 @@
 package com.g4t2project.g4t2project.controllers;
 
-import com.g4t2project.g4t2project.entity.User;
-import com.g4t2project.g4t2project.entity.Admin;
-import com.g4t2project.g4t2project.entity.Client;
-import com.g4t2project.g4t2project.entity.Worker;
-import com.g4t2project.g4t2project.repository.UserRepository;
+import com.g4t2project.g4t2project.entity.*;
 import com.g4t2project.g4t2project.service.RegistrationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -19,9 +15,6 @@ public class RegistrationController {
     @Autowired
     private RegistrationService registrationService;
 
-    
-    @Autowired
-    private UserRepository userRepository;
 
     // controller receive POST req at endpt w user data
     @PostMapping("/register")
@@ -31,9 +24,6 @@ public class RegistrationController {
             return ResponseEntity.badRequest().body("One or more of the fields are empty.");
         }
 
-        // if (userRepository.findByEmail(user.getEmail()) != null) {
-        //     return ResponseEntity.badRequest().body("Email is already in use.");
-        // }
 
         // calling registerUser method of registrationService
         User registeredUser = registrationService.registerUser(user);
@@ -50,15 +40,12 @@ public class RegistrationController {
             worker.setUser(registeredUser);
             worker.setName(user.getName());
             worker.setPhoneNumber(user.getPhoneNumber());
+            worker.setemailID(user.getEmail());
             registrationService.registerWorker(worker);
         } 
 
         // save user in the repo 
         return ResponseEntity.ok(registeredUser);
-
-        // send confirmation email to user
-
-        // controller sends back http response to client w user data 
 
     }
 

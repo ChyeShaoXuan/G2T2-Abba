@@ -16,9 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.g4t2project.g4t2project.DTO.workerDTO;
-import com.g4t2project.g4t2project.entity.LeaveApplication;
-import com.g4t2project.g4t2project.entity.Worker;
-import com.g4t2project.g4t2project.entity.WorkerHours;
+import com.g4t2project.g4t2project.entity.*;
 import com.g4t2project.g4t2project.service.WorkerService;
 
 import java.util.List;

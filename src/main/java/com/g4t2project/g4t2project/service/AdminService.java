@@ -1,7 +1,5 @@
 package com.g4t2project.g4t2project.service;
 
-import java.time.Duration;
-import java.time.LocalTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -9,10 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.g4t2project.g4t2project.DTO.ClientDTO;
-import com.g4t2project.g4t2project.DTO.StatsDTO;
-import com.g4t2project.g4t2project.DTO.UserDTO;
-import com.g4t2project.g4t2project.DTO.WorkerDTO_Admin;
+import com.g4t2project.g4t2project.DTO.*;
 import com.g4t2project.g4t2project.entity.*;
 import com.g4t2project.g4t2project.repository.*;
 

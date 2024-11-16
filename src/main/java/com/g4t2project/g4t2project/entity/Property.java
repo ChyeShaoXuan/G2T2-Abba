@@ -91,14 +91,6 @@ public class Property {
         cleaningTasks.remove(cleaningTask);
     }
 
-    // public String getPostalCode() {
-    //     return postalCode;
-    // }
-
-    // public void setPostalCode(String postalCode) {
-    //     this.postalCode = postalCode;
-    // }
-
     public CleaningPackage getPkg() {
         return pkg;
     }

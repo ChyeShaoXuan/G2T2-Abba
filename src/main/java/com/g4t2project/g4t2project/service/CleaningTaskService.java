@@ -1,9 +1,8 @@
 package com.g4t2project.g4t2project.service;
 
 import java.io.IOException;
-import java.time.Duration;
 import java.time.LocalDate;
-import java.time.LocalTime;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -12,19 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.g4t2project.g4t2project.DTO.FeedbackDTO;
-import com.g4t2project.g4t2project.DTO.OverwriteCleaningTaskDTO;
-import com.g4t2project.g4t2project.entity.CleaningTask;
-import com.g4t2project.g4t2project.entity.Feedback;
-import com.g4t2project.g4t2project.entity.LeaveApplication;
-import com.g4t2project.g4t2project.entity.Property;
-import com.g4t2project.g4t2project.entity.Worker;
+import com.g4t2project.g4t2project.DTO.*;
+import com.g4t2project.g4t2project.entity.*;
 import com.g4t2project.g4t2project.exception.NoAvailableWorkerException;
-import com.g4t2project.g4t2project.repository.CleaningTaskRepository;
-import com.g4t2project.g4t2project.repository.FeedbackRepository;
-import com.g4t2project.g4t2project.repository.LeaveApplicationRepository;
-import com.g4t2project.g4t2project.repository.PropertyRepository;
-import com.g4t2project.g4t2project.repository.WorkerRepository;
+import com.g4t2project.g4t2project.repository.*;
 import com.g4t2project.g4t2project.util.DistanceCalculator;
 
 
@@ -37,8 +27,6 @@ public class CleaningTaskService {
     private CleaningTaskRepository cleaningTaskRepository;
     @Autowired
     private WorkerRepository workerRepository;
-    @Autowired
-    private LeaveApplicationRepository leaveApplicationRepository;
     @Autowired
     private NotificationService notificationService;
     @Autowired
@@ -76,25 +64,10 @@ public class CleaningTaskService {
         System.out.println("Creating new task......");
         System.out.println("----------------------------------");
 
-        // Find the closest worker based on proximity to the property
-        // Optional<Worker> closestWorkerOpt = findClosestWorker(property, cleaningTask.getDate(), cleaningTask.getShift());
-
-        // if (closestWorkerOpt.isPresent()) {
-        //     System.out.println(closestWorkerOpt.isPresent());
-        //     Worker closestWorker = closestWorkerOpt.get();
-        //     cleaningTask.setWorker(closestWorker); // Assign the worker to the task
-        //     cleaningTask.setStatus(CleaningTask.Status.Assigned); // Set the status
-        //     cleaningTaskRepository.save(cleaningTask); // Save the task
-        // } else {
-        //     // Handle the case when no worker is available
-        //     throw new NoAvailableWorkerException("No worker available for the task on " + cleaningTask.getDate() + " during " + cleaningTask.getShift()
-        //             + " shift.");
-        // }
-
         Worker assignedWorker = null;
 
         // Check if a preferred worker is specified and valid
-        if (cleaningTask.getPreferredWorkerId() != null) {
+        if (cleaningTask.getPreferredWorkerId() != 0) {
             Long preferredWorkerId = cleaningTask.getPreferredWorkerId();
             
             // Attempt to find the preferred worker
@@ -120,11 +93,6 @@ public class CleaningTaskService {
                     + cleaningTask.getDate() + " during " + cleaningTask.getShift() + " shift.");
             }
         }
-    
-        // Final check to ensure assignedWorker is not null
-        // if (assignedWorker == null) {
-        //     throw new IllegalStateException("Worker assignment failed, no worker was assigned.");
-        // }
     
         // Assign the worker and set the task status as Assigned
         cleaningTask.setWorker(assignedWorker);
@@ -268,51 +236,6 @@ public class CleaningTaskService {
         return cleaningTaskRepository.save(existingTask);
     }
 
-    public boolean check44h_Requirement(Integer workerId, LocalDate taskDate, CleaningTask.Shift shift) {
-        // CleaningTask task = cleaningTaskRepository.findById(taskId)
-        //         .orElseThrow(() -> new RuntimeException("Task not found"));
-        Worker worker = workerRepository.findById(workerId.longValue())
-                .orElseThrow(() -> new RuntimeException("Worker not found"));
-
-        // Define shift times
-        LocalTime morningStart = LocalTime.of(8, 0);
-        LocalTime morningEnd = LocalTime.of(12, 0);
-        LocalTime afternoonStart = LocalTime.of(13, 0);
-        LocalTime afternoonEnd = LocalTime.of(17, 0);
-        LocalTime eveningStart = LocalTime.of(18, 0);
-        LocalTime eveningEnd = LocalTime.of(22, 0);
-
-        // Map shift to start and end times
-        LocalTime shiftStart;
-        LocalTime shiftEnd;
-
-        switch (shift) {
-            case Morning -> {
-                shiftStart = morningStart;
-                shiftEnd = morningEnd;
-            }
-            case Afternoon -> {
-                shiftStart = afternoonStart;
-                shiftEnd = afternoonEnd;
-            }
-            case Evening -> {
-                shiftStart = eveningStart;
-                shiftEnd = eveningEnd;
-            }
-            default -> throw new RuntimeException("Invalid shift provided.");
-        }
-
-        // Check if assigning the task would exceed the worker's 44-hour weekly limit
-        int currentWeeklyHours = worker.getWorkerHoursInWeek(); 
-        int shiftDurationHours = (int) Duration.between(shiftStart, shiftEnd).toHours();
-        if (currentWeeklyHours + shiftDurationHours > 44) {
-            return false;
-            // throw new RuntimeException("Assigning this task will exceed the worker's 44-hour weekly limit.");
-        }
-
-        return true;
-
-    }
     
     public void confirmArrival(Integer taskId, MultipartFile photo) throws IOException {
         Optional<CleaningTask> taskOpt = cleaningTaskRepository.findById(taskId);
@@ -367,9 +290,6 @@ public class CleaningTaskService {
     
     public List<OverwriteCleaningTaskDTO> getCompletedCleaningTasksByClient(Integer clientId) {
         List<CleaningTask> clientTasks = cleaningTaskRepository.findCompletedTasksByClient(clientId);
-        // System.out.println("----------------------------------");
-        // System.out.println("Client's cleaning tasks: ");
-        // System.out.println(clientTasks);
         return clientTasks.stream()
         .map(this::convertToDTO)
         .collect(Collectors.toList());    

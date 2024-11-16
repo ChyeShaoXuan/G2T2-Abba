@@ -1,12 +1,8 @@
 package com.g4t2project.g4t2project.controllers;
 
 import com.g4t2project.g4t2project.DTO.LeaveApplicationDTO;
-import com.g4t2project.g4t2project.entity.LeaveApplication;
-import com.g4t2project.g4t2project.entity.CleaningTask;
-import com.g4t2project.g4t2project.entity.Client;
-import com.g4t2project.g4t2project.service.LeaveApplicationService;
-import com.g4t2project.g4t2project.service.NotificationService;
-
+import com.g4t2project.g4t2project.entity.*;
+import com.g4t2project.g4t2project.service.*;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;

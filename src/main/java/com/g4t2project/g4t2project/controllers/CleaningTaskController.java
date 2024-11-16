@@ -23,18 +23,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.g4t2project.g4t2project.DTO.FeedbackDTO;
-import com.g4t2project.g4t2project.DTO.OverwriteCleaningTaskDTO;
-import com.g4t2project.g4t2project.DTO.PropertyDTO;
-import com.g4t2project.g4t2project.DTO.cleaningTaskDTO;
-import com.g4t2project.g4t2project.entity.CleaningPackage;
-import com.g4t2project.g4t2project.entity.CleaningTask;
-import com.g4t2project.g4t2project.entity.Property;
-import com.g4t2project.g4t2project.entity.Worker;
+import com.g4t2project.g4t2project.DTO.*;
+import com.g4t2project.g4t2project.entity.*;
 import com.g4t2project.g4t2project.exception.NoAvailableWorkerException;
-import com.g4t2project.g4t2project.repository.CleaningTaskRepository;
-import com.g4t2project.g4t2project.repository.PropertyRepository;
-import com.g4t2project.g4t2project.repository.WorkerRepository;
+import com.g4t2project.g4t2project.repository.*;
 
 import com.g4t2project.g4t2project.service.CleaningTaskService;
 
@@ -201,12 +193,6 @@ public class CleaningTaskController {
         return new ResponseEntity<>(tasks, HttpStatus.OK);
         }
     }
-
-    // @GetMapping
-    // public ResponseEntity<List<CleaningTask>> getCleaningTasks(@RequestParam Integer clientId) {
-    //     List<CleaningTask> tasks = cleaningTaskService.getCleaningTasksByClient(clientId);
-    //     return new ResponseEntity<>(tasks, HttpStatus.OK);
-    // }
 
     @GetMapping("/tasks")
     public ResponseEntity<List<OverwriteCleaningTaskDTO>> getCleaningTasks() {

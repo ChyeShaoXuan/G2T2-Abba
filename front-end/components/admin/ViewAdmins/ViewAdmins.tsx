@@ -4,65 +4,66 @@ import { useState, useEffect } from 'react'
 import axios from 'axios'
 import { Button } from "@/components/ui/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
-interface UserDTO {
-  userId: number
-  name: string
-  email: string
-  phoneNumber: string
+interface User {
+  userId: number,
+  name: string,
+  email: string,
   role: string
 }
 
 export default function ViewAdmins() {
-  const [users, setUsers] = useState<UserDTO[]>([])
-  const [editingUser, setEditingUser] = useState<UserDTO | null>(null)
+  const [users, setUsers] = useState<User[]>([])
+  const [editingUser, setEditingUser] = useState<User | null>(null)
+  const [errors, setErrors] = useState<{ [key: string]: string }>({})
 
   useEffect(() => {
-    // Fetch users from the backend
-    const fetchUsers = async () => {
-      try {
-        const usersResponse = await axios.get(`http://localhost:8080/admin/users`)
-        setUsers(usersResponse.data)
-      } catch (error) {
-        console.error('Error fetching users:', error)
-      }
-    }
-
     fetchUsers()
   }, [])
 
-  const updateUserRole = async (user: UserDTO) => {
+  const fetchUsers = async () => {
     try {
-      const response = await axios.put(`http://localhost:8080/admin/users/${user.userId}/role`, null, {
-        params: { role: user.role }
-      })
-      setUsers(prevUsers => prevUsers.map(u => (u.userId === user.userId ? response.data : u)))
-      setEditingUser(null)
+      const usersResponse = await axios.get('http://localhost:8080/admin/users')
+      setUsers(usersResponse.data)
     } catch (error) {
-      console.error('Error updating user role:', error)
+      console.error('Error fetching users:', error)
     }
   }
 
-  const handleEditClick = (user: UserDTO) => {
-    setEditingUser(user)
-  }
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target
     if (editingUser) {
       setEditingUser({ ...editingUser, [name]: value })
     }
   }
 
+  const updateUserRole = async (user: User) => {
+    try {
+      await axios.put(`http://localhost:8080/admin/users/${user.userId}/role`, { role: user.role }, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+      setEditingUser(null)
+      fetchUsers() // Re-fetch users to get the updated data
+    } catch (error) {
+      console.error('Error updating user role:', error)
+    }
+  }
+
+  const handleEditClick = (user: User) => {
+    setEditingUser(user)
+  }
+
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Admin Management</h1>
+      <h1 className="text-2xl font-bold mb-4">Admin Records</h1>
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Name</TableHead>
             <TableHead>Email</TableHead>
-            <TableHead>Phone Number</TableHead>
+            <TableHead>Name</TableHead>
             <TableHead>Role</TableHead>
             <TableHead>Actions</TableHead>
           </TableRow>
@@ -70,9 +71,32 @@ export default function ViewAdmins() {
         <TableBody>
           {users.map(user => (
             <TableRow key={user.userId}>
-              <TableCell>{user.name}</TableCell>
-              <TableCell>{user.email}</TableCell>
-              <TableCell>{user.phoneNumber}</TableCell>
+              <TableCell>
+                {editingUser && editingUser.userId === user.userId ? (
+                  <input
+                    type="text"
+                    name="email"
+                    value={editingUser.email}
+                    onChange={handleInputChange}
+                    className="border p-2"
+                  />
+                ) : (
+                  user.email
+                )}
+              </TableCell>
+              <TableCell>
+                {editingUser && editingUser.userId === user.userId ? (
+                  <input
+                    type="text"
+                    name="name"
+                    value={editingUser.name}
+                    onChange={handleInputChange}
+                    className="border p-2"
+                  />
+                ) : (
+                  user.name
+                )}
+              </TableCell>
               <TableCell>
                 {editingUser && editingUser.userId === user.userId ? (
                   <select

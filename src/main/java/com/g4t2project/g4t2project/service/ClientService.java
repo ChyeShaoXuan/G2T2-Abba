@@ -8,11 +8,9 @@ import com.g4t2project.g4t2project.DTO.*;
 import com.g4t2project.g4t2project.entity.*;
 import com.g4t2project.g4t2project.entity.CleaningPackage.PackageType;
 import com.g4t2project.g4t2project.entity.CleaningPackage.PropertyType;
-import com.g4t2project.g4t2project.exception.NoAvailableWorkerException;
 import com.g4t2project.g4t2project.exception.ManualBookingRequiredException;
 
 import java.time.*;
-import java.util.Optional;
 
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,8 +33,6 @@ public class ClientService {
     @Autowired
     private FeedbackRepository feedbackRepository;
 
-    @Autowired
-    private WorkerRepository workerRepository;
 
     @Autowired
     private CleaningTaskService cleaningTaskService;
@@ -45,34 +41,12 @@ public class ClientService {
         return new ClientDTO(client.getClientId(), client.getEmail(), client.getName(), client.getPhoneNumber());
     }
 
-    // public PropertyDTO convertToPropertyDTO(Property property) {
-    //     return new PropertyDTO(property.getPropertyId(), property.getNumberOfRooms(), property.getAddress(), property.getLatitude(), property.getLongitude());
-    // }
-
     public cleaningTaskDTO convertToCleaningTaskDTO(CleaningTask task) {
         Worker worker = task.getWorker();
         workerDTO workerDTO = new workerDTO(Long.valueOf(worker.getWorkerId()), worker.getName(), worker.getPhoneNumber(), worker.getShortBio(),worker.isAvailable());
         // workerDTO workerDTO = new workerDTO(Long.valueOf(task.getWorker().getWorkerId()), task.getWorker().getName(), task.getWorker().getPhoneNumber());
         Long propertyId = task.getProperty().getPropertyId();
         return new cleaningTaskDTO(propertyId, task.getShift().name(), task.getDate().toString(), task.isAcknowledged(), workerDTO);
-
-        // Worker worker = task.getWorker();
-        // workerDTO workerDTO = null;
-    
-        // if (worker != null) {
-        //     workerDTO = new workerDTO(
-        //         Long.valueOf(worker.getWorkerId()), 
-        //         worker.getName(), 
-        //         worker.getPhoneNumber(), 
-        //         worker.getShortBio(),
-        //         worker.isAvailable()
-        //     );
-        // }
-    
-        // Long propertyId = task.getProperty().getPropertyId();
-        // CleaningPackage cleaningPackage = task.getProperty().getPkg();
-        // String packageDetails = cleaningPackage != null ? cleaningPackage.getProperty_details() : null;
-        // return new cleaningTaskDTO(propertyId, task.getShift().name(), task.getDate().toString(), task.isAcknowledged(), workerDTO, packageDetails);
     }
 
     public cleaningTaskDTO placeOrder(Long clientId, String packageType, String propertyType, int numberOfRooms, CleaningTask.Shift shift, LocalDate date, Long preferredWorkerId) {

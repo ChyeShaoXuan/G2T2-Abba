@@ -1,8 +1,6 @@
 package com.g4t2project.g4t2project.service;
 
-import com.g4t2project.g4t2project.entity.CleaningTask;
-import com.g4t2project.g4t2project.entity.Client;
-import com.g4t2project.g4t2project.entity.LeaveApplication;
+import com.g4t2project.g4t2project.entity.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;

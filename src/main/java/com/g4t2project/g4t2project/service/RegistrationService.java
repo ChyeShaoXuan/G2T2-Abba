@@ -1,15 +1,6 @@
 package com.g4t2project.g4t2project.service;
-import com.g4t2project.g4t2project.DTO.EmailDetailsDto;
-import com.g4t2project.g4t2project.entity.Role;
-import com.g4t2project.g4t2project.entity.Admin;
-import com.g4t2project.g4t2project.entity.Client;
-import com.g4t2project.g4t2project.entity.User;
-import com.g4t2project.g4t2project.entity.Worker;
-import com.g4t2project.g4t2project.repository.UserRepository;
-import com.g4t2project.g4t2project.repository.WorkerRepository;
-import com.g4t2project.g4t2project.repository.AdminRepository;
-import com.g4t2project.g4t2project.repository.ClientRepository;
-import com.g4t2project.g4t2project.repository.RoleRepository;
+import com.g4t2project.g4t2project.entity.*;
+import com.g4t2project.g4t2project.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;

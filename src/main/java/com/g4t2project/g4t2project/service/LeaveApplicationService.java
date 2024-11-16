@@ -1,27 +1,16 @@
 package com.g4t2project.g4t2project.service;
 
 import com.g4t2project.g4t2project.DTO.LeaveApplicationDTO;
-import com.g4t2project.g4t2project.entity.LeaveApplication;
-import com.g4t2project.g4t2project.entity.Worker;
-import com.g4t2project.g4t2project.entity.Client;
-import com.g4t2project.g4t2project.entity.Admin;
-import com.g4t2project.g4t2project.entity.CleaningTask;
-import com.g4t2project.g4t2project.repository.CleaningTaskRepository;
-import com.g4t2project.g4t2project.repository.LeaveApplicationRepository;
-import com.g4t2project.g4t2project.repository.WorkerRepository;
+import com.g4t2project.g4t2project.entity.*;
+import com.g4t2project.g4t2project.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.Duration;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Optional;
-import java.util.List;
+import java.time.*;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -39,7 +28,7 @@ public class LeaveApplicationService {
     @Autowired
     private NotificationService notificationService; 
 
-    private final String MC_UPLOAD_DIR = "uploads/mc/";
+
     private final Duration MINIMUM_NOTICE_DURATION = Duration.ofHours(3);  // 3-hour minimum
 
     public LeaveApplication applyForLeave(LeaveApplication leaveApplication) {
@@ -94,7 +83,6 @@ public class LeaveApplicationService {
     public boolean reallocateWorker(LeaveApplication leaveApplication) {
         Worker workerOnLeave = leaveApplication.getWorker();
         LocalDate leaveStartDate = leaveApplication.getStartDate();  // Use start date for single-day tasks
-        LocalDate leaveEndDate = leaveApplication.getEndDate();  // For single-day tasks, start and end date are the same
     
         // Retrieve the task associated with the worker using CleaningTaskRepository
         CleaningTask taskOnLeave = getTaskForWorker(workerOnLeave);
